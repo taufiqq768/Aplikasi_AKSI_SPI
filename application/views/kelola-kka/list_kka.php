@@ -139,7 +139,7 @@
                               if ($row['kka_kirim_kadiv_dspi']=="0") { 
                             ?>
                             <?php
-                              echo "<a href='".base_url()."administrator/kirim_kka_kadiv_spi/$row[id_kka]'>" 
+                              echo "<a href='".base_url()."administrator/kirim_kka_kadiv_spi/$row[id_kka]/$row[pemeriksaan_id]'>" 
                             ?>
                               <button type="button" class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top"  title="Kirim" data-toggle="modal" data-target="#EditTemuan<?php echo $row['id_kka']?>" <?php  echo strpos($role[0]['role_akses'],',4,')!==FALSE?"":"disabled";?>><span class="fa fa-send"></span>&nbsp; Ketua Audit</button></a>
                             <?php
@@ -149,51 +149,107 @@
                             <?php
                               echo "<a href='".base_url()."administrator/delete_temuan/$row[id_kka]' onclick=\"return confirm('Apa anda yakin untuk hapus Data ini?')\">" 
                             ?>
-                              <button type="button" class="btn btn-danger btn-sm bt-remove"  <?php  echo strpos($role[0]['role_akses'],',5,')!==FALSE?"":"disabled";?> data-toggle="tooltip" data-placement="top" title="Hapus"><span class="fa fa-trash"></button></a>
+                              <button type="button" class="btn btn-danger btn-sm bt-remove"  <?php  echo strpos($role[0]['role_akses'],',5,')!==FALSE?"":"disabled";?> data-toggle="tooltip" data-placement="top" title="Reject"><span class="fa fa-long-arrow-left"></button></a>
                               <button type="button" class="btn btn-warning btn-sm btn-history"  <?php  echo strpos($role[0]['role_akses'],',5,')!==FALSE?"":"disabled";?> data-id="<?= $row['id_kka'] ?>" data-toggle="tooltip" data-placement="top" title="History"><span class="fa fa-history"></button></a>
                               <!-- /ANGGOTA AUDIT -->
                             <?php } elseif($row['kka_kirim_kadiv_dspi'] == "1" && $row['pembuat_kka'] == $this->session->username){ ?>
                               <button type="button" class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top"  <?php  echo strpos($role[0]['role_akses'],',6,')!==FALSE?"":"disabled"; ?>>Terkirim Ke Ketua</button></a>
                               <!-- block KETUA -->
                             <?php } elseif($row['kka_kirim_kadiv_dspi'] == "1" && $row['pemeriksaan_ketua'] == $this->session->username){ ?>
-                              <?php echo "<a href='".base_url()."administrator/kirim_kka_kadiv_spi/$row[id_kka]'>" ?>
-                              <button type="button" class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top"  title="Kirim" data-toggle="modal" data-target="#EditTemuan<?php echo $row['id_kka']?>" <?php  echo strpos($role[0]['role_akses'],',4,')!==FALSE?"":"disabled";?>><span class="fa fa-send"></span>&nbsp; Pengawas </br>Audit</button></a>
+                              <?php echo "<a href='".base_url()."administrator/kirim_kka_kadiv_spi/$row[id_kka]/$row[pemeriksaan_id]'>" ?>
+                              <button type="button" class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top"  title="Kirim" data-toggle="modal" data-target="#EditTemuan<?php echo $row['id_kka']?>" <?php  echo strpos($role[0]['role_akses'],',4,')!==FALSE?"":"disabled";?>><span class="fa fa-send"></span>&nbsp; Pengawas </br>Audit</button></a></br>
                               <?php
                               echo "<a href='".base_url()."administrator/edit_kka/$row[id_kka]'>" 
                               ?>
                               <button type="button" class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="top" title="Edit" <?php  echo strpos($role[0]['role_akses'],',6,')!==FALSE?"":"disabled"; ?>><span class="fa fa-pencil"></span>&nbsp;</button></a>
-                              <button type="button" class="btn btn-danger btn-sm bt-remove" data-toggle="tooltip" data-placement="top" title="Ketua Hapus Data KKA" <?php  echo strpos($role[0]['role_akses'],',6,')!==FALSE?"":"disabled"; ?>><span class="fa fa-trash"></span>&nbsp;</button></a>
+                              <button type="button" class="btn btn-danger btn-sm bt-remove" data-toggle="tooltip" data-placement="top" title=Reject" <?php  echo strpos($role[0]['role_akses'],',6,')!==FALSE?"":"disabled"; ?>><span class="fa fa-long-arrow-left"></span>&nbsp;</button></a>
                               <button type="button" class="btn btn-warning btn-sm btn-history"  <?php  echo strpos($role[0]['role_akses'],',5,')!==FALSE?"":"disabled";?> data-id="<?= $row['pemeriksaan_id'] ?>" data-toggle="tooltip" data-placement="top" title="History"><span class="fa fa-history"></button></a>
                             <?php } elseif($row['kka_kirim_kadiv_dspi'] == "2" && $row['pemeriksaan_ketua'] == $this->session->username){ ?>
                               <button type="button" class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top"  <?php  echo strpos($role[0]['role_akses'],',6,')!==FALSE?"":"disabled"; ?>>Terkirim Ke Pengawas</button></a>
                               <!-- /block KETUA -->
                               <!-- block PENGAWAS -->
                             <?php } elseif($row['kka_kirim_kadiv_dspi'] == "2" && $row['pemeriksaan_pengawas'] == $this->session->username){ ?>
-                              <?php echo "<a href='".base_url()."administrator/kirim_kka_kadiv_spi/$row[id_kka]'>" ?>
+                              <?php echo "<a href='".base_url()."administrator/kirim_kka_kadiv_spi/$row[id_kka]/$row[pemeriksaan_id]''>" ?>
                               <button type="button" class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top"  title="Kirim" data-toggle="modal" data-target="#EditTemuan<?php echo $row['id_kka']?>" <?php  echo strpos($role[0]['role_akses'],',4,')!==FALSE?"":"disabled";?>><span class="fa fa-send"></span>&nbsp; KADIV </br>DSPI</button></a>
                               <?php
                               echo "<a href='".base_url()."administrator/edit_kka/$row[id_kka]'>" 
                               ?>
                               <button type="button" class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="top" title="Edit" <?php  echo strpos($role[0]['role_akses'],',6,')!==FALSE?"":"disabled"; ?>><span class="fa fa-pencil"></span>&nbsp;</button></a>
-                              <button type="button" class="btn btn-danger btn-sm bt-remove" data-toggle="tooltip" data-placement="top" title="Ketua Hapus Data KKA" <?php  echo strpos($role[0]['role_akses'],',6,')!==FALSE?"":"disabled"; ?>><span class="fa fa-trash"></span>&nbsp;</button></a>
                               <button type="button" class="btn btn-warning btn-sm btn-history"  <?php  echo strpos($role[0]['role_akses'],',5,')!==FALSE?"":"disabled";?> data-id="<?= $row['id_kka'] ?>" data-toggle="tooltip" data-placement="top" title="History"><span class="fa fa-history"></button></a>
-                              <?php } elseif($row['kka_kirim_kadiv_dspi'] == "3" && $row['pemeriksaan_pengawas'] == $this->session->username){ ?>
+                              <button type="button" class="btn btn-danger btn-sm bt-remove" data-toggle="tooltip" data-placement="top" title=Reject" <?php  echo strpos($role[0]['role_akses'],',6,')!==FALSE?"":"disabled"; ?>><span class="fa fa-long-arrow-left"></span>&nbsp;</button></a>
+                              <?php } elseif($row['kka_kirim_kadiv_dspi'] == "2" && $row['pemeriksaan_pengawas'] == $this->session->username){ ?>
                                 <button type="button" class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top"  <?php  echo strpos($role[0]['role_akses'],',6,')!==FALSE?"":"disabled"; ?>>Terkirim Ke </br>KADIV SPI</button></a>
                               <!-- /block PENGAWAS -->
                               <!-- block KADIV -->
-                            <?php } elseif($row['kka_kirim_kadiv_dspi'] == "3" && $row['kka_kirim_kadiv_dspi'] == "0"){ ?>
-                              <?php echo "<a href='".base_url()."administrator/kirim_kka_kadiv_spi/$row[id_kka]'>" ?>
-                              <button type="button" class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top"  title="Kirim" data-toggle="modal" data-target="#EditTemuan<?php echo $row['id_kka']?>" <?php  echo strpos($role[0]['role_akses'],',4,')!==FALSE?"":"disabled";?>><span class="fa fa-check"></span>&nbsp; Approve KADIV </br>DSPI</button></a>
+                            <?php } elseif($row['kka_kirim_kadiv_dspi'] == "3" && "1001773" == $this->session->username){ ?>
+                              <?php echo "<a href='".base_url()."administrator/kirim_kka_kadiv_spi/$row[id_kka]/$row[pemeriksaan_id]'>" ?>
+                              <button type="button" class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top"  title="Kirim" data-toggle="modal" data-target="#EditTemuan<?php echo $row['id_kka']?>"><span class="fa fa-check"></span>&nbsp; Approve KADIV </br>DSPI</button></a>
                               <?php
                               echo "<a href='".base_url()."administrator/edit_kka/$row[id_kka]'>" 
                               ?>
                               <button type="button" class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="top" title="Edit" <?php  echo strpos($role[0]['role_akses'],',6,')!==FALSE?"":"disabled"; ?>><span class="fa fa-pencil"></span>&nbsp;</button></a>
-                              <button type="button" class="btn btn-danger btn-sm bt-remove" data-toggle="tooltip" data-placement="top" title="Ketua Hapus Data KKA" <?php  echo strpos($role[0]['role_akses'],',6,')!==FALSE?"":"disabled"; ?>><span class="fa fa-trash"></span>&nbsp;</button></a>
-                              <?php } elseif($row['kka_kirim_kadiv_dspi'] == "3"){ ?>
-                                <button type="button" class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top"  <?php  echo strpos($role[0]['role_akses'],',6,')!==FALSE?"":"disabled"; ?>>Terkirim Ke </br>KADIV SPI</button></a>
-                              <!-- /block PENGAWAS -->
-                            <?php } else{ echo "<a href='".base_url()."administrator/tambah_kka/$row[id_kka]'>"?>
-                              <button type="button" class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="top" title="Tambah Data KKA" <?php  echo strpos($role[0]['role_akses'],',6,')!==FALSE?"":"disabled"; ?>><span class="fa fa-plus"></span>&nbsp;KKA</button></a>
+                              <button type="button" class="btn btn-danger btn-sm bt-remove" data-toggle="tooltip" data-placement="top" title=Reject" <?php  echo strpos($role[0]['role_akses'],',6,')!==FALSE?"":"disabled"; ?>><span class="fa fa-long-arrow-left"></span>&nbsp;</button></a>
+                              <?php } elseif($row['kka_kirim_kadiv_dspi'] == "4"){ ?>
+                                <button type="button" class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top"  <?php  echo strpos($role[0]['role_akses'],',6,')!==FALSE?"":"disabled"; ?>><span class="fa fa-thumbs-up"></span>&nbsp;Approved</button></a>
+                                <button type="button" class="btn btn-warning btn-sm btn-history"  <?php  echo strpos($role[0]['role_akses'],',5,')!==FALSE?"":"disabled";?> data-id="<?= $row['id_kka'] ?>" data-toggle="tooltip" data-placement="top" title="History"><span class="fa fa-history"></button>
+                              <!-- /block KADIV -->
+                            <?php } else{
+                                if($row['kka_kirim_kadiv_dspi'] == null){
+                                  echo "<a href='".base_url()."administrator/tambah_kka/$row[id_kka]'>
+                                          <button type='button' class='btn btn-primary btn-sm' data-toggle='tooltip' data-placement='top' title='Tambah Data KKA' ".
+                                          (strpos($role[0]['role_akses'], ',6,') !== FALSE ? "" : "disabled") . ">
+                                          <span class='fa fa-plus'></span>&nbsp;KKA</button>
+                                        </a>";
+                                        echo "<button type='button' class='btn btn-warning btn-sm btn-history' " . 
+                                        (strpos($role[0]['role_akses'], ',5,') !== FALSE ? "" : "disabled") . 
+                                        " data-id='" . $row['pemeriksaan_id'] . "' data-toggle='tooltip' data-placement='top' title='History'>
+                                        <span class='fa fa-history'></span>
+                                        </button>";
+                                }elseif($row['kka_kirim_kadiv_dspi'] == "1"){
+                                  echo "<button type='button' class='btn btn-success btn-sm' data-toggle='tooltip' data-placement='top' " . 
+                                  (strpos($role[0]['role_akses'], ',6,') !== FALSE ? "" : "disabled") . ">
+                                  Terkirim Ke <br> Ketua
+                                  </button>";
+                                  echo "<button type='button' class='btn btn-warning btn-sm btn-history' " . 
+                                        (strpos($role[0]['role_akses'], ',5,') !== FALSE ? "" : "disabled") . 
+                                        " data-id='" . $row['pemeriksaan_id'] . "' data-toggle='tooltip' data-placement='top' title='History'>
+                                        <span class='fa fa-history'></span>
+                                        </button>";
+
+                                }elseif($row['kka_kirim_kadiv_dspi'] == "2"){
+                                  echo "<button type='button' class='btn btn-success btn-sm' data-toggle='tooltip' data-placement='top' " . 
+                                  (strpos($role[0]['role_akses'], ',6,') !== FALSE ? "" : "disabled") . ">
+                                  Terkirim Ke <br>Pengawas
+                                  </button>";
+                                  echo "<button type='button' class='btn btn-warning btn-sm btn-history' " . 
+                                        (strpos($role[0]['role_akses'], ',5,') !== FALSE ? "" : "disabled") . 
+                                        " data-id='" . $row['pemeriksaan_id'] . "' data-toggle='tooltip' data-placement='top' title='History'>
+                                        <span class='fa fa-history'></span>
+                                        </button>";
+
+                                }elseif($row['kka_kirim_kadiv_dspi'] == "3"){
+                                  echo "<button type='button' class='btn btn-success btn-sm' data-toggle='tooltip' data-placement='top' " . 
+                                  (strpos($role[0]['role_akses'], ',6,') !== FALSE ? "" : "disabled") . ">
+                                  Terkirim Ke <br>KADIV SPI
+                                  </button>";
+                                  echo "<button type='button' class='btn btn-warning btn-sm btn-history' " . 
+                                        (strpos($role[0]['role_akses'], ',5,') !== FALSE ? "" : "disabled") . 
+                                        " data-id='" . $row['pemeriksaan_id'] . "' data-toggle='tooltip' data-placement='top' title='History'>
+                                        <span class='fa fa-history'></span>
+                                        </button>";
+                                }
+                                else{
+                                  echo "<button type='button' class='btn btn-success btn-sm' data-toggle='tooltip' data-placement='top' " . 
+                                  (strpos($role[0]['role_akses'], ',6,') !== FALSE ? "" : "disabled") . ">
+                                  Approve Ke <br>KADIV SPI
+                                  </button>";
+                                  echo "<button type='button' class='btn btn-warning btn-sm btn-history' " . 
+                                        (strpos($role[0]['role_akses'], ',5,') !== FALSE ? "" : "disabled") . 
+                                        " data-id='" . $row['pemeriksaan_id'] . "' data-toggle='tooltip' data-placement='top' title='History'>
+                                        <span class='fa fa-history'></span>
+                                        </button>";
+                                }
+                              ?>
                             <?php }?>
                           </td>
                         </tr>
@@ -220,24 +276,6 @@
                                                 <div class="card">
                                                     <div class="card-body">
                                                         <div id="content">
-                                                            <ul class="timeline">
-                                                                <li class="event" data-date="12:30 - 1:00pm">
-                                                                    <h3>Registration</h3>
-                                                                    <p>Get here on time, it's first come first serve. Be late, get turned away.</p>
-                                                                </li>
-                                                                <li class="event" data-date="2:30 - 4:00pm">
-                                                                    <h3>Opening Ceremony</h3>
-                                                                    <p>Get ready for an exciting event, this will kick off in amazing fashion with MOP &amp; Busta Rhymes as an opening show.</p>
-                                                                </li>
-                                                                <li class="event" data-date="5:00 - 8:00pm">
-                                                                    <h3>Main Event</h3>
-                                                                    <p>This is where it all goes down. You will compete head to head with your friends and rivals. Get ready!</p>
-                                                                </li>
-                                                                <li class="event" data-date="8:30 - 9:30pm">
-                                                                    <h3>Closing Ceremony</h3>
-                                                                    <p>See how is the victor and who are the losers. The big stage is where the winners bask in their own glory.</p>
-                                                                </li>
-                                                            </ul>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -386,18 +424,55 @@
             moreText.style.display = "inline";
         }
     }
-    $(document).ready(function () {
+//     $(document).ready(function () {
+//     $(".btn-history").click(function () {
+//         var id = $(this).data("id"); // Ambil ID dari tombol
+//         var url = "<?= base_url('administrator/history_kka/') ?>" + id; // Buat URL lengkap
+        
+//         console.log("URL yang dikirim: " + url); // Debug: Cek URL di Console
+
+//         // Panggil AJAX untuk mengambil data history
+//         $.ajax({
+//             url: url, // Gunakan URL yang sudah dibuat
+//             type: "GET",
+//             success: function (response) {  
+//                 $("#historyModal").modal("show"); // Tampilkan modal
+//             },
+//             error: function () {
+//                 $("#historyContent").html("<p class='text-danger'>Gagal memuat data.</p>");
+//             }
+//         });
+//     });
+// });
+$(document).ready(function () {
     $(".btn-history").click(function () {
         var id = $(this).data("id"); // Ambil ID dari tombol
-        var url = "<?= base_url('administrator/history_kka/') ?>" + id; // Buat URL lengkap
+        var url1 = "<?= base_url('administrator/history_kka/') ?>" + id; // Buat URL lengkap
         
-        //console.log("URL yang dikirim: " + url); // Debug: Cek URL di Console
+      console.log("URL yang dikirim: " + url1); // Debug: Cek URL di Console
+        
 
         // Panggil AJAX untuk mengambil data history
         $.ajax({
-            url: url, // Gunakan URL yang sudah dibuat
+            url: "<?= base_url('administrator/history_kka') ?>/" + id, // URL dengan ID
             type: "GET",
-            success: function (response) {  
+            success: function (response) {
+                if (response.success) {
+                    var html = "<ul class='timeline'>";
+
+                    response.data.forEach(function (item) {
+                        html += "<li class='event' data-date='" + item.waktu_kirim + "'>";
+                        html += "<h3>" + item.user_nama + "</h3>";
+                        html += "</li>";
+                    });
+
+                    html += "</ul>";
+
+                    $("#historyContent").html(html);
+                } else {
+                    $("#historyContent").html("<p class='text-danger'>Data tidak ditemukan.</p>");
+                }
+
                 $("#historyModal").modal("show"); // Tampilkan modal
             },
             error: function () {
@@ -406,6 +481,7 @@
         });
     });
 });
+
 
 </script>
     

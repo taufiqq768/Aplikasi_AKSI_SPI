@@ -1,5 +1,68 @@
 <title>AKSI | Kelola Pemeriksaan </title>
       <!-- page content -->
+       <style>
+        /* The switch - the box around the slider */
+        .switch {
+        position: relative;
+        display: inline-block;
+        width: 48px; /* 60px * 0.8 */
+        height: 27.2px; /* 34px * 0.8 */
+      }
+
+      .switch input { 
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        -webkit-transition: .4s;
+        transition: .4s;
+      }
+
+      .slider:before {
+        position: absolute;
+        content: "";
+        height: 20.8px; /* 26px * 0.8 */
+        width: 20.8px; /* 26px * 0.8 */
+        left: 3.2px; /* 4px * 0.8 */
+        bottom: 3.2px; /* 4px * 0.8 */
+        background-color: white;
+        -webkit-transition: .4s;
+        transition: .4s;
+      }
+
+      input:checked + .slider {
+        background-color: #2196F3;
+      }
+
+      input:focus + .slider {
+        box-shadow: 0 0 0.8px #2196F3; /* 1px * 0.8 */
+      }
+
+      input:checked + .slider:before {
+        -webkit-transform: translateX(20.8px); /* 26px * 0.8 */
+        -ms-transform: translateX(20.8px);
+        transform: translateX(20.8px);
+      }
+
+      /* Rounded sliders */
+      .slider.round {
+        border-radius: 16px; /* 20px * 0.8 */
+      }
+
+      .slider.round:before {
+        border-radius: 50%;
+      }
+
+      </style>
       <div class="right_col" role="main">
         <div class="">
           <div class="page-title">
@@ -113,12 +176,19 @@
                           </div>
                           <?php }else{ 
                               echo "<a href='".base_url("asset/file_lha/").$filelha."' target='_blank'><button type=button class='btn btn-warning btn-sm' data-toggle=tooltip data-placement=top title=Download Dokumen LHA style='margin-left: 10px'>Download Dokumen LHA</button></a>";
-                              echo "<a href='" . base_url("administrator/send_lha_reg/$id_pmr") . "'>
-                              <button type='button' class='btn btn-primary btn-sm' data-toggle='tooltip' data-placement='top' title='Kirim LHA ke Regional/Divisi'> 
-                                  <span class='fa fa-send'></span>
-                              </button>
-                            </a>";
                             }
+                          ?>
+                        </div>
+                        <div class="form-group">
+                          <label class="control-label col-md-3" style="padding-left: 150px">Dokumen LHA Kirim ke Regional/Divisi </label>
+                          <?php 
+                            $checked = $record4[0]['status'] == 1 ? "checked" : "";
+                          ?>
+                          <?php 
+                              echo "<br><label class='switch'>
+                                      <input type='checkbox' class='send-lha' data-id='$id_pmr' $checked>
+                                      <span class='slider round'></span>
+                                    </label>";
                           ?>
                         </div></br></br>
                         <div class="form-groupm lha" style="display:none;">
@@ -439,6 +509,32 @@
         $('#lha').click(function() {
             $('.lha').removeAttr('style');
         });
+
+        $(".send-lha").on("change", function() {
+        let checkbox = $(this);
+        let id_pmr = checkbox.data("id");
+        let status = checkbox.prop("checked") ? 1 : 0;
+
+        $.ajax({
+            url: "<?= base_url('administrator/send_lha_reg') ?>/" + id_pmr,
+            type: "POST",
+            data: { status: status },
+            dataType: "json",
+            success: function(response) {
+                if (response.success) {
+                    console.log("Status berhasil diperbarui:", response);
+                } else {
+                    console.error("Gagal memperbarui status:", response.message);
+                    checkbox.prop("checked", !status); // Balik status jika gagal
+                }
+            },
+            error: function(xhr) {
+                let err = JSON.parse(xhr.responseText);
+                console.error("Error:", err.message);
+                checkbox.prop("checked", !status); // Balik status jika gagal
+            }
+        });
+    });
 
     });
     </script>

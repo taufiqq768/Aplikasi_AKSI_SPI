@@ -59,153 +59,7 @@
                     
                       <div id="collapseTwo<?php echo $no; ?>" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo<?php echo $no; ?>" style="padding: 5px 0px 5px 20px" >
                         <!-- --------------------------------------------------------------- -->
-                        <?php 
-                          if ($row['pemeriksaan_sebelumnya']!=0) { ?>
-                            <!-- <div class="panel"> -->
-                              <a class="panel-heading collapsed" role="tab" id="headingTwo<?php echo $back?>" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo<?php echo $back?>" aria-expanded="false" aria-controls="collapseTwo<?php echo $back?>">
-                                <h4 class="panel-title"><span class="fa fa-caret-down"></span> Pemeriksaan Sebelumnya yang belum Close</h4>
-                              </a>
-                              <div id="collapseTwo<?php echo $back?>" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo<?php echo $back?>"  style="padding: 5px 0px 0px 20px" >
-                                <!-- <div class="panel-body"> -->
-                                  <?php 
-                                  $huhu = $row['pemeriksaan_sebelumnya'];
-                                  $huhu = explode(" ", $huhu);
-                                  foreach ($huhu as $hmm) {
-                                   $pmr_back = $this->db->query("SELECT * FROM tb_temuan JOIN tb_pemeriksaan ON tb_temuan.pemeriksaan_id = tb_pemeriksaan.pemeriksaan_id WHERE NOT(temuan_pmr_sebelumnya = '0') AND temuan_pmr_sebelumnya = '$hmm' AND tb_pemeriksaan.pemeriksaan_id = '$row[pemeriksaan_id]' ORDER BY temuan_id ASC")->result_array(); ?>
-                                   <?php if ($pmr_back!=null): ?>
-                                  <strong><font size="3"><?php
-                                  $judulpmr = $this->model_app->view_where('tb_pemeriksaan','pemeriksaan_id',$pmr_back[0]['temuan_pmr_sebelumnya']);
-                                  echo "Pemeriksaan : ".$judulpmr[0]['pemeriksaan_judul']; 
-                                  $mulai = explode("-", $judulpmr[0]['pemeriksaan_tgl_mulai']);
-                                  $akhir = explode("-", $judulpmr[0]['pemeriksaan_tgl_akhir']);
-                                  echo "(".$mulai[2]."-".$mulai[1]."-".$mulai[0]." s.d ".$akhir[2]."-".$akhir[1]."-".$akhir[0].")";
-                                  ?>
-                                  </font>
-                                  </strong><br> 
-                                  
-                                     
-                                   <?php endif ?>
-                                 <?php if ($pmr_back!=null) {
-                                    $htg_temuan = 1;
-                                    foreach ($pmr_back as $nilai) { 
-                                      $cek_ta = $this->db->query("SELECT rekomendasi_status FROM tb_rekomendasi WHERE temuan_id = '$nilai[temuan_id]' AND rekomendasi_kirim='Y'")->result_array();
-                                      // print_r($cek_t);
-                                      foreach ($cek_ta as $toa) {
-                                        $tia[] = $toa['rekomendasi_status'];
-                                      }
-                                      // print_r($ti);
-                                      $span1a ='';
-                                      foreach ($target as $keya) {
-                                       if (in_array($keya, $tia)) {
-                                          $span1a = "<span class='fa fa-asterisk red'></span>";
-                                        }
-                                      }
-                                      ?>
-                                  <div class="panel">
-                                  <a class="panel-heading collapsed" role="tab" id="headingTwo<?php echo $tback; ?>" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo<?php echo $tback; ?>" aria-expanded="false" aria-controls="collapseTwo<?php echo $tback; ?>"<?php echo $back; ?>>
-                                    <h5 class="panel-title"><span><i class="fa fa-plus">&nbsp;</i></span>
-                                      <strong>
-                                        <?php 
-                                        echo "Temuan ".$htg_temuan.": </strong>";
-                                        $temuan = explode(" ", $nilai['temuan_judul']);
-                                        $count = count($temuan);
-                                        if ($count < 10) {
-                                          echo $nilai['temuan_judul'];
-                                        }else{
-                                          for ($i=0; $i < 10; $i++) { 
-                                            echo $temuan[$i]." ";
-                                          }
-                                          if ($count > 10) {
-                                            echo "...";
-                                          }
-                                        } ?> 
-                                      <?php echo $span1a; ?></h5>
-                                  </a>
-                                  </div>
-                                  <div id="collapseTwo<?php echo $tback; ?>" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo<?php echo $tback; ?>">
-                                    <div class="panel-body">
-                                      <?php  
-                                      $bidang = $this->model_app->view_profile('tb_bidangtemuan', array('bidangtemuan_id'=> $nilai['bidangtemuan_id']))->row_array();
-                                      echo "<b>Bidang : </b>".$bidang['bidangtemuan_nama']."<br>";
-                                      echo "<b>Obyek Pemeriksaan : </b>".$nilai['temuan_obyek']."<br>";
-                                      echo "<b>Detail Temuan : </b><br>".$nilai['temuan_judul'];
-                                      $tmn_id = $nilai['temuan_id'];
-                                      $rekomendasi = $this->db->query("SELECT * FROM tb_rekomendasi WHERE temuan_id='$tmn_id' AND rekomendasi_kirim = 'Y'")->result_array();
-                                      ?>
-                                      <div class="table-responsive">
-                                        <table class="table table-bordered">
-                                          <tr>
-                                            <th style="width: 38%"><center>Rekomendasi</center></th>
-                                            <th style="width: 10%"><center>Tanggal</center></th>
-                                            <th style="width: 16%"><center>Status</center></th>
-                                            <th style="width: 16%"><center>Status Terbaru</center></th>
-                                            <th style="width: 19%"><center>Action</center></th>
-                                          </tr>
-                                          <tbody>
-                                            <?php 
-                                            foreach ($rekomendasi as $key => $rowr) {
-                                              $rowbaris++;
-                                            if ($rowr['rekomendasi_status']=="Sesuai") {
-                                              $btn_class = 'btn btn-xs btn-round btn-success';
-                                            }elseif($rowr['rekomendasi_status']=="Belum Sesuai"){
-                                              $btn_class = 'btn btn-xs btn-round btn-warning';
-                                            }elseif ($rowr['rekomendasi_status']=="Belum di Tindak Lanjut") {
-                                              $btn_class = 'btn btn-xs btn-round btn-danger';
-                                            }elseif ($rowr['rekomendasi_status']=="Tidak dapat di Tindak Lanjuti"){
-                                              $btn_class = 'btn btn-xs btn-round btn-info';
-                                            }else{
-                                              $btn_class = 'btn btn-xs btn-round btn-dark';
-                                            }
-                                            ?>
-                                            <tr>
-                                              <td><?php  
-                                                  $rekom1 = explode(" ", $rowr['rekomendasi_judul']); 
-                                                    $htg_rekom1 = count($rekom1);
-                                                    if ($htg_rekom1 <= 15) {
-                                                      echo $rowr['rekomendasi_judul'];
-                                                    }else{
-                                                      for ($i=0; $i < 15; $i++) { 
-                                                      echo $rekom1[$i]." ";
-                                                      }
-                                                      
-                                                    }
-                                                    if ($htg_rekom1 > 15) { ?>
-                                                      ...&nbsp;<a href="#" id="ambilid<?php echo $rowbaris?>" data-toggle="modal" data-target="#exampleModal" data-id="<?php echo $rowr['rekomendasi_id']?>"><i style="color: black">Lihat Selengkapnya</i></a>    
-                                                      <?php 
-                                                      }
-                                              ?>
-                                              </td>
-                                              <td><?php $tgl = explode("-", $rowr['rekomendasi_tgl']);  echo $tgl[2]."-".$tgl[1]."-".$tgl[0]; ?></td>
-                                              <td>
-                                                <center><span class="<?php echo $btn_class ?>"><?php echo $rowr['rekomendasi_status']; ?></span></center></td>
-                                                <td>
-                                                <center><span class="<?php echo $btn_class ?>"><?php echo $rowr['rekomendasi_status_terbaru']; ?></span></center></td>
-                                              <td><div class="form-group">
-                                                <?php   echo "<a href='".base_url()."administrator/riwayat_tl/$row[pemeriksaan_id]/$rowr[temuan_id]/$rowr[rekomendasi_id]'>" ?><button type="button" class="btn btn-default btn-xs" title="Lihat Riwayat Tindak Lanjut"><span class="fa fa-history"></span> Riwayat</button></a>
-                                                <?php   echo "<a href='".base_url()."administrator/list_tl/$row[pemeriksaan_id]/$rowr[temuan_id]/$rowr[rekomendasi_id]'>" ?><button type="button" class="btn btn-primary btn-xs" title="Isi Usulan Tindak Lanjut"><span class="fa fa-list-alt"></span> List TL</button></a>
-                                              </div>
-                                              </td>
-                                            </tr>
-                                            <?php
-                                            } ?>
-                                          </tbody>
-                                        </table>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <?php $htg_temuan++; $back++; $tback++; }?>
-                                    <!-- ---batas if--- -->
-                                  <?php  }
-                                  ?>
-                                 <?php  } ?>
-                                  
-                                  <!-- ----batasloop--- -->
-                                <!-- </div> -->
-                              </div>
-                            <!-- </div> -->
-                            
-                          <?php }
-                        ?>
+                        
     <!-- --------------------------------------------------------------------------------- -->
                         <?php 
                         $temuan = 1; $ti = []; 
@@ -213,7 +67,13 @@
                         { 
                           $span = ""; $ti=[];
                           //$rkm = $this->model_app->view_join_where3('tb_rekomendasi','temuan_id',$value['temuan_id'],'rekomendasi_kirim','Y','tb_pemeriksaan','pemeriksaan_id','pemeriksaan_id', 'tb_pemeriksaan.unit_id','tb_rekomendasi.unit_id');
-                          $rkm = $this->db->query("SELECT * FROM `tb_rekomendasi` LEFT JOIN `tb_pemeriksaan` ON `tb_rekomendasi`.`pemeriksaan_id`=`tb_pemeriksaan`.`pemeriksaan_id` WHERE `temuan_id` = $value[temuan_id] AND `rekomendasi_kirim` = 'Y' AND `tb_pemeriksaan`.`unit_id` = `tb_rekomendasi`.`unit_id`")->result_array();
+                          $q= $this->db->query("SELECT * FROM `tb_rekomendasi` LEFT JOIN `tb_pemeriksaan` ON `tb_rekomendasi`.`pemeriksaan_id`=`tb_pemeriksaan`.`pemeriksaan_id` WHERE `temuan_id` = $value[temuan_id] AND `rekomendasi_kirim` = 'Y'")->result_array();
+                          if($q[0]['unit_id'] == $this->session->unit){
+                            $rkm= $this->db->query("SELECT * FROM `tb_rekomendasi` LEFT JOIN `tb_pemeriksaan` ON `tb_rekomendasi`.`pemeriksaan_id`=`tb_pemeriksaan`.`pemeriksaan_id` WHERE `temuan_id` = $value[temuan_id] AND `rekomendasi_kirim` = 'Y' AND `tb_pemeriksaan`.`unit_id` = `tb_rekomendasi`.`unit_id`")->result_array();
+                          }
+                          else{
+                            $rkm= $this->db->query("SELECT * FROM `tb_rekomendasi` LEFT JOIN `tb_pemeriksaan` ON `tb_rekomendasi`.`pemeriksaan_id`=`tb_pemeriksaan`.`pemeriksaan_id` WHERE `temuan_id` = $value[temuan_id] AND `rekomendasi_kirim` = 'Y' AND `tb_pemeriksaan`.`unit_mention` = `tb_rekomendasi`.`unit_id`")->result_array();
+                          }
                           $bidang = $this->model_app->view_profile('tb_bidangtemuan', array('bidangtemuan_id'=> $value['bidangtemuan_id']))->row_array();
                           $m_temuan = $this->model_app->view_profile('tb_master_temuan', array('temu_id'=> $value['temu_id']))->row_array();
                           $m_ab = $this->model_app->view_profile('tb_master_ab', array('id_ab'=> $value['id_klasifikasi_ab']))->row_array();
@@ -271,7 +131,7 @@
                             <table class="table table-bordered">
                               <thead>
                                 <th style="width: 38%"><center>Rekomendasi</center></th>
-                                <th style="width: 10%"><center>Tanggal</center></th>
+                                <th style="width: 10%"><center>Tanggal Deadline</center></th>
                                 <th style="width: 16%"><center>Status</center></th>
                                 <th style="width: 16%"><center>Status Terbaru</center></th>
                                 <th style="width: 19%"><center>Action</center></th>
@@ -328,7 +188,7 @@
                                         }   
                                     ?>
                                   </td>
-                                  <td><?php $tgl = explode("-", $baris['rekomendasi_tgl']);  echo $tgl[2]."-".$tgl[1]."-".$tgl[0]; ?></td>
+                                  <td><?php $tgl = explode("-", $baris['rekomendasi_tgl_deadline']);  echo $tgl[2]."-".$tgl[1]."-".$tgl[0]; ?></td>
                                   <td>
                                     <center><span class="<?php echo $btn_class ?>"><?php echo $baris['rekomendasi_status']; ?></span></center></td>
                                     <td><center>

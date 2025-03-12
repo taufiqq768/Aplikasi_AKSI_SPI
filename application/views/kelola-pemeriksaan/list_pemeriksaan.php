@@ -95,8 +95,8 @@
                         <tr>
                           <th>No.</th>
                           <th style="width: 12%">Jenis Audit</th>
-                          <th>Nama Pengawas</th>
                           <th>Nama Ketua</th>
+                          <th>Nama Pengawas</th>
                           <th>Nama Anggota</th>
                           <th style="width: 25%">Judul</th>
                           <th>Unit</th>
@@ -126,75 +126,21 @@
                               } 
                         ?>
                         <?php 
-                        if ($value['pemeriksaan_jenis']!="Rutin") {
-                          $userspi = explode("/", $value['pemeriksaan_petugas']);
-                          if (in_array($this->session->username, $userspi) OR $this->session->level=="admin" OR $this->session->level=="kabagspi" OR $this->session->level=="administrasi") { 
-                            $no++;
-                            ?>
-                           <tr>
-                          <td><center><?php echo $no."."; ?></center></td>
-                          <td><?php echo $value['pemeriksaan_jenis']; ?></td>
-                          <td><?php echo $value['pemeriksaan_pengawas'] == 0 ? '-' : $value['pemeriksaan_pengawas']; ?></td>
-                          <td><?php echo $value['pemeriksaan_ketua'] == 0 ? '-' : $value['pemeriksaan_ketua']; ?></td>
-                          <td><?php 
-                           $select  = explode("/", $value['pemeriksaan_petugas']);
-                           $nomer = 1;
-                            foreach ($select as $nik) {
-                              $usr = $this->model_app->view_profile('tb_users', array('user_nik'=> $nik))->row_array();
-                              echo $nomer.". ".$usr['user_nama']."<br>";
-                              $nomer++;
-                            } ?>
-                          </td>
-                          <td><?php   echo "<a href='".base_url()."administrator/view_temuan/$value[pemeriksaan_id]' data-toggle='tooltip' data-placement='top' title='Lihat Detail Pemeriksaan'><u>" ?><?php echo $value['pemeriksaan_judul']; ?></u></a></td>
-                          <td><?php echo $value['unit_nama']; ?></td>
-                          <td><?php 
-                              $mulai = explode("-", $value['pemeriksaan_tgl_mulai']);
-                              $akhir = explode("-", $value['pemeriksaan_tgl_akhir']);
-                              echo $mulai[2]."-".$mulai[1]."-".$mulai[0]." s.d <br>".$akhir[2]."-".$akhir[1]."-".$akhir[0];
-                            ?>
-                          </td>
-                          <?php 
-                          $select  = explode("/", $value['pemeriksaan_petugas']);
-                          $nama = [];
-                            foreach ($select as $nik) {
-                              $usr = $this->model_app->view_profile('tb_users', array('user_nik'=> $nik))->row_array();
-                              $nama[] = $usr['user_nama'];
-                            }
-                            // $petugas = implode(", ", $nama);
-                            if ($this->session->level=="spi") {
-                              if (in_array($this->session->username, $select)) {
-                                $dis = "";
-                              }else{
-                                $dis = "disabled";
-                              }
-                            }else{
-                             $dis = "";
-                            }
-                          ?>
-                          <td>
-                            <?php if ($this->session->level=="admin") { ?>
-                            <center><?php   echo "<a href='".base_url()."administrator/status_pemeriksaan/$value[pemeriksaan_id]/$value[pemeriksaan_aktif]'"?><button type="button" class='btn btn-default btn-xs' data-toggle="tooltip" data-placement="top" title='<?php echo $placeholder ?>' <?php  echo strpos($role[0]['role_akses'],',2,')!==FALSE?"":"disabled"; ?> <?php echo $dis; ?>><?php echo $status;  ?></button></center></a>
-                            <?php }else{
-                              echo "<center>".$status."</center>";
-                            } ?>
-                          </td>
-
-                          <td><?php   echo "<a href='".base_url()."administrator/input_spi/$value[pemeriksaan_id]'>" ?><button type="button" class="btn btn-primary btn-xs" data-toggle="tooltip" data-placement="top" title="Kelola Data Pemeriksaan" <?php  echo strpos($role[0]['role_akses'],',6,')!==FALSE?"":"disabled"; ?>>Kelola Data</button></a>
-                           <?php   echo "<a href='".base_url()."administrator/delete_pemeriksaan/$value[pemeriksaan_id]'>" ?>
-                           <?php if ($this->session->level=="admin"): ?>
-                           <button type="button" class="btn btn-danger btn-xs" data-toggle="tooltip" data-placement="top" title="Hapus Pemeriksaan" onclick="return confirm('Apa anda yakin untuk hapus Data ini?')" <?php  echo strpos($role[0]['role_akses'],',7,')!==FALSE?"":"disabled"; ?> <?php echo $dis; ?>>Hapus</button></a>
-                           <?php endif ?>
-                          </td>
-                        </tr>
-                  <?php  }
-                        }elseif ($value['pemeriksaan_jenis']=="Rutin") { 
-                          $no++;
+                        
+                        // }elseif ($value['pemeriksaan_jenis']=="Rutin") { 
+                          $no = 1;
                           ?>
                         <tr>
                           <td><center><?php echo $no."."; ?></center></td>
                           <td><?php echo $value['pemeriksaan_jenis']; ?></td>
-                          <td><?php echo $value['pemeriksaan_pengawas'] == 0 ? '-' : $value['pemeriksaan_pengawas']; ?></td>
-                          <td><?php echo $value['pemeriksaan_ketua'] == 0 ? '-' : $value['pemeriksaan_ketua']; ?></td>
+                          <?php 
+                              $usr = $this->model_app->view_profile('tb_users', array('user_nik'=> $value['pemeriksaan_ketua']))->row_array();
+                          ?>
+                            <td><?php echo $usr['user_nama'] != 0 ? '-' : $usr['user_nama']; ?></td>
+                          <?php 
+                              $usr = $this->model_app->view_profile('tb_users', array('user_nik'=> $value['pemeriksaan_pengawas']))->row_array();
+                          ?>
+                          <td><?php echo $usr['user_nama'] != 0 ? '-' : $usr['user_nama']; ?></td>
                           <td><?php 
                            $select  = explode("/", $value['pemeriksaan_petugas']);
                            $nomer = 1;
@@ -252,7 +198,7 @@
                          ?>
                         
 
-                        <?php  $number++;} ?>
+                        <?php  $no++; ?>
                         
                       </tbody>
                     </table>
