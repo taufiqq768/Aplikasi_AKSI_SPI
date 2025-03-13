@@ -10,22 +10,29 @@ class Administrator extends CI_Controller {
             $cek = $this->model_app->cek_login($username,$password,'tb_users');
             $row = $cek->row_array();
             $total = $cek->num_rows();
-            if ($total > 0) {
+            if ($total > 0) 
+			{
+				
             	$this->session->set_userdata(array('username'=>$row['user_nik'],
             					'user_nama'=>$row['user_nama'],
                                 'level'=>$row['user_level'],
                             	'role'=>$row['role_id'],
 								'nik'=>$row['user_level'],
                             	'unit'=>$row['unit_id']));
-            	if ($row['user_count']=='0') {
+								
+            	if ($row['user_count']=='0') 
+				{
             		redirect('administrator/login_satu/'.$row['user_nik']);
-            	}else{
-                redirect('administrator/home');
+            	}
+				else
+				{
+                	redirect('administrator/home');
             	}
             }else{
                 $data['pesan'] = 'Username atau Password salah!';
-              $this->load->view('view_login', $data);            }
-        }else{
+              	$this->load->view('view_login', $data);            }
+        }
+		else{
             $data['title'] = 'Administrator &rsaquo; Log In';
             $this->load->view('view_login',$data);
         	
@@ -375,17 +382,18 @@ class Administrator extends CI_Controller {
 			}
 		}
 		if($found){
+			//anggota
 			$data['record'] = $this->db->query("SELECT * FROM `tb_pemeriksaan` JOIN `tb_unit` ON `tb_pemeriksaan`.`unit_id`=`tb_unit`.`unit_id` JOIN `tb_kka` ON `tb_pemeriksaan`.`pemeriksaan_id`=`tb_kka`.`pemeriksaan_id` WHERE `tb_kka`.`pembuat_kka`= $nik AND `tb_pemeriksaan`.`pemeriksaan_id`=$id_pmr ORDER BY `tb_pemeriksaan`.`pemeriksaan_id` DESC")->result_array();
 			$this->template->load('template','kelola-kka/list_kka',$data);
 		}
 		else{
-			$data['record'] = $this->db->query("SELECT * FROM `tb_pemeriksaan` JOIN `tb_unit` ON `tb_pemeriksaan`.`unit_id`=`tb_unit`.`unit_id` JOIN `tb_kka` ON `tb_pemeriksaan`.`pemeriksaan_id`=`tb_kka`.`pemeriksaan_id` WHERE `tb_pemeriksaan`.`pemeriksaan_id`=$id_pmr ORDER BY `tb_pemeriksaan`.`pemeriksaan_id` DESC")->result_array();
+			//ketua dan pengawas dan kavid
+			$data['record'] = $this->db->query("SELECT * FROM `tb_pemeriksaan` JOIN `tb_unit` ON `tb_pemeriksaan`.`unit_id`=`tb_unit`.`unit_id` JOIN `tb_kka` ON `tb_pemeriksaan`.`pemeriksaan_id`=`tb_kka`.`pemeriksaan_id` WHERE `tb_pemeriksaan`.`pemeriksaan_id`=$id_pmr AND (`tb_kka`.`kka_kirim_kadiv_dspi` IN (1,2,3,4)) ORDER BY `tb_pemeriksaan`.`pemeriksaan_id` DESC")->result_array();
 			$this->template->load('template','kelola-kka/list_kka',$data);
 		}
 	}
 	public function tambah_kka(){
 		if ($this->session->level=="spi") {
-			$id_kka = $this->uri->segment(3);
 			//$cek = $this->model_app->view_where('tb_pemeriksaan','pemeriksaan_id',$id_pmr);
 			//$jenis =  $cek[0]['pemeriksaan_jenis'];
 			if (isset($_POST['simpan'])) {
@@ -408,6 +416,7 @@ class Administrator extends CI_Controller {
 				);
 				$where = array('id_kka' => $this->uri->segment(3));
 				$this->model_app->update('tb_kka', $data, $where);
+			
 				// //insert notifikasi
 				// $pmr = $this->model_app->view_where('tb_pemeriksaan','pemeriksaan_id',$id_pmr);
 				// $pmr = $pmr[0]['pemeriksaan_judul'];
@@ -444,22 +453,146 @@ class Administrator extends CI_Controller {
 	}
 	public function kirim_kka_kadiv_spi(){
 		$id_kka = $this->uri->segment(3);
+		$id_pmr = $this->uri->segment(4);
+		$nik=$this->session->username;
 		$q = $this->db->query("SELECT * FROM `tb_pemeriksaan` JOIN `tb_unit` ON `tb_pemeriksaan`.`unit_id`=`tb_unit`.`unit_id` JOIN `tb_kka` ON `tb_pemeriksaan`.`pemeriksaan_id`=`tb_kka`.`pemeriksaan_id` WHERE `tb_kka`.`id_kka`=$id_kka ORDER BY `tb_pemeriksaan`.`pemeriksaan_id` DESC")->result_array();
 		
 		if($q[0]['kka_kirim_kadiv_dspi'] == 1){
 			$data = array('kka_kirim_kadiv_dspi' => '2');
 			$where = array('id_kka' => $id_kka);
 			$this->model_app->update('tb_kka', $data, $where);
+			// Data untuk insert ke tabel history
+			$data_history = array(
+				'pemeriksaan_id' => $id_pmr,
+				'pembuat_kka' => $nik ,
+				'waktu_kirim' => date('Y-m-d H:i:s')
+			);
+		
+			// Mulai transaksi database
+			$this->db->trans_start();
+		
+			// Update tb_kka
+			$this->model_app->update('tb_kka', $data, array('id_kka' => $id_kka));
+		
+			// Insert ke tabel history
+			$this->model_app->insert('tb_history', $data_history);
+		
+			// Selesaikan transaksi
+			$this->db->trans_complete();
+		
+			if ($this->db->trans_status() === FALSE) {
+				// Jika gagal, rollback perubahan
+				$this->db->trans_rollback();
+				$this->session->set_flashdata('error', 'Gagal mengupdate data.');
+			} else {
+				// Jika sukses, commit perubahan
+				$this->db->trans_commit();
+				$this->session->set_flashdata('success', 'Data berhasil diperbarui.');
+			}
 			redirect('administrator/list_kka');	
+
 		}elseif($q[0]['kka_kirim_kadiv_dspi'] == 2){
 			$data = array('kka_kirim_kadiv_dspi' => '3');
 			$where = array('id_kka' => $id_kka);
 			$this->model_app->update('tb_kka', $data, $where);
+			// Data untuk insert ke tabel history
+			$data_history = array(
+				'pemeriksaan_id' => $id_pmr,
+				'pembuat_kka' => $nik ,
+				'waktu_kirim' => date('Y-m-d H:i:s')
+			);
+		
+			// Mulai transaksi database
+			$this->db->trans_start();
+		
+			// Update tb_kka
+			$this->model_app->update('tb_kka', $data, array('id_kka' => $id_kka));
+		
+			// Insert ke tabel history
+			$this->model_app->insert('tb_history', $data_history);
+		
+			// Selesaikan transaksi
+			$this->db->trans_complete();
+		
+			if ($this->db->trans_status() === FALSE) {
+				// Jika gagal, rollback perubahan
+				$this->db->trans_rollback();
+				$this->session->set_flashdata('error', 'Gagal mengupdate data.');
+			} else {
+				// Jika sukses, commit perubahan
+				$this->db->trans_commit();
+				$this->session->set_flashdata('success', 'Data berhasil diperbarui.');
+			}
 			redirect('administrator/list_kka');
-		}else{
+			
+		}elseif($q[0]['kka_kirim_kadiv_dspi'] == 3){
+			$data = array('kka_kirim_kadiv_dspi' => '4');
+			$where = array('id_kka' => $id_kka);
+			$this->model_app->update('tb_kka', $data, $where);
+
+			// Data untuk insert ke tabel history
+			$data_history = array(
+				'pemeriksaan_id' => $id_pmr,
+				'pembuat_kka' => $nik ,
+				'waktu_kirim' => date('Y-m-d H:i:s')
+			);
+		
+			// Mulai transaksi database
+			$this->db->trans_start();
+		
+			// Update tb_kka
+			$this->model_app->update('tb_kka', $data, array('id_kka' => $id_kka));
+		
+			// Insert ke tabel history
+			$this->model_app->insert('tb_history', $data_history);
+		
+			// Selesaikan transaksi
+			$this->db->trans_complete();
+		
+			if ($this->db->trans_status() === FALSE) {
+				// Jika gagal, rollback perubahan
+				$this->db->trans_rollback();
+				$this->session->set_flashdata('error', 'Gagal mengupdate data.');
+			} else {
+				// Jika sukses, commit perubahan
+				$this->db->trans_commit();
+				$this->session->set_flashdata('success', 'Data berhasil diperbarui.');
+			}
+			redirect('administrator/list_kka');	
+		}
+		else{
 			$data = array('kka_kirim_kadiv_dspi' => '1');
 			$where = array('id_kka' => $id_kka);
 			$this->model_app->update('tb_kka', $data, $where);
+
+			// Data untuk insert ke tabel history
+			$data_history = array(
+				'pemeriksaan_id' => $id_pmr,
+				'pembuat_kka' => $nik ,
+				'waktu_kirim' => date('Y-m-d H:i:s')
+			);
+		
+			// Mulai transaksi database
+			$this->db->trans_start();
+		
+			// Update tb_kka
+			$this->model_app->update('tb_kka', $data, array('id_kka' => $id_kka));
+		
+			// Insert ke tabel history
+			$this->model_app->insert('tb_history', $data_history);
+		
+			// Selesaikan transaksi
+			$this->db->trans_complete();
+		
+			if ($this->db->trans_status() === FALSE) {
+				// Jika gagal, rollback perubahan
+				$this->db->trans_rollback();
+				$this->session->set_flashdata('error', 'Gagal mengupdate data.');
+			} else {
+				// Jika sukses, commit perubahan
+				$this->db->trans_commit();
+				$this->session->set_flashdata('success', 'Data berhasil diperbarui.');
+			}
 			redirect('administrator/list_kka');	
 		}
 		
@@ -488,8 +621,22 @@ class Administrator extends CI_Controller {
 	}
 	public function history_kka(){
 		$id_pmr = $this->uri->segment(3);
-		$q['history'] = $this->model_app->view_join_where_field2('pemeriksaan_id',$id_pmr,'tb_kka','tb_users','pembuat_kka','user_nik','pemeriksaan_id','ASC');
-		redirect('administrator/list_kka',$history);
+		$q = $this->model_app->view_join_where_field2('pemeriksaan_id',$id_pmr,'tb_history','tb_users','pembuat_kka','user_nik','history_id','ASC');
+		// Set response ke JSON di CodeIgniter 3
+		header('Content-Type: application/json');
+
+		if (!empty($q)) {
+			echo json_encode([
+				'success' => true,
+				'data' => $q
+			]);
+		} else {
+			echo json_encode([
+				'success' => false,
+				'message' => 'Data tidak ditemukan'
+			]);
+		}
+		//redirect('administrator/list_kka',$history);
 	}
 	public function cari_pemeriksaan(){
 		if(isset($_POST['submit'])){
@@ -1146,13 +1293,22 @@ class Administrator extends CI_Controller {
 		}
 	}
 
-	public function send_lha_reg(){
-		$id_pemeriksaan = $this->uri->segment(3);
-		$data1 = ['status' => '1'];
-		$where1 = ['id_pemeriksaan' => $id_pemeriksaan];
-		$update1 = $this->model_app->update('tb_lha', $data1, $where1);
-		redirect('administrator/input_spi/'.$id_pemeriksaan);
+	public function send_lha_reg($id_pmr){
+		
+		$status = $this->input->post('status');
 
+		// Update status di database
+		$this->db->where('id_pemeriksaan', $id_pmr);
+		$this->db->update('tb_lha', ['status' => $status]);
+	
+		// Ambil status terbaru untuk memastikan perubahan berhasil
+		$new_status = $this->db->get_where('tb_lha', ['id_pemeriksaan' => $id_pmr])->row()->status;
+	
+		echo json_encode([
+			"success" => true,
+			"message" => "Status berhasil diperbarui",
+			"status" => $new_status // Kirim status terbaru
+		]);
 	}
 	
 	public function tambah_tanggapan(){
@@ -1332,12 +1488,19 @@ class Administrator extends CI_Controller {
 
 	public function list_pmr_operator(){
 		if ($this->session->level=="admin" OR $this->session->level=="operator") {
+			$query = $this->model_app->view_where2_ordering('tb_pemeriksaan','pemeriksaan_aktif','Y','unit_mention',$this->session->unit,'pemeriksaan_id','ASC');
 			//CEK NOTIFIKASI
 			if ($this->uri->segment(3)!=null) {
 				$id_notif = $this->uri->segment(3);
 				$this->db->query("UPDATE tb_notifikasi SET notifikasi_dibaca='Y' WHERE notifikasi_id = '$id_notif'");
 			}
+			elseif(!empty($query[0]['unit_mention'])){
+				$data['record'] = $this->model_app->view_where2_ordering('tb_pemeriksaan','pemeriksaan_aktif','Y','unit_mention',$this->session->unit,'pemeriksaan_id','ASC');
+			}else{
 				$data['record'] = $this->model_app->view_where2_ordering('tb_pemeriksaan','pemeriksaan_aktif','Y','unit_id',$this->session->unit,'pemeriksaan_id','ASC');
+			}
+				
+
 				
 			
 		$this->template->load('template','kelola-tl/list_pmr_operator', $data);

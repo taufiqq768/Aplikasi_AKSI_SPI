@@ -138,7 +138,7 @@
                           <th style="width: 350px"><center>Rekomendasi</center></th>
                           <th style="width: 170px"><center>Klasifikasi Rekomendasi</center></th>
                           <th style="width: 170px"><center>Dokumen</center></th>
-                          <th style="width: 70px"><center>Tanggal</center></th>
+                          <th style="width: 70px"><center>Tanggal Deadline</center></th>
                           <th style="width: 135px"><center>Status</center></th>
                           <th style="width: 110px"><center>Action</center></th>
                         </tr>
@@ -201,7 +201,7 @@
                                   $placeholder = 'Aktifkan';
                                 } ?>
                               </td>
-                              <td><center><?php $tgl =  explode('-', $row['rekomendasi_tgl']); echo $tgl[2]."-".$tgl[1]."-".$tgl[0] ?></center></td>
+                              <td><center><?php $tgl =  explode('-', $row['rekomendasi_tgl_deadline']); echo $tgl[2]."-".$tgl[1]."-".$tgl[0] ?></center></td>
                               <td><center><?php echo $status; ?></center></td>
                               <td>
                                   <?php if ($row['rekomendasi_publish_kabag']=='N') { ?>

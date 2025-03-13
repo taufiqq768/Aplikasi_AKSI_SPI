@@ -68,7 +68,11 @@
                       </div>
                     </div>
                     <div class="form-group">
+<<<<<<< HEAD
                       <label class="control-label col-md-3 col-sm-3 col-xs-12"></label>
+=======
+                      <!-- <label class="control-label col-md-3 col-sm-3 col-xs-12">Hasil Data</label> -->
+>>>>>>> 8540d555258e2fae9e89448f6d1c81680490dc97
                       <div class="col-md-6 col-sm-6 col-xs-12">
                         <select id="data-result" class="form-control" name="c" required>
                           <option selected>Silakan pilih objek audit terlebih dahulu</option>

@@ -27,21 +27,24 @@
                         echo '';
                      }
                     ?>
-                    <form method="GET">
-                    <label for="tahun">Pilih Tahun:</label>
-                    <select name="tahun" id="tahun" onchange="this.form.submit()" class="form-control col-md-3">
-                        <?php
-                        $tahunSekarang = date('Y');
-                        $tahunTerpilih = isset($_GET['tahun']) ? $_GET['tahun'] : $tahunSekarang;
-                        for ($i = -1; $i <= 3; $i++) { // Menampilkan 3 tahun ke belakang dan ke depan
-                            $tahun = $tahunSekarang + $i;
-                            $selected = ($tahun == $tahunTerpilih) ? 'selected' : '';
-                            echo "<option value='$tahun' $selected>$tahun</option>";
-                        }
-                        ?>
-                    </select>
-                </form></br>
-
+                    <div class="row">
+                      <div class="col-md-2 col-sm-3 col-4"> 
+                        <form method="GET">
+                        <label for="tahun">Pilih Tahun:</label>
+                          <select name="tahun" id="tahun" onchange="this.form.submit()" class="form-control">
+                              <?php
+                              $tahunSekarang = date('Y');
+                              $tahunTerpilih = isset($_GET['tahun']) ? $_GET['tahun'] : $tahunSekarang;
+                              for ($i = -1; $i <= 3; $i++) { // Menampilkan 3 tahun ke belakang dan ke depan
+                                  $tahun = $tahunSekarang + $i;
+                                  $selected = ($tahun == $tahunTerpilih) ? 'selected' : '';
+                                  echo "<option value='$tahun' $selected>$tahun</option>";
+                              }
+                              ?>
+                            </select>
+                          </form></br>
+                        </div>
+                      </div>
                      <table id="datatable" class="table table-striped table-bordered">
                       <thead>
                           <tr>

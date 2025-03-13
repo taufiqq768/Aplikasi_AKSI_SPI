@@ -1,4 +1,23 @@
   <title>PTPN XII | Tambah Rekomendasi </title>
+  <style>
+  .radio-select-group {
+    display: flex;
+    align-items: center; /* Sejajarkan elemen secara vertikal */
+    gap: 15px; /* Beri jarak antar elemen */
+  }
+  .form-check {
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Jarak antara radio button dan label */
+  }
+  .form-check-input {
+    width: 20px; /* Ukuran radio button */
+    height: 20px;
+  }
+  .form-control {
+    width: 200px; /* Sesuaikan ukuran dropdown */
+  }
+  </style>
   <script src="<?php echo base_url(); ?>/asset/tinymce/tinymce.min.js"></script>
   <script>
   
@@ -163,32 +182,37 @@
                     </div>
                       <div class="form-group" >
                           <label class="control-label col-md-2 col-sm-2 col-xs-12">Tujuan Rekomendasi<span class="required ">*</span></label>
-                          <div class="col-md-6 col-sm-6 col-xs-12">
-                                <div class="input-prepend input-group">
-                                  <input class="form-check-input" style="width: 50px" type="radio" name="tujuan" checked id="reset" value=<?php echo $row['unit_id']; ?>>
-                                  <label class="control-label"><?php echo $row['unit_nama']; ?></label>
-                                  <input class="form-check-input" style="width: 50px" type="radio" name="tujuan" id="pihak_lain">
-                                  <label class="control-label">Pihak lain</label>
-                                </div>
+                          <div class="radio-select-group">
+                            <!-- Radio Button Auditi -->
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="tujuan" checked id="reset" value="<?= $row['unit_id']; ?>">
+                                <label class="form-check-label" for="reset">Auditi</label>
+                            </div>
+
+                            <!-- Radio Button Pihak Lain -->
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="tujuan" id="pihak_lain">
+                                <label class="form-check-label" for="pihak_lain">Pihak Lain</label>
+                            </div>
+
+                            <div id="pihak_luar" style="display: none;">
+                            <label class="control-label col-md-2 col-sm-2 col-xs-12" for="select2">Divisi<span class="required ">*</span></label>
+                            <div class="col-md-6 col-sm-6 col-xs-12" >
+                                  <select class="form-control" id="select2" name="divisi">
+                                    <option value="0" selected>Pilih</option>
+                                    <?php 
+                                      $m_rekomen = $this->db->query("SELECT * FROM tb_unit")->result_array(); 
+                                      foreach ($m_rekomen as $value) 
+                                      {
+                                    ?>
+                                      <option value="<?php echo $value['unit_id']?>"><?php echo $value['unit_nama']; ?></option>
+                                    <?php } ?>
+                                  </select>
+                                </div></br></br>
+                            </div>
                         </div>
                       </div>
                       <?php } ?>
-                      <div class="form-group">
-                          <div id="pihak_luar" style="display: none;">
-                            <label class="control-label col-md-2 col-sm-2 col-xs-12" for="select2">Divisi<span class="required ">*</span></label>
-                            <div class="col-md-6 col-sm-6 col-xs-12" >
-                              <select class="form-control" id="select2" name="divisi">
-                                <option value="0" selected>Pilih</option>
-                                <?php 
-                                  $m_rekomen = $this->db->query("SELECT * FROM tb_unit")->result_array(); 
-                                  foreach ($m_rekomen as $value) 
-                                  {
-                                ?>
-                                  <option value="<?php echo $value['unit_id']?>"><?php echo $value['unit_nama']; ?></option>
-                                <?php } ?>
-                              </select>
-                            </div></br></br>
-                        </div>
                     <div class="form-group">
                       <label class="control-label col-md-2 col-sm-2 col-xs-12" >Rekomendasi <span class="required">*</span>
                       </label>

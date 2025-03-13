@@ -185,6 +185,7 @@
 
                         <br></br>
                         <div class="form-group">
+<<<<<<< HEAD
                           <label class="control-label col-md-3">Dokumen LHA Kirim ke Regional/Divisi </label>
                                 <?php 
 
@@ -203,6 +204,33 @@
                                 ?>
                         </div>
 
+=======
+                          <label class="control-label col-md-3" style="padding-left: 150px">Dokumen LHA</label>
+                          <?php 
+                            $filelha = isset($record4[0]['file_lha']) ? trim(json_encode($record4[0]['file_lha']), '"') : '0';
+                            if ($filelha === '0' || empty($filelha)) { 
+                          ?>
+                          <div class="col-md-6 col-sm-6 col-xs-12">
+                            <button type="button" id="lha" class="btn btn-success btn-xs" data-toggle="tooltip" data-placement="top" title="Upload Dokumen LHA">Upload Dokumen LHA</button>
+                          </div>
+                          <?php }else{ 
+                              echo "<a href='".base_url("asset/file_lha/").$filelha."' target='_blank'><button type=button class='btn btn-warning btn-sm' data-toggle=tooltip data-placement=top title=Download Dokumen LHA style='margin-left: 10px'>Download Dokumen LHA</button></a>";
+                            }
+                          ?>
+                        </div>
+                        <div class="form-group">
+                          <label class="control-label col-md-3" style="padding-left: 150px">Dokumen LHA Kirim ke Regional/Divisi </label>
+                          <?php 
+                            $checked = $record4[0]['status'] == 1 ? "checked" : "";
+                          ?>
+                          <?php 
+                              echo "<br><label class='switch'>
+                                      <input type='checkbox' class='send-lha' data-id='$id_pmr' $checked>
+                                      <span class='slider round'></span>
+                                    </label>";
+                          ?>
+                        </div></br></br>
+>>>>>>> 8540d555258e2fae9e89448f6d1c81680490dc97
                         <div class="form-groupm lha" style="display:none;">
                           <label class="control-label col-md-3" style="padding-left: 196px">Nomor LHA</label>
                           <div class="col-md-6 col-sm-6 col-xs-12">

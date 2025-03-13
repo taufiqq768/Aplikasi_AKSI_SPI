@@ -37,16 +37,7 @@
                       $disable = "disabled";
                     }
                   ?>
-                  <ul class="nav navbar-right panel_toolbox">&nbsp;  
-                  <?php $limit = $this->db->where('rekomendasi_id',$id_rekom)->from("tb_tl")->count_all_results(); 
-                    //echo $limit;?>
-                  <?php $role = $this->model_app->view_where('tb_role','role_id',$this->session->role);?>
-                    <?php if ($limit < 3  AND ($record2[0]['rekomendasi_status']=="Belum di Tindak Lanjut" || $record2[0]['rekomendasi_status']=="Dikembalikan")){ ?>
-                   <?php   echo "<a href='".base_url()."administrator/input_tl/$id_pmr/$id_temuan/$id_rekom'>"?><button type="button" class="btn btn-primary tambah-lagi pull-right" <?php  echo strpos($role[0]['role_akses'],'12')!==FALSE?"":"disabled"; echo $disable;?>>Input Tindak Lanjut</button></a>                  
-                    <?php } ?>
-                   <!--  <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-                    </li> -->
-                  </ul>
+                  
                   <div class="clearfix"></div>
                 </div>
                 <div class="x_content">
@@ -115,7 +106,18 @@
                           </tr>
                         <?php }?>
                         </table>
-
+                          <div class="row">
+                            <ul class="nav navbar-right panel_toolbox">&nbsp;  
+                              <?php $limit = $this->db->where('rekomendasi_id',$id_rekom)->from("tb_tl")->count_all_results(); 
+                                //echo $limit;?>
+                              <?php $role = $this->model_app->view_where('tb_role','role_id',$this->session->role);?>
+                                <?php if ($limit < 3  AND ($record2[0]['rekomendasi_status']=="Belum di Tindak Lanjut" || $record2[0]['rekomendasi_status']=="Dikembalikan")){ ?>
+                              <?php   echo "<a href='".base_url()."administrator/input_tl/$id_pmr/$id_temuan/$id_rekom'>"?><button type="button" class="btn btn-primary tambah-lagi pull-right" <?php  echo strpos($role[0]['role_akses'],'12')!==FALSE?"":"disabled"; echo $disable;?>>Input Tindak Lanjut</button></a>                  
+                                <?php } ?>
+                              <!--  <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                                </li> -->
+                              </ul>
+                          </div>
                         <div class="table-responsive">
                           <table id="datatable" class="table table-bordered">
                             <thead>
@@ -123,7 +125,7 @@
                               <th style="width: 250px"><center>Tindak Lanjut</center></th>
                               <th style="width: 200px"><center>Tanggapan</center></th>
                               <th style="width: 200px"><center>Dokumen</center></th>
-                              <th style="width: 70px">Tanggal</th>
+                              <th style="width: 70px">Tanggal Tindak Lanjut</th>
                               <th style="width: 85px">Keterangan Kirim</th>
                               <th style="width: 160px"><center>Action</center></th>
                             </thead>
@@ -163,7 +165,40 @@
                                   ?>
 
                                 </td>
-                                <td><?php $tgl = explode("-", $row['tl_tgl']);  echo $tgl[2]."-".$tgl[1]."-".$tgl[0]; ?></td>
+                                <td>
+                                      <?php 
+                                      if (!empty($row['tl_tgl']) && !empty($row['rekomendasi_tgl_deadline'])) {
+                                          // Ubah format tanggal
+                                          $tl_tgl = date_create($row['tl_tgl']);
+                                          $deadline = date_create($row['rekomendasi_tgl_deadline']);
+
+                                          // Format tampilan tgl_tgl (DD-MM-YYYY)
+                                          $formatted_tl_tgl = date_format($tl_tgl, "d-m-Y");
+                                          
+                                          // Hitung selisih tanggal
+                                          $diff = date_diff($deadline, $tl_tgl);
+                                          $tahun = $diff->y;
+                                          $bulan = $diff->m;
+                                          $hari = $diff->d;
+
+                                          if ($tl_tgl > $deadline) {
+                                            // Jika telat, tampilkan selisih keterlambatan
+                                            $telat_str = "Telat ";
+                                            if ($tahun > 0) $telat_str .= "$tahun tahun ";
+                                            if ($bulan > 0) $telat_str .= "$bulan bulan ";
+                                            if ($hari > 0) $telat_str .= "$hari hari";
+                                
+                                            $status = "<span class='btn btn-sm btn-warning text-white'>$telat_str</span>";
+                                        } else {
+                                            $status = "<span class='btn btn-sm btn-success'>Tepat Waktu</span>";
+                                        }
+
+                                          echo "$formatted_tl_tgl $status";
+                                      } else {
+                                          echo "-"; // Jika salah satu tanggal kosong
+                                      }
+                                      ?>
+                                  </td>
                                 <td><?php echo $kirim; ?></td>
                                 <td>
                                   <?php if ($row['tl_publish_verif']=='N' OR $row['tl_status_from_vrf']=='Y') { ?>

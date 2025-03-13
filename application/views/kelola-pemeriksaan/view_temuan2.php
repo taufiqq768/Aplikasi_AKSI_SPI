@@ -5,7 +5,7 @@
           <div class="">
             <div class="page-title">
               <div class="title_left">
-                <h3>Kelola Pemeriksaaan <small>Regional</small></h3>
+                <h3>Kelola Temuan <small>Regional</small></h3>
               </div>
 
             </div>
@@ -102,331 +102,7 @@
                         $disable = "disabled";
                       }
                     ?>
-                    <div class="accordion" id="accordion<?php echo $no ?>" role="tablist" aria-multiselectable="true">
-                      <div class="panel">
-                    <?php
-                    if ($record[0]['pemeriksaan_sebelumnya']!=null) { ?>
-                          <a class="panel-heading collapsed" role="tab" id="headingTwo<?php echo $back?>" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo<?php echo $back?>" aria-expanded="false" aria-controls="collapseTwo<?php echo $back?>">
-                                <h4 class="panel-title"><span class="fa fa-caret-down"></span> Pemeriksaan Sebelumnya yang belum Close</h4>
-                              </a>
-                      </div>
-                          <div id="collapseTwo<?php echo $back?>" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo<?php echo $back?>"  style="padding: 5px 0px 0px 20px" >
-                            <?php 
-                            $huhu = $row['pemeriksaan_sebelumnya'];
-                            $huhu = explode(" ", $huhu);
-                            
-                            foreach ($huhu as $hmm) {
-
-                              $pmr_back = $this->db->query("SELECT * FROM tb_temuan JOIN tb_pemeriksaan ON tb_temuan.pemeriksaan_id = tb_pemeriksaan.pemeriksaan_id WHERE NOT(temuan_pmr_sebelumnya = '0') AND temuan_pmr_sebelumnya = '$hmm' AND tb_pemeriksaan.pemeriksaan_id = '$row[pemeriksaan_id]' ORDER BY temuan_id ASC")->result_array();
-                             ?>
-                             <?php if ($pmr_back!=null): ?>
-                             
-                            <strong>
-                              <font size="3"><i class="fa fa-caret-right"></i> <?php $judulpmr = $this->model_app->view_where('tb_pemeriksaan','pemeriksaan_id',$pmr_back[0]['temuan_pmr_sebelumnya']);
-                                echo "Pemeriksaan : ".$judulpmr[0]['pemeriksaan_judul']; 
-                                $mulai = explode("-", $judulpmr[0]['pemeriksaan_tgl_mulai']);
-                                $akhir = explode("-", $judulpmr[0]['pemeriksaan_tgl_akhir']);
-                                echo "(".$mulai[2]."-".$mulai[1]."-".$mulai[0]." s.d ".$akhir[2]."-".$akhir[1]."-".$akhir[0].")";
-                                ?>
-                              </font>
-                            </strong>
-                             <?php endif ?>
-                            <?php if ($pmr_back!=null) {
-                                    $htg_temuan = 1;
-                                    foreach ($pmr_back as $nilai) {
-                                    $hapustemuan++; $ti = [];
-                                    if ($nilai['temuan_id']!=null) {
-                                    
-                                    $target = array('Belum di Tindak Lanjut', 'Tidak dapat di Tindak Lanjuti');
-                                     $cek_t = $this->db->query("SELECT rekomendasi_status FROM tb_rekomendasi WHERE temuan_id = '$nilai[temuan_id]' AND rekomendasi_kirim='Y'")->result_array();
-                                        foreach ($cek_t as $to) {
-                                          $ti[] = $to['rekomendasi_status'];
-                                        }
-                                        $spant ='';
-                                        foreach ($target as $key) {
-                                         if (in_array($key, $ti)) {
-                                            $spant = "<span class='fa fa-asterisk'></span>";
-                                          }
-                                        }
-                                    }
-                                      ?>
-                                  <div class="panel">
-                                  <a class="panel-heading collapsed" role="tab" id="headingTwo<?php echo $tback; ?>" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo<?php echo $tback; ?>" aria-expanded="false" aria-controls="collapseTwo<?php echo $tback; ?>"<?php echo $back; ?>>
-                                    <h5><span><i class="fa fa-plus">&nbsp;</i></span>
-                                      <strong>
-                                        <?php 
-                                        echo "Temuan ".$htg_temuan.": </strong>";
-                                        $temuan = explode(" ", $nilai['temuan_judul']);
-                                        $count = count($temuan);
-                                        if ($count < 10) {
-                                          echo $nilai['temuan_judul'];
-                                        }else{
-                                          for ($i=0; $i < 10; $i++) { 
-                                            echo $temuan[$i]." ";
-                                          }
-                                          if ($count > 10) {
-                                            echo "...";
-                                          }
-                                        } ?>
-                                        <!-- tanggal temuan -->
-                                        <?php 
-                                        $tglt = explode("-", $nilai['temuan_tgl']); 
-                                        echo "(".$tglt[2]."-".$tglt[1]."-".$tglt[0].") ".$spant; 
-                                        ?>
-                                        <?php if ($this->session->level=="admin"): ?>
-                                          <button class="btn btn-xs btn-danger btn-round" id="btnhapus<?php echo $hapustemuan ?>" title="Hapus Temuan"  data-id = "<?php echo $nilai['temuan_id'] ?>" <?php  echo strpos($role[0]['role_akses'],',6,')!==FALSE?"":"disabled"; ?>><i class="fa fa-trash-o"></i> Hapus </button> 
-                                       <?php endif ?> 
-                                      </h5>
-                                  </a>
-                                  </div>
-                                  <div id="collapseTwo<?php echo $tback; ?>" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo<?php echo $tback; ?>" style="padding: 0px 0px 0px 10px">
-                                    <div class="panel-body">
-                                      <?php  
-                                      $bidang = $this->model_app->view_profile('tb_bidangtemuan', array('bidangtemuan_id'=> $nilai['bidangtemuan_id']))->row_array();
-                                      echo "<b>Bidang : </b>".$bidang['bidangtemuan_nama']."<br>";
-                                      echo "<b>Obyek Pemeriksaan : </b>".$nilai['temuan_obyek']."<br>";
-                                      echo "<b>Detail Temuan : </b><br>".$nilai['temuan_judul'];
-                                      $tmn_id = $nilai['temuan_id'];
-                                      $rekomendasi = $this->db->query("SELECT * FROM tb_rekomendasi WHERE temuan_id='$tmn_id' AND rekomendasi_publish_kabag = 'Y'")->result_array();
-                                      $htg_rekom = 1;
-                                      foreach ($rekomendasi as $kunci => $val) { 
-                                       $rowbaris++;  
-                                       if ($val['rekomendasi_status']=='Belum di Tindak Lanjut' OR $val['rekomendasi_status']=='Tidak dapat di Tindak Lanjuti') {
-                                          $spanr = "red";
-                                        }else{
-                                          $spanr = "";
-                                        }
-                                       ?>
-                                      <div class="panel">
-                                        <a class="panel-heading collapsed" role="tab" id="headingTwo<?php echo $rback; ?>" data-toggle="collapse" data-parent="#accordion" href="#collapseThree<?php echo $rback; ?>" aria-expanded="false" aria-controls="collapseThree<?php echo $rback; ?>">
-                                          <h5 class="<?php echo $spanr?>"><span class="fa fa-plus-circle"></span>
-                                            <strong>
-                                              <?php echo "Rekomendasi ".$htg_rekom.": </strong>"; 
-                                              $rekom_back = explode(" ", $val['rekomendasi_judul']);
-                                              $count_r = count($rekom_back);
-                                              if ($count_r < 10) {
-                                                echo $val['rekomendasi_judul'];
-                                              }else{
-                                                for ($i=0; $i < 9; $i++) { 
-                                                  echo $rekom_back[$i]." ";
-                                                }
-                                                if ($count_r > 10) {?>
-                                                  <button class="btn btn-xs btn-round btn-dark" href="#" id="ambilid<?php echo $rowbaris?>" data-toggle="modal" data-target="#readmore" data-id="<?php echo $val['rekomendasi_id']?>"><i style="color: white">. .Lihat Selengkapnya</i></button>
-                                            <?php
-                                                }
-                                              }
-                                              ?>
-
-                                            <?php if ($this->session->level=="admin"): ?>
-                                              <button class="btn btn-xs btn-round btn-danger" id="hapusrekom<?php echo $rowbaris ?>" title="Hapus Rekomendasi" data-id = "<?php echo $val['rekomendasi_id'] ?>" <?php  echo strpos($role[0]['role_akses'],',6,')!==FALSE?"":"disabled"; ?>><i class="fa fa-trash-o"></i> Hapus</button>
-                                            <?php endif ?>
-                                          </h5>
-                                        </a>
-                                        </div>
-                                        <div id="collapseThree<?php echo $rback; ?>" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree<?php echo $rback; ?>">
-                                          <!-- STATUS REKOMENDASI -->
-                                          <?php  
-                                          if ($val['rekomendasi_status_cache']=="Sesuai") {
-                                            $btn_class = 'btn btn-xs btn-round btn-success';
-                                          }elseif($val['rekomendasi_status_cache']=="Belum Sesuai"){
-                                            $btn_class = 'btn btn-xs btn-round btn-warning';
-                                          }elseif ($val['rekomendasi_status_cache']=="Belum di Tindak Lanjut") {
-                                            $btn_class = 'btn btn-xs btn-round btn-danger';
-                                          }elseif ($val['rekomendasi_status_cache']=="Tidak dapat di Tindak Lanjuti") {
-                                            $btn_class = 'btn btn-xs btn-round btn-info';
-                                          }else{
-                                            $btn_class = 'btn btn-xs btn-round btn-dark';
-                                          }
-                                          ?>
-                                          &nbsp;
-                                          <strong>Status Rekomendasi : </strong>
-                                          <span class="<?php echo $btn_class ?>"><?= $val['rekomendasi_status_cache'] ?></span>
-                                          <!-- <div class="panel-body"> -->
-                                          <?php if ($this->session->level=="admin" AND ($val['rekomendasi_status']=="Belum di Tindak Lanjut" OR $val['rekomendasi_status']=="Tidak dapat di Tindak Lanjuti") AND ($val['rekomendasi_status_terbaru']=="Belum di Tindak Lanjut" OR $val['rekomendasi_status_terbaru']=="Tidak dapat di Tindak Lanjuti" OR $val['rekomendasi_status_terbaru']=="")): ?>
-                                           <a href="<?php echo base_url(); ?>administrator/close_rekomendasi/<?php echo $val['pemeriksaan_id']?>/<?php echo $val['temuan_id']?>/<?php echo $val['rekomendasi_id']?>"><button type="button" class="btn btn-xs btn-round btn-dark"><i class="fa fa-minus-circle"></i> Close Rekomendasi</button></a>
-                                         <?php endif ?>
-                                            <?php 
-                                             $id_pmr = $this->uri->segment(3);
-                                              $attributes = array('class'=>'form-horizontal','role'=>'form');
-                                              echo form_open('data/multidelete_tl/'.$id_pmr,$attributes);
-                                            ?>
-                                            <table class="table table-bordered table-striped">
-                                              <thead>
-                                                <tr>
-                                                  
-                                                    <?php 
-                                                    if ($this->session->level=="admin") {
-                                                      $ambiltl = $this->db->query("SELECT * FROM tb_tl WHERE rekomendasi_id='$val[rekomendasi_id]' ORDER BY tl_id ASC")->result_array();
-                                                    }else{
-                                                      $ambiltl = $this->db->query("SELECT * FROM tb_tl WHERE rekomendasi_id='$val[rekomendasi_id]' AND tl_publish_spi='Y' ORDER BY tl_id ASC")->result_array();
-                                                    }
-                                                    
-                                                    if($ambiltl!=null){ ?>
-                                                      <?php if ($this->session->level=="admin"): ?>
-                                                    <th><center><button class="btn btn-danger btn-xs" type="submit" name="hapus" onclick="return confirm('Yakin ingin menghapus Tindak Lanjut ?')"><i class="fa fa-trash-o"></i></button></center></th>
-                                                    <?php endif ?>
-                                                  <?php } ?>
-                                                  
-                                                  <th style="width: 40%"><center>Tindak Lanjut</center></th>
-                                                  <th style="width: 10%"><center>Tgl. TL</center></th>
-                                                  <th style="width: 23%"><center>Tanggapan</center></th>
-                                                  <th style="width: 15%"><center>Keterangan</center></th>
-                                                  <th style="width: 12%"><center>Action</center></th>
-                                                </tr>
-                                              </thead>
-                                              <tbody>
-                                                <?php 
-                                                
-                                                foreach ($ambiltl as $k2 => $val2) { 
-                                                  if ($val2['tl_status_cache']=="Sesuai") {
-                                                    $status = '<span class="btn-round btn-xs btn-success">'.$val2['tl_status_cache'].'</span>';
-                                                  }elseif($val2['tl_status_cache']=="Belum Sesuai"){
-                                                    $status = '<span class="btn-round btn-xs btn-warning">'.$val2['tl_status_cache'].'</span>';
-                                                  }elseif($val2['tl_status_cache']==null){
-                                                    $status = ' - ';
-                                                  }elseif($val2['tl_status_cache']=="Tidak dapat di Tindak Lanjuti"){
-                                                    $status = '<span class="btn-round btn-xs btn-info">'.$val2['tl_status_cache'].'</span>';
-                                                  }elseif($val2['tl_status_cache']=="Belum di Tindak Lanjut"){
-                                                    $status = '<span class="btn-round btn-xs btn-danger">'.$val2['tl_status_cache'].'</span>';
-                                                  }
-                                                  $pasang= '';
-                                                  if ($val2['tl_tanggapan']=="" AND ($val['rekomendasi_status']=="Belum di Tindak Lanjut" OR $val['rekomendasi_status']=="Tidak dapat di Tindak Lanjuti")) {
-                                                    $pasang = "<span class='fa fa-circle red'></span>";
-                                                  }
-                                                ?>
-                                                <tr>
-                                                  <?php if ($this->session->level=="admin"): ?>
-                                                    <td><center><input type="checkbox" name="hapustl[]" value="<?php echo $val2['tl_id'] ?>"></center></td>
-                                                  <?php endif ?>
-                                                  <td><?php echo "<b>Status TL : </b>".$status."<br>"; echo $val2['tl_deskripsi']."  ".$pasang; ?></td>
-                                                  <td><center><?php $tgl = explode("-", $val2['tl_tgl']); echo $tgl[2]."-".$tgl[1]."-".$tgl[0]; ?></center></td>
-                                                  <td>
-                                                    <?php 
-                                                    if ($val2['tl_tanggapan']==null) {
-                                                      echo "<center> - </center>";
-                                                    }else{
-                                                      echo $val2['tl_tanggapan'];
-                                                      if ($val2['tl_tanggapan_publish_kabag']=="N" AND $val2['tl_tanggapan_kirim']=="K") {
-                                                        echo " <i class='fa fa-circle' style='color: red'></i>";
-                                                      }
-                                                    } ?>
-                                                  </td>
-                                                  <td>
-                                                    <?php 
-                                                    if ($val2['tl_status_publish_kabag']=='Y' AND $val2['tl_status_kirim']=="N") {
-                                                      echo "Terkirim ke Kabag";
-                                                    }elseif ($val2['tl_status_kirim']=="Y") {
-                                                      echo "Telah disetujui Kabag dan terkirim ke Kebun";
-                                                    }
-                                                    ?>
-                                                  </td>
-                                                  <td>
-                                          <center>
-                                            <!-- ACTION / KONDISI UNTUK DISABLE TANGGAPAN -->
-                                          <?php if (($val['rekomendasi_status']=="Sesuai" OR $val['rekomendasi_status']=="Belum Sesuai" OR $val['rekomendasi_status']=="Closed") OR $val2['tl_tanggapan_publish_kabag']=="Y" OR $val2['tl_status_publish_kabag']=='Y') {
-                                             $yuhu = "disabled";
-                                           }else{
-                                            $yuhu = '';
-                                           } ?>
-                                           <?php 
-                                           //cek petugas spi
-                                            $select  = explode("/", $record[0]['pemeriksaan_petugas']);
-                                            $nama = [];
-                                              foreach ($select as $nik) {
-                                                $usr = $this->model_app->view_profile('tb_users', array('user_nik'=> $nik))->row_array();
-                                                $nama[] = $usr['user_nama'];
-                                              }
-                                              // $petugas = implode(", ", $nama);
-                                              if ($this->session->level=="spi") {
-                                                if (in_array($this->session->username, $select)) {
-                                                  $dis = "";
-                                                }else{
-                                                  $dis = "disabled";
-                                                }
-                                              }else{
-                                               $dis = "";
-                                              }
-                                            ?>
-                                          <?php if ($this->session->level=="spi"): ?>
-                                            <button type="button" class="btn btn-default btn-xs pull-right" title="Tambah Tanggapan" data-toggle="modal" data-target="#editTL<?php echo $val2['tl_id']; echo $yuhu;?>" <?php  echo strpos($role[0]['role_akses'],'11')!==FALSE?"":"disabled"; ?><?php echo $dis; echo $disable; ?>><span class="fa fa-plus"></span> Tanggapan</button>
-                                          <?php endif ?>
-                                          <?php if ($this->session->level=="admin"): ?>
-                                            <?php   echo "<a href='".base_url()."data/delete_tl/$val2[pemeriksaan_id]/$val2[temuan_id]/$val2[rekomendasi_id]/$val2[tl_id]'>" ?><button type="button" class="btn btn-xs btn-danger pull-right" onclick="return confirm('Apakah yakin data ini dihapus ?');" <?php  echo strpos($role[0]['role_akses'],',6,')!==FALSE?"":"disabled"; ?>><i class="fa fa-trash-o"></i> Hapus TL &nbsp;</button></a>
-                                          <?php endif ?>
-                                            <?php   echo "<a href='".base_url()."administrator/detail_tl/$id_pmr/$val2[temuan_id]/$val2[rekomendasi_id]/$val2[tl_id]'>" ?><button type="button" class="btn btn-primary btn-xs pull-right" title="Lihat Detail"><span class="fa fa-tags"></span> Detail TL &nbsp;</button></a>
-                                        </center>
-                                                  </td>
-                                                </tr>
-                                      <?php echo form_close(); ?>
-                                                <div class="modal fade" id="editTL<?php echo $val2['tl_id']?>" tabindex="-1" role="dialog" aria-hidden="true">
-                                      <div class="modal-dialog" role="document">
-                                        <div class="modal-content">
-                                         <div class="modal-header">
-                                          <div class="row">
-                                            <h4 class="modal-title"><strong>Kelola Tanggapan Tindak Lanjut</strong>
-                                            <button type="button" class="close" data-dismiss="modal">&times;</button></h4>
-                                          </div>
-                                          </div>
-                                          <div class="modal-body">
-                                          <?php 
-                                            $id_pmr = $this->uri->segment(3);
-                                             $attributes = array('class'=>'form-horizontal','role'=>'form');
-                                             echo form_open('administrator/status_tl_kirimkabag/'.$id_pmr,$attributes);
-                                              echo "<div class='form-group'><input type='hidden' name='id' value='$val2[tl_id]'></div>";
-                                              echo "<div class='form-group'><input type='hidden' name='id_rekom' value='$val2[rekomendasi_id]'></div>";
-                                           ?>
-                                              <div class="form-group">
-                                                <label class="control-label col-md-3 col-sm-3 col-xs-12">Status</label>
-                                                <div class="input-group col-md-8 col-sm-8 col-xs-12">
-                                                <select name="status" id="status" class="form-control">
-                                                 <!-- <option ><?php //echo $row['rekomendasi_status']; ?></option> -->
-                                                 <option value="Sesuai" <?php if ($val['rekomendasi_status_cache']=="Sesuai") {echo "selected";}?>>Sesuai</option>
-                                                 <option value="Belum Sesuai" <?php if ($val['rekomendasi_status_cache']=="Belum Sesuai") {echo "selected";}?>>Belum Sesuai</option>
-                                                 <option value="Belum di Tindak Lanjut" <?php if ($val['rekomendasi_status_cache']=="Belum di Tindak Lanjut") {echo "selected";}?>>Belum di Tindak Lanjut</option>
-                                                 <option value="Tidak dapat di Tindak Lanjuti" <?php if ($val['rekomendasi_status_cache']=="Tidak dapat di Tindak Lanjuti") {echo "selected";}?>>Tidak dapat di Tindak Lanjuti</option>
-                                                </select>
-                                                </div>
-                                              </div>
-                                               <div class="form-group" id="tanggap">
-                                                <label class="control-label col-md-3 col-sm-3 col-xs-12">Tanggapan</label>
-                                                  <div class="input-group col-md-8 col-sm-8 col-xs-12">
-                                                  <textarea class="form-control" rows="5" placeholder="Masukkan Deskripsi Tanggapan" name="tanggapan"><?php echo $val2['tl_tanggapan']; ?></textarea>
-                                                  </div>
-                                               </div>
-                                          </div><div class="modal-footer">
-                                            <div class="form-group">
-                                              <div class="col-md-12 col-sm-12 col-xs-12">
-                                              <button type="submit" name="simpan" class="btn btn-sm btn-primary pull-right">Simpan Draft</button>
-                                              <button type="submit" name="kirim" class="btn btn-sm btn-success pull-right">Kirim</button>
-                                              </div>
-                                            </div>
-                                            </div>
-                                          <?php echo form_close(); ?>
-                                        </div>
-                                      </div>
-                                    </div>
-                                                <?php  
-                                                }
-                                                ?>
-                                              </tbody>
-                                            </table> 
-                                          </div>
-                                        <!-- </div> -->
-                                        
-                                <?php $htg_rekom++; $rback++;
-                                      }
-                                      ?>
-                                      
-                                    </div>
-                                  </div>
-                                  <?php $htg_temuan++; $back++; $tback++; }?>
-                                    <!-- ---batas if--- -->
-                                  <?php  }
-                                }
-                                  ?>
-                          </div>
-                    <?php  
-                    } ?>
+                    
                       
                     </div>
    <!-- --------------------------------BATAS UNTUK PEMERIKSAAN SEBELUMNYA-------------------------------------- -->                 
@@ -541,6 +217,7 @@
                             }
                             
                            ?>
+                           &nbsp; <strong>Deadline Rekomendasi : <span class="btn btn-sm btn-round btn-warning"><?php echo $row['rekomendasi_tgl_deadline']; ?></span></strong></br>
                            &nbsp; <strong>Status Rekomendasi : </strong>
                            <?php if ($row['rekomendasi_status']=="Sesuai" OR $row['rekomendasi_status']=="Belum Sesuai" OR $row['rekomendasi_status']=="Closed") {
                              $non = "disabled";
@@ -603,6 +280,10 @@
                                     $tl = $this->model_app->view_where('tb_tl','rekomendasi_id',$row['rekomendasi_id']);
                                   }else{
                                     $tl = $this->model_app->view_where2('tb_tl','rekomendasi_id',$row['rekomendasi_id'], 'tl_publish_spi', "Y");
+                                    
+                                    $tl = $this->db->query("SELECT * FROM `tb_tl` LEFT JOIN `tb_rekomendasi` ON tb_tl.rekomendasi_id = tb_rekomendasi.rekomendasi_id WHERE `tb_tl`.`rekomendasi_id` = $row[rekomendasi_id] AND `tl_publish_spi` = 'Y'")->result_array();
+                                    //$tl = $this->model_app->view_join_where('rekomendasi_id',$row['rekomendasi_id'],'tb_tl','tb_rekomendasi','rekomendasi_id', 'tl_publish_spi', "Y");
+                                    //public function view_join_where($attr,$data,$table1,$table2,$field,$order,$ordering){
                                   }
                                   
                                 ?>
@@ -647,7 +328,40 @@
                                             <td><input type="checkbox" name="hapustl[]" value="<?php echo $baris['tl_id'] ?>"></td>
                                           <?php endif ?>
                                           <td><?php echo "<b>Status TL : </b>".$status."<br>"; echo $baris['tl_deskripsi']."  ".$pasang; ?></td>
-                                          <td><center><?php $tgl = explode("-", $baris['tl_tgl']); echo $tgl[2]."-".$tgl[1]."-".$tgl[0]; ?></center></td>
+                                          <td>
+                                      <?php 
+                                      if (!empty($baris['tl_tgl']) && !empty($baris['rekomendasi_tgl_deadline'])) {
+                                          // Ubah format tanggal
+                                          $tl_tgl = date_create($baris['tl_tgl']);
+                                          $deadline = date_create($baris['rekomendasi_tgl_deadline']);
+
+                                          // Format tampilan tgl_tgl (DD-MM-YYYY)
+                                          $formatted_tl_tgl = date_format($tl_tgl, "d-m-Y");
+                                          
+                                          // Hitung selisih tanggal
+                                          $diff = date_diff($deadline, $tl_tgl);
+                                          $tahun = $diff->y;
+                                          $bulan = $diff->m;
+                                          $hari = $diff->d;
+
+                                          if ($tl_tgl > $deadline) {
+                                            // Jika telat, tampilkan selisih keterlambatan
+                                            $telat_str = "Telat ";
+                                            if ($tahun > 0) $telat_str .= "$tahun tahun ";
+                                            if ($bulan > 0) $telat_str .= "$bulan bulan ";
+                                            if ($hari > 0) $telat_str .= "$hari hari";
+                                
+                                            $status = "<span class='btn btn-sm btn-warning text-white'>$telat_str</span>";
+                                        } else {
+                                            $status = "<span class='btn btn-sm btn-success'>Tepat Waktu</span>";
+                                        }
+
+                                          echo "$formatted_tl_tgl $status";
+                                      } else {
+                                          echo "-"; // Jika salah satu tanggal kosong
+                                      }
+                                      ?>
+                                  </td>
                                           <td>
                                             <?php if ($baris['tl_tanggapan']==null) {
                                               echo "<center> - </center>";
