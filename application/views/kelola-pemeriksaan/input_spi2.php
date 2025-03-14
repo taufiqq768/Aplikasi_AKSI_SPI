@@ -160,51 +160,10 @@
                           <?php endif ?>
                           </div>
                       </div>
-                      <div class="form-group">
-                          <label class="control-label col-md-3">Dokumen LHA</label>
-                              <?php 
-                                $filelha = isset($record4[0]['file_lha']) ? trim(json_encode($record4[0]['file_lha']), '"') : '0';
-                                if ($filelha === '0' || empty($filelha)) 
-                                { 
-                              ?>
-                          <div class="col-md-6 col-sm-6 col-xs-12">
-                            <button type="button" id="lha" class="btn btn-success btn-xs" data-toggle="tooltip" data-placement="top" title="Upload Dokumen LHA">Upload Dokumen LHA</button>
-                          </div>
-                              <?php }
-                              else { 
-                                  echo "<a href='".base_url("asset/file_lha/").$filelha."' target='_blank'><button type=button class='btn btn-warning btn-sm' data-toggle=tooltip data-placement=top title=Download Dokumen LHA style='margin-left: 10px'>Download Dokumen LHA</button></a>";
-                                }
-                              ?>
-                      </div>
-
                     </form>
                  <?php } ?>
-                  <div class="form-group">
-                    <?php $id_pmr = $this->uri->segment(3); ?>
-                    <form action="<?= site_url('administrator/upload_lha/'.$id_pmr) ?>" method="post" enctype="multipart/form-data">
-
-                        <br></br>
+                  <!-- <div class="form-group"> -->
                         <div class="form-group">
-<<<<<<< HEAD
-                          <label class="control-label col-md-3">Dokumen LHA Kirim ke Regional/Divisi </label>
-                                <?php 
-
-                                if(isset($record4[0]['status'])){
-                                  $checked = $record4[0]['status'] == 1 ? "checked" : "";
-                                }
-                                else{
-                                  $checked = "";
-                                }
-                                ?>
-                                <?php 
-                                    echo "<br><label class='switch'>
-                                            <input type='checkbox' class='send-lha' data-id='$id_pmr' $checked>
-                                            <span class='slider round'></span>
-                                          </label>";
-                                ?>
-                        </div>
-
-=======
                           <label class="control-label col-md-3" style="padding-left: 150px">Dokumen LHA</label>
                           <?php 
                             $filelha = isset($record4[0]['file_lha']) ? trim(json_encode($record4[0]['file_lha']), '"') : '0';
@@ -217,32 +176,35 @@
                               echo "<a href='".base_url("asset/file_lha/").$filelha."' target='_blank'><button type=button class='btn btn-warning btn-sm' data-toggle=tooltip data-placement=top title=Download Dokumen LHA style='margin-left: 10px'>Download Dokumen LHA</button></a>";
                             }
                           ?>
-                        </div>
-                        <div class="form-group">
-                          <label class="control-label col-md-3" style="padding-left: 150px">Dokumen LHA Kirim ke Regional/Divisi </label>
-                          <?php 
-                            $checked = $record4[0]['status'] == 1 ? "checked" : "";
-                          ?>
-                          <?php 
-                              echo "<br><label class='switch'>
-                                      <input type='checkbox' class='send-lha' data-id='$id_pmr' $checked>
-                                      <span class='slider round'></span>
-                                    </label>";
-                          ?>
-                        </div></br></br>
->>>>>>> 8540d555258e2fae9e89448f6d1c81680490dc97
-                        <div class="form-groupm lha" style="display:none;">
-                          <label class="control-label col-md-3" style="padding-left: 196px">Nomor LHA</label>
-                          <div class="col-md-6 col-sm-6 col-xs-12">
-                          <input type="text" id="no_lha" required="required" name="no_lha" class="form-control col-md-7 col-xs-12" value="<?php echo set_value('Nomor LHA'); ?>"></br></br></br>
-                          <input type="file" name="file_lha" accept=".pdf" required="required">
-                              <p><strong>(Accepted : .pdf)</strong></p>
-                              <p><strong>Max. size 20MB</strong></p></br>
-                          <button type="submit" name="upload" class="btn btn-primary">simpan</button>
-                        </div>
-                    </form>
-                  </div>
-              <?php //print_r($select); ?>
+                        </div></br>
+                        <div class="form-group lha" style="display:none;">
+                          <div class="form-groupm">
+                            <?php $id_pmr = $this->uri->segment(3); ?>
+                            <form action="<?= site_url('administrator/upload_lha/'.$id_pmr) ?>" method="post" enctype="multipart/form-data">
+                                  <label class="control-label col-md-3" style="padding-left: 196px">Nomor LHA</label>
+                                  <div class="col-md-6 col-sm-6 col-xs-12">
+                                  <input type="text" id="no_lha" required="required" name="no_lha" class="form-control col-md-7 col-xs-12" value="<?php echo set_value('Nomor LHA'); ?>"></br></br></br>
+                                  <input type="file" name="file_lha" accept=".pdf" required="required">
+                                      <p><strong>(Accepted : .pdf)</strong></p>
+                                      <p><strong>Max. size 20MB</strong></p></br>
+                                  <button type="submit" name="upload" class="btn btn-primary">simpan</button>
+                                </div>
+                            </form>
+                          </div>
+                        </div></br>
+                        <div class="form-group row">
+                          <label class="control-label col-md-3 col-form-label">Dokumen LHA Kirim ke Regional/Divisi</label>
+                          <div class="col-md-9">
+                              <?php 
+                                  $checked = (!empty($record4) && isset($record4[0]['status']) && $record4[0]['status'] == 1) ? "checked" : "";
+                              ?>
+                              <label class="switch">
+                                  <input type="checkbox" class="send-lha" id="statusCheckbox" data-id="<?= $id_pmr ?>" <?= $checked ?>>
+                                  <span class="slider round"></span>
+                              </label>
+                          </div>
+                      </div>
+
                     <div class="col-xs-12 col-md-12 col-sm-12 col-lg-12">
                      <?php 
                      $role = $this->model_app->view_where('tb_role','role_id',$this->session->role);
@@ -281,7 +243,7 @@
                        $dis = "";
                       } ?>
                     <?php   echo "<a href='".base_url()."administrator/tambah_temuan/$id_pmr'>" ?><button type="button" class="btn btn-primary tambah-lagi pull-right" <?php  echo strpos($role[0]['role_akses'],',3,')!==FALSE?"":"disabled";?> <?php echo $dis; echo $disable; ?>>Tambah Temuan</button></a>
-                  </div>
+                  <!-- </div> -->
                   <?php 
                     //action untuk kirim temuan
                     $atribut = array('class'=>'form-horizontal','role'=>'form');
@@ -550,31 +512,30 @@
             $('.lha').removeAttr('style');
         });
 
-        $(".send-lha").on("change", function() {
-        let checkbox = $(this);
-        let id_pmr = checkbox.data("id");
-        let status = checkbox.prop("checked") ? 1 : 0;
+        $("#statusCheckbox").change(function() {
+          var isChecked = $(this).is(":checked") ? 1 : 0; // 1 jika dicentang, 0 jika tidak
+          var id_pmr = $(this).data("id"); // Ambil ID dari checkbox
 
-        $.ajax({
-            url: "<?= base_url('administrator/send_lha_reg') ?>/" + id_pmr,
-            type: "POST",
-            data: { status: status },
-            dataType: "json",
-            success: function(response) {
-                if (response.success) {
-                    console.log("Status berhasil diperbarui:", response);
-                } else {
-                    console.error("Gagal memperbarui status:", response.message);
-                    checkbox.prop("checked", !status); // Balik status jika gagal
-                }
-            },
-            error: function(xhr) {
-                let err = JSON.parse(xhr.responseText);
-                console.error("Error:", err.message);
-                checkbox.prop("checked", !status); // Balik status jika gagal
-            }
-        });
-    });
+          $.ajax({
+              url: "<?= base_url('administrator/send_lha_reg') ?>", // Ganti dengan route controller
+              type: "POST",
+              data: { id_pmr: id_pmr, status: isChecked }, // Kirim status juga
+              dataType: "json",
+              success: function(response) {
+                  if (response.status === "error") {
+                      alert("Harap upload dokumen terlebih dahulu sebelum mengubah status!");
+                      $("#statusCheckbox").prop("checked", !isChecked); // Batalkan perubahan status
+                  } else {
+                      console.log("Status berhasil diubah menjadi " + isChecked);
+                  }
+              },
+              error: function(xhr, status, error) {
+                  alert("Terjadi kesalahan, coba lagi.");
+                  $("#statusCheckbox").prop("checked", !isChecked); // Batalkan perubahan status jika error
+              }
+          });
+      });
+
 
     });
     </script>

@@ -67,18 +67,15 @@
                         </select>
                       </div>
                     </div>
-                    <div class="form-group">
-<<<<<<< HEAD
-                      <label class="control-label col-md-3 col-sm-3 col-xs-12"></label>
-=======
-                      <!-- <label class="control-label col-md-3 col-sm-3 col-xs-12">Hasil Data</label> -->
->>>>>>> 8540d555258e2fae9e89448f6d1c81680490dc97
-                      <div class="col-md-6 col-sm-6 col-xs-12">
+                    <div class="row align-items-center">
+                    <div class="col-md-3">
+                    </div>
+                      <div class="col-md-6">
                         <select id="data-result" class="form-control" name="c" required>
-                          <option selected>Silakan pilih objek audit terlebih dahulu</option>
+                            <option selected>Silakan pilih objek audit terlebih dahulu</option>
                         </select>
                       </div>
-                    </div>
+                    </div></br>
                     <div class="form-group">
                       <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">Nomor Dokumen Surat Tugas <span class="required ">*</span></label>
                       <div class="col-md-6 col-sm-6 col-xs-12">
@@ -260,7 +257,7 @@
     <script>
   $(document).ready(function () {
     $("#objek").change(function () {
-      const selectedValue = $("#objek").val();
+      const selectedValue = $(this).val();
 
       // Clear existing options in the result dropdown
       $("#data-result").html('<option selected>Loading...</option>');

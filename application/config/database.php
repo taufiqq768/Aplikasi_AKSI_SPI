@@ -75,10 +75,10 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => '10.100.11.117',
-	'username' => 'aksi_user',
-	'password' => '8KUdFXR2tgo8v4RujLvV',
-	'database' => 'db_aksi_stg',
+	'hostname' => 'localhost',
+	'username' => 'root',
+	'password' => '',
+	'database' => 'simonspi',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
 	'pconnect' => FALSE,
