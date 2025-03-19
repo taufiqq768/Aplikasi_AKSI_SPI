@@ -12,7 +12,7 @@
               <ul class="nav navbar-nav navbar-right">
                 <li class="">
                   <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                    <img <?php if ($usr['user_foto']!=null) { ?>src="<?php echo base_url(); ?>asset/foto_user/<?php echo $usr['user_foto'] ?>"<?php }else{ ?>src="<?php echo base_url() ?>/asset/images/user.png"<?php } ?> alt=""><?php echo $usr['user_nama']; //$this->session->userdata('user_nama'); ?>
+                    <img <?php if ($usr['user_foto']!=null) { ?>src="<?php echo base_url(); ?>asset/foto_user/<?php echo $usr['user_foto'] ?>"<?php }else{ ?>src="<?php echo base_url() ?>/asset/images/user.png"<?php } ?> alt=""><?php echo $usr['user_nama']."-".$usr['user_level']; //$this->session->userdata('user_nama'); ?>
                     <span class=" fa fa-angle-down"></span>
                   </a>
                   <ul class="dropdown-menu dropdown-usermenu pull-right">

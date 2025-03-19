@@ -91,7 +91,7 @@
                             <th style="width: 350px"><center>Rekomendasi</center></th>
                             <th style="width: 170px"><center>Klasifikasi Rekomendasi</center></th>
                             <th style="width: 300px"><center>Dokumen</center></th>
-                            <th style="width: 70px"><center>Tanggal</center></th>
+                            <th style="width: 70px"><center>Tanggal Deadline</center></th>
                             <th style="width: 110px"><center>Action</center></th>
                           </thead>
                           <tbody>
@@ -145,7 +145,7 @@
                                   $placeholder = 'Aktifkan';
                                 } ?>
                               </td>
-                              <td><center><?php $tgl =  explode('-', $row['rekomendasi_tgl']); echo $tgl[2]."-".$tgl[1]."-".$tgl[0] ?></center></td>
+                              <td><center><?php $tgl =  explode('-', $row['rekomendasi_tgl_deadline']); echo $tgl[2]."-".$tgl[1]."-".$tgl[0] ?></center></td>
                               <td>
                                   <?php if ($this->session->level=="kabagspi" AND $row['rekomendasi_kirim']=='N') { ?>
                                          <?php   echo "<a href='".base_url()."administrator/kembalikan_rekomendasi/$id_pmr/$id_temuan/$row[rekomendasi_id]'>" ?><button class="btn btn-xs btn-danger" type="button" title="Kembalikan Rekomendasi ke SPI" <?php echo $disable; ?>><span class="fa fa-mail-reply"></span></button></a>

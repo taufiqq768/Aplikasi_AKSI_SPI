@@ -2,6 +2,14 @@
 <style>
     .hidden { display: none; }
     .read-more:hover + .hidden { display: inline; }
+    .timeline {margin-left:200px; padding-right:320px;}
+    .event{
+    white-space: nowrap; /* Cegah teks wrap */
+    text-overflow: ellipsis; /* Tambahkan "..." jika teks terlalu panjang */
+    max-width: 100%; /* Pastikan lebar maksimal mengikuti container */
+    display: block; /* Pastikan tetap sebagai blok */
+}
+    
 </style>
         <!-- page content -->
         <div class="right_col" role="main">
@@ -150,7 +158,7 @@
                               echo "<a href='".base_url()."administrator/delete_temuan/$row[id_kka]' onclick=\"return confirm('Apa anda yakin untuk hapus Data ini?')\">" 
                             ?>
                               <button type="button" class="btn btn-danger btn-sm bt-remove"  <?php  echo strpos($role[0]['role_akses'],',5,')!==FALSE?"":"disabled";?> data-toggle="tooltip" data-placement="top" title="Reject"><span class="fa fa-long-arrow-left"></button></a>
-                              <button type="button" class="btn btn-warning btn-sm btn-history"  <?php  echo strpos($role[0]['role_akses'],',5,')!==FALSE?"":"disabled";?> data-id="<?= $row['id_kka'] ?>" data-toggle="tooltip" data-placement="top" title="History"><span class="fa fa-history"></button></a>
+                              <button type="button" class="btn btn-warning btn-sm btn-history"  <?php  echo strpos($role[0]['role_akses'],',5,')!==FALSE?"":"disabled";?> data-id="<?= $row['pemeriksaan_id'] ?>" data-toggle="tooltip" data-placement="top" title="History"><span class="fa fa-history"></button></a>
                               <!-- /ANGGOTA AUDIT -->
                             <?php } elseif($row['kka_kirim_kadiv_dspi'] == "1" && $row['pembuat_kka'] == $this->session->username){ ?>
                               <button type="button" class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top"  <?php  echo strpos($role[0]['role_akses'],',6,')!==FALSE?"":"disabled"; ?>>Terkirim Ke Ketua</button></a>
@@ -162,9 +170,8 @@
                               echo "<a href='".base_url()."administrator/edit_kka/$row[id_kka]'>" 
                               ?>
                               <button type="button" class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="top" title="Edit" <?php  echo strpos($role[0]['role_akses'],',6,')!==FALSE?"":"disabled"; ?>><span class="fa fa-pencil"></span>&nbsp;</button></a>
-                              <button type="button" class="btn btn-danger btn-sm bt-remove" data-toggle="tooltip" data-placement="top" title=Reject" <?php  echo strpos($role[0]['role_akses'],',6,')!==FALSE?"":"disabled"; ?>><span class="fa fa-long-arrow-left"></span>&nbsp;</button></a>
                               <button type="button" class="btn btn-warning btn-sm btn-history"  <?php  echo strpos($role[0]['role_akses'],',5,')!==FALSE?"":"disabled";?> data-id="<?= $row['pemeriksaan_id'] ?>" data-toggle="tooltip" data-placement="top" title="History"><span class="fa fa-history"></button></a>
-                              <?php echo "<a href='".base_url()."administrator/reject_kka/$row[pemeriksaan_id]'>" ?><button type="button" class="btn btn-danger btn-xs" data-toggle="modal" data-placement="top" title="Kembalikan KKA ke SPI"><span class="fa fa-mail-reply"></span></button></a>
+                              <?php echo "<a href='".base_url()."administrator/reject_kka/$row[pemeriksaan_id]'>" ?><button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-placement="top" title="Kembalikan KKA ke Anggota SPI"><span class="fa fa-mail-reply"></span></button></a>
                             <?php } elseif($row['kka_kirim_kadiv_dspi'] == "2" && $row['pemeriksaan_ketua'] == $this->session->username){ ?>
                               <button type="button" class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top"  <?php  echo strpos($role[0]['role_akses'],',6,')!==FALSE?"":"disabled"; ?>>Terkirim Ke Pengawas</button></a>
                               <!-- /block KETUA -->
@@ -176,9 +183,8 @@
                               echo "<a href='".base_url()."administrator/edit_kka/$row[id_kka]'>" 
                               ?>
                               <button type="button" class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="top" title="Edit" <?php  echo strpos($role[0]['role_akses'],',6,')!==FALSE?"":"disabled"; ?>><span class="fa fa-pencil"></span>&nbsp;</button></a>
-                              <button type="button" class="btn btn-warning btn-sm btn-history"  <?php  echo strpos($role[0]['role_akses'],',5,')!==FALSE?"":"disabled";?> data-id="<?= $row['id_kka'] ?>" data-toggle="tooltip" data-placement="top" title="History"><span class="fa fa-history"></button></a>
-                              <button type="button" class="btn btn-danger btn-sm bt-remove" data-toggle="tooltip" data-placement="top" title="Reject" <?php  echo strpos($role[0]['role_akses'],',6,')!==FALSE?"":"disabled"; ?>><span class="fa fa-long-arrow-left"></span>&nbsp;</button></a>
-                              <?php echo "<a href='".base_url()."administrator/reject_kka/$row[pemeriksaan_id]'>" ?><button type="button" class="btn btn-danger btn-xs" data-toggle="modal" data-placement="top" title="Kembalikan KKA ke SPI"><span class="fa fa-mail-reply"></span></button></a>
+                              <button type="button" class="btn btn-warning btn-sm btn-history"  <?php  echo strpos($role[0]['role_akses'],',5,')!==FALSE?"":"disabled";?> data-id="<?= $row['pemeriksaan_id'] ?>" data-toggle="tooltip" data-placement="top" title="History"><span class="fa fa-history"></button></a>
+                              <?php echo "<a href='".base_url()."administrator/reject_kka/$row[pemeriksaan_id]'>" ?><button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-placement="top" title="Kembalikan KKA ke SPI"><span class="fa fa-mail-reply"></span></button></a>
                               <?php } elseif($row['kka_kirim_kadiv_dspi'] == "2" && $row['pemeriksaan_pengawas'] == $this->session->username){ ?>
                                 <button type="button" class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top"  <?php  echo strpos($role[0]['role_akses'],',6,')!==FALSE?"":"disabled"; ?>>Terkirim Ke </br>KADIV SPI</button></a>
                               <!-- /block PENGAWAS -->
@@ -190,11 +196,11 @@
                               echo "<a href='".base_url()."administrator/edit_kka/$row[id_kka]'>" 
                               ?>
                               <button type="button" class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="top" title="Edit" <?php  echo strpos($role[0]['role_akses'],',6,')!==FALSE?"":"disabled"; ?>><span class="fa fa-pencil"></span>&nbsp;</button></a>
-                              <button type="button" class="btn btn-warning btn-sm btn-history"  <?php  echo strpos($role[0]['role_akses'],',5,')!==FALSE?"":"disabled";?> data-id="<?= $row['id_kka'] ?>" data-toggle="tooltip" data-placement="top" title="History"><span class="fa fa-history"></button></a>
-                              <button type="button" class="btn btn-danger btn-xs" data-toggle="modal" data-placement="top" data-target="#modalreject" title="Kembalikan KKA ke Petugas DSPI"><span class="fa fa-mail-reply"></span></button></a>
+                              <button type="button" class="btn btn-warning btn-sm btn-history"  data-id="<?= $row['pemeriksaan_id'] ?>" data-toggle="tooltip" data-placement="top" title="History"><span class="fa fa-history"></button></a>
+                              <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-placement="top" data-target="#modalreject" title="Kembalikan KKA ke Petugas DSPI"><span class="fa fa-mail-reply"></span></button></a>
                               <?php } elseif($row['kka_kirim_kadiv_dspi'] == "4"){ ?>
                                 <button type="button" class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top"  <?php  echo strpos($role[0]['role_akses'],',6,')!==FALSE?"":"disabled"; ?>><span class="fa fa-thumbs-up"></span>&nbsp;Approved</button></a>
-                                <button type="button" class="btn btn-warning btn-sm btn-history"  <?php  echo strpos($role[0]['role_akses'],',5,')!==FALSE?"":"disabled";?> data-id="<?= $row['id_kka'] ?>" data-toggle="tooltip" data-placement="top" title="History"><span class="fa fa-history"></button>
+                                <button type="button" class="btn btn-warning btn-sm btn-history"  data-id="<?= $row['pemeriksaan_id'] ?>" data-toggle="tooltip" data-placement="top" title="History"><span class="fa fa-history"></button>
                               <!-- /block KADIV -->
                             <?php } else{
                                 if($row['kka_kirim_kadiv_dspi'] == null){
@@ -476,9 +482,8 @@ $(document).ready(function () {
     $(".btn-history").click(function () {
         var id = $(this).data("id"); // Ambil ID dari tombol
         var url1 = "<?= base_url('administrator/history_kka/') ?>" + id; // Buat URL lengkap
-        
-      console.log("URL yang dikirim: " + url1); // Debug: Cek URL di Console
-        
+
+        console.log("URL yang dikirim: " + url1); // Debug: Cek URL di Console
 
         // Panggil AJAX untuk mengambil data history
         $.ajax({
@@ -489,8 +494,13 @@ $(document).ready(function () {
                     var html = "<ul class='timeline'>";
 
                     response.data.forEach(function (item) {
+                        var textColor = item.revisi == 1 ? "text-danger" : ""; // Jika revisi = 1, ubah warna merah
+                        var ApprovedColor = item.user_level == "kabagspi" ? "text-success" : ""; // Jika revisi = 1, ubah warna merah
+                        var revisiText = item.revisi == 1 ? " (Revisi)" : ""; // Tambahkan teks "Revisi" jika revisi = 1
+                        var ApprovedText = item.user_level == "kabagspi" ? " (Approved)" : ""; // Tambahkan teks "Revisi" jika revisi = 1
+
                         html += "<li class='event' data-date='" + item.waktu_kirim + "'>";
-                        html += "<h3>" + item.user_nama + "</h3>";
+                        html += "<p style='font-size:20px;' class='" + textColor + ApprovedColor +"'>" + item.user_nama + revisiText + ApprovedText + "</p>";
                         html += "</li>";
                     });
 
@@ -509,6 +519,7 @@ $(document).ready(function () {
         });
     });
 });
+
 
 
 </script>
