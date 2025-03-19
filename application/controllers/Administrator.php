@@ -1594,22 +1594,19 @@ class Administrator extends CI_Controller {
 
 	public function list_pmr_operator(){
 		if ($this->session->level=="admin" OR $this->session->level=="operator") {
-			$query = $this->model_app->view_where2_ordering('tb_pemeriksaan','pemeriksaan_aktif','Y','unit_mention',$this->session->unit,'pemeriksaan_id','ASC');
-			//CEK NOTIFIKASI
-			if ($this->uri->segment(3)!=null) {
-				$id_notif = $this->uri->segment(3);
-				$this->db->query("UPDATE tb_notifikasi SET notifikasi_dibaca='Y' WHERE notifikasi_id = '$id_notif'");
-			}
-			elseif(!empty($query[0]['unit_mention'])){
-				$data['record'] = $this->model_app->view_where2_ordering('tb_pemeriksaan','pemeriksaan_aktif','Y','unit_mention',$this->session->unit,'pemeriksaan_id','ASC');
-			}else{
-				$data['record'] = $this->model_app->view_where2_ordering('tb_pemeriksaan','pemeriksaan_aktif','Y','unit_id',$this->session->unit,'pemeriksaan_id','ASC');
-			}
-				
-
-				
+			$unit=$this->session->unit;
+			//$query = $this->model_app->view_where2_ordering('tb_pemeriksaan','pemeriksaan_aktif','Y','unit_mention',$this->session->unit,'pemeriksaan_id','ASC');
+			$data['record'] = $this->db->query("SELECT tb_pemeriksaan.*,tb_rekomendasi.unit_id as unit_mention FROM `tb_pemeriksaan` LEFT JOIN `tb_rekomendasi` ON `tb_pemeriksaan`.`pemeriksaan_id` = `tb_rekomendasi`.`pemeriksaan_id` WHERE `pemeriksaan_aktif` = 'Y' AND `tb_rekomendasi`.`unit_id` = $unit ORDER BY `tb_pemeriksaan`.`pemeriksaan_id` ASC")->result_array();
+			$this->template->load('template','kelola-tl/list_pmr_operator', $data);
 			
-		$this->template->load('template','kelola-tl/list_pmr_operator', $data);
+			//CEK NOTIFIKASI
+			// if ($this->uri->segment(3)!=null) {
+			// 	$id_notif = $this->uri->segment(3);
+			// 	$this->db->query("UPDATE tb_notifikasi SET notifikasi_dibaca='Y' WHERE notifikasi_id = '$id_notif'");
+			// }else{
+			// 	$data['record'] = $this->db->query("SELECT tb_pemeriksaan.*,tb_rekomendasi.unit_id as unit_mention FROM `tb_pemeriksaan` LEFT JOIN `tb_rekomendasi` ON `tb_pemeriksaan`.`pemeriksaan_id` = `tb_rekomendasi`.`pemeriksaan_id` WHERE `pemeriksaan_aktif` = 'Y' AND `tb_rekomendasi.`unit_id` = $unit ORDER BY `tb_pemeriksaan`.`pemeriksaan_id` ASC")->result_array();
+			// }				
+		
 		}else{
 			redirect('administrator');
 		}
@@ -1620,7 +1617,8 @@ class Administrator extends CI_Controller {
 			$id_notif = $this->uri->segment(3);
 			$this->db->query("UPDATE tb_notifikasi SET notifikasi_dibaca='Y' WHERE notifikasi_id = '$id_notif'");
 		}
-			$data['record'] = $this->model_app->view_where2_ordering('tb_pemeriksaan','pemeriksaan_aktif','Y','unit_id',$this->session->unit,'pemeriksaan_id','ASC');
+		$unit=$this->session->unit;
+		$data['record'] = $this->db->query("SELECT tb_pemeriksaan.*,tb_rekomendasi.unit_id as unit_mention FROM `tb_pemeriksaan` LEFT JOIN `tb_rekomendasi` ON `tb_pemeriksaan`.`pemeriksaan_id` = `tb_rekomendasi`.`pemeriksaan_id` WHERE `pemeriksaan_aktif` = 'Y' AND `tb_rekomendasi`.`unit_id` = $unit ORDER BY `tb_pemeriksaan`.`pemeriksaan_id` ASC")->result_array();
 		
 		$this->template->load('template','kelola-tl/list_pmr_verifikator', $data);
 	}

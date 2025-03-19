@@ -173,10 +173,10 @@
                                                 <div class="input-group col-md-8 col-sm-8 col-xs-12">
                                                 <select name="status" id="status" class="form-control">
                                                  <!-- <option ><?php //echo $row['rekomendasi_status']; ?></option> -->
-                                                 <option value="Sudah di Tindak Lanjut" <?php if ($value['rekomendasi_status_cache']=="Sudah di Tindak Lanjut") {echo "selected";}?>>Sudah di Tindak Lanjut</option>
-                                                 <option value="Sudah TL (Belum Optimal)" <?php if ($value['rekomendasi_status_cache']=="Sudah TL (Belum Optimal)") {echo "selected";}?>>Sudah di Tindak Lanjut (Belum Optimal)</option>
+                                                 <option value="Sesuai" <?php if ($value['rekomendasi_status_cache']=="Sesuai") {echo "selected";}?>>Sesuai</option>
+                                                 <option value="Belum Sesuai" <?php if ($value['rekomendasi_status_cache']=="Belum Sesuai") {echo "selected";}?>>Belum Sesuai</option>
                                                  <option value="Belum di Tindak Lanjut" <?php if ($value['rekomendasi_status_cache']=="Belum di Tindak Lanjut") {echo "selected";}?>>Belum di Tindak Lanjut</option>
-                                                 <option value="Dikembalikan" <?php if ($value['rekomendasi_status_cache']=="Dikembalikan") {echo "selected";}?>>Dikembalikan</option>
+                                                 <option value="Tidak dapat di Tindak Lanjuti" <?php if ($value['rekomendasi_status_cache']=="Tidak dapat di Tindak Lanjuti") {echo "selected";}?>>Tidak dapat di Tindak Lanjuti</option>
                                                 </select>
                                                 </div>
                                               </div>
