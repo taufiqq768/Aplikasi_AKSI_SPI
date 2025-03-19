@@ -389,75 +389,7 @@ class Administrator extends CI_Controller {
 		else{
 			//ketua dan pengawas dan kavid
 			$data['record'] = $this->db->query("SELECT * FROM `tb_pemeriksaan` JOIN `tb_unit` ON `tb_pemeriksaan`.`unit_id`=`tb_unit`.`unit_id` JOIN `tb_kka` ON `tb_pemeriksaan`.`pemeriksaan_id`=`tb_kka`.`pemeriksaan_id` WHERE `tb_pemeriksaan`.`pemeriksaan_id`=$id_pmr AND (`tb_kka`.`kka_kirim_kadiv_dspi` IN (1,2,3,4)) ORDER BY `tb_pemeriksaan`.`pemeriksaan_id` DESC")->result_array();
-			
 			$this->template->load('template','kelola-kka/list_kka',$data);
-		}
-	}
-	public function reject_kka(){
-		$level=$this->session->level;
-		$nik=$this->session->nik;
-		$id_pmr=$this->input->post('id_pmr');
-		$alasan=$this->input->post('alasan');
-		$pemeriksaan = $this->db->query("SELECT * FROM `tb_pemeriksaan` JOIN `tb_kka` ON `tb_pemeriksaan`.`pemeriksaan_id`=`tb_kka`.`pemeriksaan_id` WHERE `tb_pemeriksaan`.`pemeriksaan_id` = $id_pmr ORDER BY `tb_pemeriksaan`.`pemeriksaan_id` ASC")->result_array();
-		
-		if($level == "kabagspi"){
-			$data = array(
-				'kka_kirim_kadiv_dspi' => '0',
-				'kka_alasan'=>$alasan
-			);
-			$where = array('id_kka' => $pemeriksaan[0]['id_kka']);
-			$this->model_app->update('tb_kka', $data, $where);
-
-			if ($update) {
-				// Jika update berhasil, jalankan query berikutnya
-				$data['record'] = $this->model_app->view_join('tb_pemeriksaan', 'tb_unit', 'unit_id', 'tb_pemeriksaan.pemeriksaan_id', 'DESC');
-				$data['unit'] = $this->model_app->view_ordering('tb_unit', 'unit_id', 'ASC');
-				
-				// Load template dengan data terbaru
-				$this->template->load('template', 'kelola-kka/list_kka_kadiv_group', $data);
-			} else {
-				// Jika update gagal, tampilkan pesan error atau redirect ke halaman sebelumnya
-				echo "<script>alert('Update gagal, silakan coba lagi!'); window.history.back();</script>";
-			}
-
-		}elseif($pemeriksaan[0]['pemeriksaan_pengawas'] == $nik){
-			$data = array(
-				'kka_kirim_kadiv_dspi' => '0'
-			);
-			$where = array('id_kka' => $pemeriksaan[0]['id_kka']);
-			$this->model_app->update('tb_kka', $data, $where);
-
-			if ($update) {
-				// Jika update berhasil, jalankan query berikutnya
-				$data['unit'] = $this->model_app->view_ordering('tb_unit','unit_id','ASC');
-				$data['record'] = $this->db->query("SELECT * FROM `tb_pemeriksaan` JOIN `tb_unit` ON `tb_pemeriksaan`.`unit_id`=`tb_unit`.`unit_id` WHERE `tb_pemeriksaan`.`pemeriksaan_pengawas`=$nik ORDER BY `tb_pemeriksaan`.`pemeriksaan_id` DESC;")->result_array();
-				$this->template->load('template','kelola-kka/list_kka_group',$data);
-				// Load template dengan data terbaru
-				$this->template->load('template', 'kelola-kka/list_kka_kadiv_group', $data);
-			} else {
-				// Jika update gagal, tampilkan pesan error atau redirect ke halaman sebelumnya
-				echo "<script>alert('Update gagal, silakan coba lagi!'); window.history.back();</script>";
-			}
-		}
-		else{
-			$data = array(
-				'kka_kirim_kadiv_dspi' => '0'
-			);
-			$where = array('id_kka' => $pemeriksaan[0]['id_kka']);
-			$this->model_app->update('tb_kka', $data, $where);
-
-			if ($update) {
-				// Jika update berhasil, jalankan query berikutnya
-				$data['unit'] = $this->model_app->view_ordering('tb_unit','unit_id','ASC');
-				$data['record'] = $this->db->query("SELECT * FROM `tb_pemeriksaan` JOIN `tb_unit` ON `tb_pemeriksaan`.`unit_id`=`tb_unit`.`unit_id` JOIN `tb_kka` ON `tb_pemeriksaan`.`pemeriksaan_id`=`tb_kka`.`pemeriksaan_id` WHERE `tb_kka`.`pembuat_kka`=$nik ORDER BY `tb_pemeriksaan`.`pemeriksaan_id` DESC")->result_array();
-				$this->template->load('template','kelola-kka/list_kka_group',$data);
-				
-				// Load template dengan data terbaru
-				$this->template->load('template', 'kelola-kka/list_kka_kadiv_group', $data);
-			} else {
-				// Jika update gagal, tampilkan pesan error atau redirect ke halaman sebelumnya
-				echo "<script>alert('Update gagal, silakan coba lagi!'); window.history.back();</script>";
-			}
 		}
 	}
 	public function tambah_kka(){
@@ -1361,25 +1293,22 @@ class Administrator extends CI_Controller {
 		}
 	}
 
-	public function send_lha_reg(){
+	public function send_lha_reg($id_pmr){
 		
-		$id_pmr = $this->input->post('id_pmr');
-		$status = $this->input->post('status'); // Ambil status dari AJAX
+		$status = $this->input->post('status');
 
-		// Cek di database apakah dokumen sudah di-upload
-		$cek = $this->db->get_where('tb_lha', ['id_pemeriksaan' => $id_pmr])->row();
-
-		if (!$cek || empty($cek->file_lha)) {
-			echo json_encode(['status' => 'error']);
-			return;
-		}
-	
 		// Update status di database
 		$this->db->where('id_pemeriksaan', $id_pmr);
 		$this->db->update('tb_lha', ['status' => $status]);
 	
-		echo json_encode(['status' => 'success']);
-		
+		// Ambil status terbaru untuk memastikan perubahan berhasil
+		$new_status = $this->db->get_where('tb_lha', ['id_pemeriksaan' => $id_pmr])->row()->status;
+	
+		echo json_encode([
+			"success" => true,
+			"message" => "Status berhasil diperbarui",
+			"status" => $new_status // Kirim status terbaru
+		]);
 	}
 	
 	public function tambah_tanggapan(){

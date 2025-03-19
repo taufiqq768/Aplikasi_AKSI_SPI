@@ -164,6 +164,7 @@
                               <button type="button" class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="top" title="Edit" <?php  echo strpos($role[0]['role_akses'],',6,')!==FALSE?"":"disabled"; ?>><span class="fa fa-pencil"></span>&nbsp;</button></a>
                               <button type="button" class="btn btn-danger btn-sm bt-remove" data-toggle="tooltip" data-placement="top" title=Reject" <?php  echo strpos($role[0]['role_akses'],',6,')!==FALSE?"":"disabled"; ?>><span class="fa fa-long-arrow-left"></span>&nbsp;</button></a>
                               <button type="button" class="btn btn-warning btn-sm btn-history"  <?php  echo strpos($role[0]['role_akses'],',5,')!==FALSE?"":"disabled";?> data-id="<?= $row['pemeriksaan_id'] ?>" data-toggle="tooltip" data-placement="top" title="History"><span class="fa fa-history"></button></a>
+                              <?php echo "<a href='".base_url()."administrator/reject_kka/$row[pemeriksaan_id]'>" ?><button type="button" class="btn btn-danger btn-xs" data-toggle="modal" data-placement="top" title="Kembalikan KKA ke SPI"><span class="fa fa-mail-reply"></span></button></a>
                             <?php } elseif($row['kka_kirim_kadiv_dspi'] == "2" && $row['pemeriksaan_ketua'] == $this->session->username){ ?>
                               <button type="button" class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top"  <?php  echo strpos($role[0]['role_akses'],',6,')!==FALSE?"":"disabled"; ?>>Terkirim Ke Pengawas</button></a>
                               <!-- /block KETUA -->
@@ -176,7 +177,8 @@
                               ?>
                               <button type="button" class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="top" title="Edit" <?php  echo strpos($role[0]['role_akses'],',6,')!==FALSE?"":"disabled"; ?>><span class="fa fa-pencil"></span>&nbsp;</button></a>
                               <button type="button" class="btn btn-warning btn-sm btn-history"  <?php  echo strpos($role[0]['role_akses'],',5,')!==FALSE?"":"disabled";?> data-id="<?= $row['id_kka'] ?>" data-toggle="tooltip" data-placement="top" title="History"><span class="fa fa-history"></button></a>
-                              <button type="button" class="btn btn-danger btn-sm bt-remove" data-toggle="tooltip" data-placement="top" title=Reject" <?php  echo strpos($role[0]['role_akses'],',6,')!==FALSE?"":"disabled"; ?>><span class="fa fa-long-arrow-left"></span>&nbsp;</button></a>
+                              <button type="button" class="btn btn-danger btn-sm bt-remove" data-toggle="tooltip" data-placement="top" title="Reject" <?php  echo strpos($role[0]['role_akses'],',6,')!==FALSE?"":"disabled"; ?>><span class="fa fa-long-arrow-left"></span>&nbsp;</button></a>
+                              <?php echo "<a href='".base_url()."administrator/reject_kka/$row[pemeriksaan_id]'>" ?><button type="button" class="btn btn-danger btn-xs" data-toggle="modal" data-placement="top" title="Kembalikan KKA ke SPI"><span class="fa fa-mail-reply"></span></button></a>
                               <?php } elseif($row['kka_kirim_kadiv_dspi'] == "2" && $row['pemeriksaan_pengawas'] == $this->session->username){ ?>
                                 <button type="button" class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top"  <?php  echo strpos($role[0]['role_akses'],',6,')!==FALSE?"":"disabled"; ?>>Terkirim Ke </br>KADIV SPI</button></a>
                               <!-- /block PENGAWAS -->
@@ -188,7 +190,8 @@
                               echo "<a href='".base_url()."administrator/edit_kka/$row[id_kka]'>" 
                               ?>
                               <button type="button" class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="top" title="Edit" <?php  echo strpos($role[0]['role_akses'],',6,')!==FALSE?"":"disabled"; ?>><span class="fa fa-pencil"></span>&nbsp;</button></a>
-                              <button type="button" class="btn btn-danger btn-sm bt-remove" data-toggle="tooltip" data-placement="top" title=Reject" <?php  echo strpos($role[0]['role_akses'],',6,')!==FALSE?"":"disabled"; ?>><span class="fa fa-long-arrow-left"></span>&nbsp;</button></a>
+                              <button type="button" class="btn btn-warning btn-sm btn-history"  <?php  echo strpos($role[0]['role_akses'],',5,')!==FALSE?"":"disabled";?> data-id="<?= $row['id_kka'] ?>" data-toggle="tooltip" data-placement="top" title="History"><span class="fa fa-history"></button></a>
+                              <button type="button" class="btn btn-danger btn-xs" data-toggle="modal" data-placement="top" data-target="#modalreject" title="Kembalikan KKA ke Petugas DSPI"><span class="fa fa-mail-reply"></span></button></a>
                               <?php } elseif($row['kka_kirim_kadiv_dspi'] == "4"){ ?>
                                 <button type="button" class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top"  <?php  echo strpos($role[0]['role_akses'],',6,')!==FALSE?"":"disabled"; ?>><span class="fa fa-thumbs-up"></span>&nbsp;Approved</button></a>
                                 <button type="button" class="btn btn-warning btn-sm btn-history"  <?php  echo strpos($role[0]['role_akses'],',5,')!==FALSE?"":"disabled";?> data-id="<?= $row['id_kka'] ?>" data-toggle="tooltip" data-placement="top" title="History"><span class="fa fa-history"></button>
@@ -286,6 +289,31 @@
                                 </div>
                             </div>
                         </div>
+                  </div>
+              </div>
+              <!-- modal reject -->
+               <?php $id_pmr = $this->uri->segment(3); ?>
+                <div class="modal fade" id="modalreject" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                          <div class="modal-header">
+                              <h5 class="modal-title" id="modalLabel">Konfirmasi Pengembalian</h5>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                              </button>
+                          </div>
+                          <form id="formKKA" method="POST" action="<?= base_url('administrator/reject_kka') ?>">
+                              <div class="modal-body">
+                                  <p>Silakan masukkan alasan pengembalian:</p>
+                                  <textarea name="alasan" id="alasanKKA" class="form-control" rows="3" placeholder="Masukkan alasan..." required></textarea>
+                                  <input type="hidden" name="id_pmr" value="<?= $id_pmr; ?>"> <!-- ID Pemeriksaan -->
+                              </div>
+                              <div class="modal-footer">
+                                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                                  <button type="submit" class="btn btn-danger">Ya, Kembalikan</button>
+                              </div>
+                          </form>
+                      </div>
                   </div>
               </div>
             </div>
