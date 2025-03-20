@@ -157,7 +157,6 @@
                             <?php
                               echo "<a href='".base_url()."administrator/delete_temuan/$row[id_kka]' onclick=\"return confirm('Apa anda yakin untuk hapus Data ini?')\">" 
                             ?>
-                              <button type="button" class="btn btn-danger btn-sm bt-remove"  <?php  echo strpos($role[0]['role_akses'],',5,')!==FALSE?"":"disabled";?> data-toggle="tooltip" data-placement="top" title="Reject"><span class="fa fa-long-arrow-left"></button></a>
                               <button type="button" class="btn btn-warning btn-sm btn-history"  <?php  echo strpos($role[0]['role_akses'],',5,')!==FALSE?"":"disabled";?> data-id="<?= $row['pemeriksaan_id'] ?>" data-toggle="tooltip" data-placement="top" title="History"><span class="fa fa-history"></button></a>
                               <!-- /ANGGOTA AUDIT -->
                             <?php } elseif($row['kka_kirim_kadiv_dspi'] == "1" && $row['pembuat_kka'] == $this->session->username){ ?>
