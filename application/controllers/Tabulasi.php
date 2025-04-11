@@ -1,12 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Dashboard extends CI_Controller {
-    public function __construct()
-    {
-        parent::__construct();
-        $this->load->helper('kalender_helper');
-    }
+class Tabulasi extends CI_Controller {
 
 	public function status_rekomendasi ()
     {
@@ -46,50 +41,7 @@ class Dashboard extends CI_Controller {
 
                 GROUP BY l.tahun, l.no_lha, t.jumlah_temuan, r.jumlah_rekomendasi, r.jumlah_s, r.jumlah_bd, r.jumlah_bs, r.jumlah_tdd, r.rekomendasi_status_tanggal")->result_array();
             
-             // DATA BULAN BERJALAN SAJA
-            $data['bulan_berjalan'] = $this->db->query("
-            SELECT 
-                t.tanggal, 
-                mt.kode_temuan, 
-                mt.klasifikasi_temuan, 
-                COALESCE(COUNT(tt.temu_id), 0) AS jumlah_kemunculan
-            FROM (
-                SELECT DISTINCT temuan_tgl AS tanggal 
-                FROM tb_temuan 
-                WHERE MONTH(temuan_tgl) = MONTH(CURDATE()) 
-                AND YEAR(temuan_tgl) = YEAR(CURDATE())
-            ) t
-            CROSS JOIN tb_master_temuan mt
-            LEFT JOIN tb_temuan tt 
-                ON mt.temu_id = tt.temu_id 
-            AND t.tanggal = tt.temuan_tgl
-            GROUP BY t.tanggal, mt.klasifikasi_temuan, mt.kode_temuan
-            ORDER BY t.tanggal, mt.kode_temuan
-        ")->result_array();
-
-        // -------------------------------
-        // DATA DARI JANUARI S/D BULAN SEKARANG
-        $data['kumulatif'] = $this->db->query("
-            SELECT 
-                t.tanggal, 
-                mt.kode_temuan, 
-                mt.klasifikasi_temuan, 
-                COALESCE(COUNT(tt.temu_id), 0) AS jumlah_kemunculan
-            FROM (
-                SELECT DISTINCT temuan_tgl AS tanggal 
-                FROM tb_temuan 
-                WHERE MONTH(temuan_tgl) <= MONTH(CURDATE()) 
-                AND YEAR(temuan_tgl) = YEAR(CURDATE())
-            ) t
-            CROSS JOIN tb_master_temuan mt
-            LEFT JOIN tb_temuan tt 
-                ON mt.temu_id = tt.temu_id 
-            AND t.tanggal = tt.temuan_tgl
-            GROUP BY t.tanggal, mt.klasifikasi_temuan, mt.kode_temuan
-            ORDER BY t.tanggal, mt.kode_temuan
-        ")->result_array();
-            
-            
+            $data['record2'] = $this->db->query("SELECT t.tanggal, mt.kode_temuan, mt.klasifikasi_temuan, COALESCE(COUNT(tt.temu_id), 0) AS jumlah_kemunculan FROM (SELECT DISTINCT temuan_tgl AS tanggal FROM tb_temuan) t CROSS JOIN tb_master_temuan mt LEFT JOIN tb_temuan tt ON mt.temu_id = tt.temu_id AND t.tanggal = tt.temuan_tgl GROUP BY t.tanggal, mt.klasifikasi_temuan, mt.kode_temuan ORDER BY t.tanggal, mt.kode_temuan")->result_array();
             $data['record3'] = $this->db->query("SELECT 
                     t1.temuan_tgl AS tanggal,
                     bt.bidangtemuan_nama,
@@ -101,39 +53,10 @@ class Dashboard extends CI_Controller {
                     AND DATE(t2.temuan_tgl) = t1.temuan_tgl
                 GROUP BY t1.temuan_tgl, bt.bidangtemuan_nama
                 ORDER BY t1.temuan_tgl, bt.bidangtemuan_nama")->result_array();
-                // Data dari query
-                $record3 = $data['record3'];
-
-                // Ambil bulan dan tahun saat ini
-                $bulanSekarang = date('n');
-                $tahunSekarang = date('Y');
-
-                // Siapkan array data
-                $bulan_berjalan = [];
-                $kumulatif = [];
-
-                foreach ($record3 as $row) {
-                    $tanggal = date('Y-m-d', strtotime($row['tanggal']));
-                    $bulan = (int)date('n', strtotime($row['tanggal']));
-                    $tahun = (int)date('Y', strtotime($row['tanggal']));
-
-                    if ($bulan == $bulanSekarang && $tahun == $tahunSekarang) {
-                        $bulan_berjalan[] = $row;
-                    }
-
-                    if ($bulan <= $bulanSekarang && $tahun == $tahunSekarang) {
-                        $kumulatif[] = $row;
-                    }
-                }
-
-                $data['record_bidang_bulan'] = $bulan_berjalan;
-                $data['record_bidang_kumulatif'] = $kumulatif;
-
-                
             $data['record4'] = $this->db->query("WITH Bulan AS (
                 SELECT DISTINCT DATE_FORMAT(pemeriksaan_tgl_mulai, '%Y-%m') AS periode
                 FROM tb_pemeriksaan
-                WHERE YEAR(pemeriksaan_tgl_mulai) = YEAR(CURDATE()) 
+                WHERE YEAR(pemeriksaan_tgl_mulai) = YEAR(CURDATE()) -- Hanya ambil bulan yang ada di data
             ),
             JenisAudit AS (
                 SELECT 'Rutin' AS jenis_audit UNION ALL
@@ -156,7 +79,7 @@ class Dashboard extends CI_Controller {
             ORDER BY b.periode, FIELD(j.jenis_audit, 'Rutin', 'Khusus', 'Tematik')")->result_array();
            
 
-            $this->template->load('template','dashboard',$data);
+            $this->template->load('template','tabulasi',$data);
         }
         else
         {
