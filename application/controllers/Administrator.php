@@ -898,6 +898,7 @@ class Administrator extends CI_Controller {
 			$jenis =  $cek[0]['pemeriksaan_jenis'];
 			$data['record'] = $this->model_app->view_join_where('pemeriksaan_id',$id,'tb_pemeriksaan','tb_unit','unit_id','pemeriksaan_id','DESC');
 			$data['record2'] = $this->model_app->view_where3_ordering('tb_temuan','pemeriksaan_id',$id,'temuan_publish_kabag','Y','temuan_pmr_sebelumnya',0,'temuan_id','ASC');
+			
 			if ($this->session->level=="kabagspi") {
 				//if ($jenis!="Rutin") {
 				//	$this->template->load('template','kelola-pemeriksaan/view_temuan', $data);
@@ -1596,9 +1597,17 @@ class Administrator extends CI_Controller {
 		if ($this->session->level=="admin" OR $this->session->level=="operator") {
 			$unit=$this->session->unit;
 			//$query = $this->model_app->view_where2_ordering('tb_pemeriksaan','pemeriksaan_aktif','Y','unit_mention',$this->session->unit,'pemeriksaan_id','ASC');
-			$data['record'] = $this->db->query("SELECT tb_pemeriksaan.*,tb_rekomendasi.unit_id as unit_mention FROM `tb_pemeriksaan` LEFT JOIN `tb_rekomendasi` ON `tb_pemeriksaan`.`pemeriksaan_id` = `tb_rekomendasi`.`pemeriksaan_id` WHERE `pemeriksaan_aktif` = 'Y' AND `tb_rekomendasi`.`unit_id` = $unit ORDER BY `tb_pemeriksaan`.`pemeriksaan_id` ASC")->result_array();
-			$this->template->load('template','kelola-tl/list_pmr_operator', $data);
+			$q = $this->db->query("SELECT * FROM `tb_pemeriksaan` WHERE `pemeriksaan_aktif` = 'Y' ORDER BY `tb_pemeriksaan`.`pemeriksaan_id` ASC")->result_array();
 			
+			
+			if($q[0]['mention_unit'] == $unit){
+				$data['record'] = $this->db->query("SELECT * FROM `tb_pemeriksaan` WHERE `pemeriksaan_aktif` = 'Y' AND mention_unit = $unit ORDER BY `tb_pemeriksaan`.`pemeriksaan_id` ASC")->result_array();
+				$this->template->load('template','kelola-tl/list_pmr_operator', $data);
+			}
+			else{
+				$data['record'] = $this->db->query("SELECT * FROM `tb_pemeriksaan` WHERE `pemeriksaan_aktif` = 'Y' AND unit_id = $unit ORDER BY `tb_pemeriksaan`.`pemeriksaan_id` ASC")->result_array();
+				$this->template->load('template','kelola-tl/list_pmr_operator', $data);
+			}
 			//CEK NOTIFIKASI
 			// if ($this->uri->segment(3)!=null) {
 			// 	$id_notif = $this->uri->segment(3);
@@ -1618,9 +1627,18 @@ class Administrator extends CI_Controller {
 			$this->db->query("UPDATE tb_notifikasi SET notifikasi_dibaca='Y' WHERE notifikasi_id = '$id_notif'");
 		}
 		$unit=$this->session->unit;
-		$data['record'] = $this->db->query("SELECT tb_pemeriksaan.*,tb_rekomendasi.unit_id as unit_mention FROM `tb_pemeriksaan` LEFT JOIN `tb_rekomendasi` ON `tb_pemeriksaan`.`pemeriksaan_id` = `tb_rekomendasi`.`pemeriksaan_id` WHERE `pemeriksaan_aktif` = 'Y' AND `tb_rekomendasi`.`unit_id` = $unit ORDER BY `tb_pemeriksaan`.`pemeriksaan_id` ASC")->result_array();
+		//$data['record'] = $this->db->query("SELECT * FROM `tb_pemeriksaan`  WHERE `pemeriksaan_aktif` = 'Y' AND unit_id = $unit ORDER BY `tb_pemeriksaan`.`pemeriksaan_id` ASC")->result_array();
+		$q = $this->db->query("SELECT * FROM `tb_pemeriksaan` WHERE `pemeriksaan_aktif` = 'Y' ORDER BY `tb_pemeriksaan`.`pemeriksaan_id` ASC")->result_array();	
+			
+			if($q[0]['mention_unit'] == $unit){
+				$data['record'] = $this->db->query("SELECT * FROM `tb_pemeriksaan` WHERE `pemeriksaan_aktif` = 'Y' AND mention_unit = $unit ORDER BY `tb_pemeriksaan`.`pemeriksaan_id` ASC")->result_array();
+				$this->template->load('template','kelola-tl/list_pmr_verifikator', $data);
+			}
+			else{
+				$data['record'] = $this->db->query("SELECT * FROM `tb_pemeriksaan` WHERE `pemeriksaan_aktif` = 'Y' AND unit_id = $unit ORDER BY `tb_pemeriksaan`.`pemeriksaan_id` ASC")->result_array();
+				$this->template->load('template','kelola-tl/list_pmr_verifikator', $data);
+			}
 		
-		$this->template->load('template','kelola-tl/list_pmr_verifikator', $data);
 	}
 	public function list_tanggapantl(){
 		$id_pmr = $this->uri->segment(3);
@@ -1676,13 +1694,32 @@ class Administrator extends CI_Controller {
 								'user_nik' => $this->session->username,
 								'unit_id' => $divisi
 					);					
-				$this->model_app->insert('tb_rekomendasi', $data);
-				$id_rekom = $this->db->insert_id();
-				redirect('administrator/upload_rekomendasi/'.$id_pmr.'/'.$id_temuan.'/'.$id_rekom);
+					$insert=$this->model_app->insert('tb_rekomendasi', $data);
+					
+					//redirect('administrator/upload_rekomendasi/'.$id_pmr.'/'.$id_temuan.'/'.$id_rekom);
+
+				if ($insert) {
+					// Jika insert berhasil, ambil ID yang baru dimasukkan
+					$id_rekom = $this->db->insert_id();
+				
+					// Update mention_unit di tb_pemeriksaan
+					$this->db->set('mention_unit', $divisi);
+					$this->db->where('pemeriksaan_id', $id_pmr);
+					$update = $this->db->update('tb_pemeriksaan');
+				
+					if ($update) {
+						// Jika update juga berhasil, lanjutkan redirect
+						redirect('administrator/upload_rekomendasi/' . $id_pmr . '/' . $id_temuan . '/' . $id_rekom);
+					} else {
+						echo "<script>alert('Update mention_unit gagal!'); window.history.back();</script>";
+					}
+				} else {
+					echo "<script>alert('Insert ke tb_rekomendasi gagal!'); window.history.back();</script>";
+				}
 
 			}
 			else{
-				$tujuan_lain=$this->input->post('tujuan');
+				$audity=$this->input->post('tujuan');
 				$tanggal=$this->input->post('deadline');
 				$date = explode("-", $tanggal);
 				$deadline = $date[2]."-".$date[1]."-".$date[0];
@@ -1697,7 +1734,7 @@ class Administrator extends CI_Controller {
 								'rekomendasi_publish_kabag' => 'N',
 								'rekomen_id' => $this->input->post('m_rekomendasi'),
 								'user_nik' => $this->session->username,
-								'unit_id' => $tujuan_lain,
+								'unit_id' => $audity,
 					);
 					$this->model_app->insert('tb_rekomendasi', $data);
 					$id_rekom = $this->db->insert_id();
