@@ -60,7 +60,7 @@
                                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li><!-- 
                                 <li><a class="close-link"><i class="fa fa-close"></i></a></li>  -->
                             </ul>
-                            <h4>Tabular KK4</h4>
+                            <h4>Tabular KK1</h4>
                             
                             <div class="clearfix">
                             </div>
@@ -158,219 +158,9 @@
                                             ?>
                                         </tr>
                                     </tfoot>
-
                                 </table>
-
                                 </div>
                             </div>
-                    </div>
-
-                    <div class="x_panel tile fixed_height_420 overflow_hidden">
-                        <div class="x_title">
-                            <ul class="nav navbar-right panel_toolbox">
-                                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li><!-- 
-                                <li><a class="close-link"><i class="fa fa-close"></i></a></li>  -->
-                            </ul>
-                            <h4>Tabular KK3</h4>
-                            
-                            <div class="clearfix">
-                            </div>
-                            <!-- <hr style="height:2px;border:none;color:lightgrey;background-color:lightgrey;"/> -->
-                        </div>
-                        <div class="tab-container">
-                            <button class="tab-button active" data-tab="temuan">Klasifikasi Temuan</button>
-                            <button class="tab-button" data-tab="penyebab">Klasifikasi Penyebab</button>
-                            <button class="tab-button" data-tab="coso">Klasifikasi COSO</button>
-                            <button class="tab-button" data-tab="audit">Klasifikasi Kode A dan B</button>
-                        </div>
-                            <div id="temuan" class="tab-content" style="display: block;">
-                                <div class="x_content">
-                                    <button class="btn btn-success btn-lg" id="exportExcel" onclick="exportTableToExcel('auditTable', 'LHA_Audit')">
-                                        <span class="fa fa-file-excel-o"></span>
-                                    </button>
-                                    <div class="table-responsive">
-                                    <?php
-                                        // Array bulan dalam Bahasa Indonesia (Januari - Desember)
-                                        $bulan_indonesia = [
-                                            '01' => 'Januari', '02' => 'Februari', '03' => 'Maret',
-                                            '04' => 'April', '05' => 'Mei', '06' => 'Juni',
-                                            '07' => 'Juli', '08' => 'Agustus', '09' => 'September',
-                                            '10' => 'Oktober', '11' => 'November', '12' => 'Desember'
-                                        ];
-                                        // Inisialisasi data
-                                        $data_temuan = [];
-                                        $total_per_bulan = array_fill_keys(array_keys($bulan_indonesia), 0); // Setiap bulan default 0
-                                        $total_semua = 0;
-
-                                        // Proses data dari database
-                                        foreach ($record2 as $row) {
-                                            $bulan = date('m', strtotime($row['tanggal'] . '-01')); // Ambil bulan dalam format MM
-                                            $kode_temuan = $row['kode_temuan'];
-
-                                            // Jika bulan tidak valid, lewati iterasi ini
-                                            if (!isset($bulan_indonesia[$bulan])) {
-                                                continue;
-                                            }
-
-                                            // Simpan data temuan
-                                            $data_temuan[$kode_temuan]['kode'] = $row['kode_temuan'];
-                                            $data_temuan[$kode_temuan]['uraian'] = $row['klasifikasi_temuan'];
-                                            $data_temuan[$kode_temuan]['data'][$bulan] = $row['jumlah_kemunculan'];
-
-                                            // Hitung total per bulan
-                                            $total_per_bulan[$bulan] += $row['jumlah_kemunculan'];
-                                        }
-
-                                        // Total semua temuan
-                                        $total_semua = array_sum($total_per_bulan);
-                                    ?>
-                                    <h4>Tabel Klasifikasi Bidang</h4>
-                                    <table class="table table-striped table-bordered datatable">
-                                        <thead>
-                                            <tr>
-                                                <th rowspan="2">No</th>
-                                                <th colspan="2">Klasifikasi Temuan</th>
-                                                <?php foreach ($bulan_indonesia as $key => $bulan): ?>
-                                                    <th colspan="2"><?php echo $bulan; ?></th>
-                                                <?php endforeach; ?>
-                                            </tr>
-                                            <tr>
-                                                <th>Kode</th>
-                                                <th>Uraian</th>
-                                                <?php foreach ($bulan_indonesia as $key => $bulan): ?>
-                                                    <th>Jumlah</th>
-                                                    <th>%</th>
-                                                <?php endforeach; ?>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php $nomer = 1; foreach ($data_temuan as $temuan): ?>
-                                                <tr>
-                                                    <td><?php echo $nomer++; ?></td>
-                                                    <td><?php echo $temuan['kode']; ?></td>
-                                                    <td><?php echo $temuan['uraian']; ?></td>
-                                                    <?php foreach ($bulan_indonesia as $key => $bulan): ?>
-                                                        <?php $jumlah = $temuan['data'][$key] ?? 0; ?>
-                                                        <td><?php echo $jumlah; ?></td>
-                                                        <td><?php echo ($total_per_bulan[$key] > 0) ? number_format(($jumlah / $total_per_bulan[$key]) * 100) . '%' : '0%'; ?></td>
-                                                    <?php endforeach; ?>
-                                                </tr>
-                                            <?php endforeach; ?>
-                                        </tbody>
-                                        <tfoot>
-                                            <tr class="footer">
-                                                <td colspan="3">Jumlah</td>
-                                                <?php foreach ($bulan_indonesia as $key => $bulan): ?>
-                                                    <td><?php echo $total_per_bulan[$key]; ?></td>
-                                                    <td><?php echo ($total_semua > 0) ? number_format(($total_per_bulan[$key] / $total_semua) * 100) . '%' : '0%'; ?></td>
-                                                <?php endforeach; ?>
-                                            </tr>
-                                        </tfoot>
-                                    </table>
-                                    </div>
-                                </div>
-                            </div>
-                            <div id="penyebab" class="tab-content" style="display: none;">
-                                <div class="table-container">
-                                    <h4>Tabel Klasifikasi Penyebab</h4>
-                                    <table  class="table table-striped table-bordered">
-                                        <thead>
-                                            <tr>
-                                                <th rowspan="2">No</th>
-                                                <th colspan="2">Klasifikasi Penyebab</th>
-                                                <th colspan="2">Januari</th>
-                                            </tr>
-                                            <tr>
-                                                <th>Kode</th>
-                                                <th>Uraian</th>
-                                                <th>Jumlah</th>
-                                                <th>%</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr><td>1</td><td>01.01</td><td>Organisasi</td><td></td><td></td></tr>
-                                            <tr><td>2</td><td>01.02</td><td>Kebijakan</td><td></td><td></td></tr>
-                                            <tr><td>3</td><td>01.03</td><td>Perencanaan</td><td></td><td></td></tr>
-                                            <tr><td>4</td><td>01.04</td><td>Personil</td><td></td><td></td></tr>
-                                            <tr><td>5</td><td>01.05</td><td>Prosedur</td><td></td><td></td></tr>
-                                            <tr><td>6</td><td>01.06</td><td>Pencatatan dan Pelaporan</td><td></td><td></td></tr>
-                                            <tr><td>7</td><td>01.07</td><td>Reviu/Pengawasan Internal</td><td></td><td></td></tr>
-                                            <tr><td>8</td><td>02.01</td><td>Hambatan Kelancaran Kegiatan</td><td></td><td></td></tr>
-                                        </tbody>
-                                        <tfoot>
-                                            <tr class="footer">
-                                                <td colspan="3">Jumlah</td>
-                                                <td></td>
-                                                <td></td>
-                                            </tr>
-                                        </tfoot>
-                                    </table>
-                                </div>
-                            </div>
-                            <div id="coso" class="tab-content" style="display: none;">
-                                <div class="table-container">
-                                <h4>Tabel Klasifikasi COSO</h4>
-                                <table  class="table table-striped table-bordered">
-                                <thead>
-                                        <tr>
-                                            <th>No</th>
-                                            <th>Kode</th>
-                                            <th>Uraian</th>
-                                            <th>Jumlah</th>
-                                            <th>%</th>
-                                        </tr>
-                                </thead>
-                                <tbody>
-                                        <tr>
-                                            <td>1</td>
-                                            <td>LP.01</td>
-                                            <td>Komitmen Terhadap Integritas dan Nilai Etika</td>
-                                            <td>-</td>
-                                            <td>-</td>
-                                        </tr>
-                                </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                            <div id="audit" class="tab-content" style="display: none;">
-                                <div class="table-container">
-                                <h4>Tabel Klasifikasi Kode A dan B</h4>
-                                <table  class="table table-striped table-bordered">
-                                <thead>
-                                        <tr>
-                                            <th>No</th>
-                                            <th>Kode</th>
-                                            <th>Uraian</th>
-                                            <th>Jumlah</th>
-                                            <th>%</th>
-                                        </tr>
-                                </thead>
-                                <tbody>
-                                        <tr>
-                                            <td colspan="5"><strong>1. Kriteria Audit Keuangan dengan Kode A meliputi:</strong></td>
-                                        </tr>
-                                        <tr>
-                                            <td>1</td>
-                                            <td>A1</td>
-                                            <td>Finansial atau dapat dinilai dengan uang</td>
-                                            <td>-</td>
-                                            <td>-</td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="5"><strong>2. Kriteria Audit Operasional dengan Kode B meliputi:</strong></td>
-                                        </tr>
-                                        <tr>
-                                            <td>1</td>
-                                            <td>B1</td>
-                                            <td>Kelancaran Pelayanan</td>
-                                            <td>-</td>
-                                            <td>-</td>
-                                        </tr>
-                                </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
                     </div>
 
                     <div class="x_panel tile fixed_height_420 overflow_hidden">
@@ -385,114 +175,56 @@
                             </div>
                             <!-- <hr style="height:2px;border:none;color:lightgrey;background-color:lightgrey;"/> -->
                         </div>
+                        <!-- <div class="tab-container">
+                            <button class="tab-button active" data-tab="temuan">Klasifikasi Temuan</button>
+                            <button class="tab-button" data-tab="penyebab">Klasifikasi Penyebab</button>
+                            <button class="tab-button" data-tab="coso">Klasifikasi COSO</button>
+                            <button class="tab-button" data-tab="audit">Klasifikasi Kode A dan B</button>
+                        </div> -->
+                            <div id="temuan" class="tab-content" style="display: block;">
+                                <div class="x_content">
+                                    <button class="btn btn-success btn-lg" id="exportExcel" onclick="exportTableToExcel('auditTable', 'LHA_Audit')">
+                                        <span class="fa fa-file-excel-o"></span>
+                                    </button>
+                                    
+                                    <h2>Grafik Temuan</h2>
+                                    <canvas id="grafikBulanBerjalan" height="100"></canvas>
+
+                                    <h2>Grafik Temuan s/d Bulan Ini</h2>
+                                    <canvas id="grafikTotalPerKlasifikasi" height="100"></canvas>
+
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="x_panel tile fixed_height_420 overflow_hidden">
+                        <div class="x_title">
+                            <ul class="nav navbar-right panel_toolbox">
+                                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li><!-- 
+                                <li><a class="close-link"><i class="fa fa-close"></i></a></li>  -->
+                            </ul>
+                            <h4>Tabular KK3</h4>
+                            
+                            <div class="clearfix">
+                            </div>
+                            <!-- <hr style="height:2px;border:none;color:lightgrey;background-color:lightgrey;"/> -->
+                        </div>
                             <div class="x_content">
-                            <div class="tab-container">
+                            <!-- <div class="tab-container">
                                 <button class="tab-button active" data-tab="rekomendasi">Klasifikasi Rekomendasi</button>
                                 <button class="tab-button" data-tab="bidang">Bidang Pekerjaan</button>
-                            </div>
+                            </div> -->
                                 <button class="btn btn-success btn-lg" id="exportExcel" onclick="exportTableToExcel('auditTable', 'LHA_Audit')">
                                     <span class="fa fa-file-excel-o"></span>
                                 </button>
-                                <div id="rekomendasi" class="tab-content" style="display: none;">
-                                    <div class="table-container">
-                                        <h3>Tabel 7 Klasifikasi Rekomendasi</h3>
-                                        <table  class="table table-striped table-bordered">
-                                            <thead>
-                                                <tr>
-                                                    <th>No</th>
-                                                    <th>Klasifikasi Rekomendasi</th>
-                                                    <th>Januari</th>
-                                                    <th>%</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr><td>1</td><td>Finansial atau dapat dinilai dengan uang</td><td></td><td></td></tr>
-                                                <tr><td>2</td><td>Kepegawaian</td><td></td><td></td></tr>
-                                                <tr><td>3</td><td>Keputusan pengadilan</td><td></td><td></td></tr>
-                                                <tr><td>4</td><td>Administrasi dan Penegakan Prosedur</td><td></td><td></td></tr>
-                                                <tr><td>5</td><td>Peningkatan Efisiensi dan Efektivitas</td><td></td><td></td></tr>
-                                                <tr><td>6</td><td>Peningkatan Sistem Pengendalian Internal</td><td></td><td></td></tr>
-                                                <tr><td colspan="2"><strong>Jumlah</strong></td><td></td><td></td></tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
                                 <div id="bidang" class="tab-content" style="display: block;">
-                                <?php
-                                    // Daftar nama bulan dalam bahasa Indonesia
-                                    $bulan_list = [
-                                        '01' => 'Januari', '02' => 'Februari', '03' => 'Maret', '04' => 'April',
-                                        '05' => 'Mei', '06' => 'Juni', '07' => 'Juli', '08' => 'Agustus',
-                                        '09' => 'September', '10' => 'Oktober', '11' => 'November', '12' => 'Desember'
-                                    ];
-
-                                    // Inisialisasi array data per bidang pekerjaan
-                                    $rekapitulasi = [];
-                                    $total_per_bulan = array_fill_keys(array_keys($bulan_list), 0);
-                                    $total_keseluruhan = 0;
-
-                                    // Proses data hasil query
-                                    foreach ($record3 as $row) {
-                                        $bidang = $row['bidangtemuan_nama'];
-                                        $bulan = date('m', strtotime($row['tanggal'])); // Ambil bulan dari tanggal
-                                        $jumlah = $row['jumlah_kemunculan'];
-
-                                        // Buat array default jika bidang pekerjaan belum ada
-                                        if (!isset($rekapitulasi[$bidang])) {
-                                            $rekapitulasi[$bidang] = array_fill_keys(array_keys($bulan_list), 0);
-                                            $rekapitulasi[$bidang]['total'] = 0;
-                                        }
-
-                                        // Simpan jumlah temuan dalam bulan yang sesuai
-                                        $rekapitulasi[$bidang][$bulan] += $jumlah;
-                                        $rekapitulasi[$bidang]['total'] += $jumlah;
-
-                                        // Tambahkan ke total bulanan
-                                        $total_per_bulan[$bulan] += $jumlah;
-                                    }
-
-                                    // Hitung total keseluruhan
-                                    $total_keseluruhan = array_sum($total_per_bulan);
-                                ?>
-                                    <h3>Tabel Bidang Pekerjaan</h3>
-                                    <table class="table table-striped table-bordered datatable">
-                                        <thead>
-                                            <tr>
-                                                <th rowspan="2">No</th>
-                                                <th rowspan="2">Bidang Pekerjaan</th>
-                                                <?php foreach ($bulan_list as $bulan) : ?>
-                                                    <th colspan="2"><?= $bulan ?></th>
-                                                <?php endforeach; ?>
-                                            </tr>
-                                            <tr>
-                                                <?php foreach ($bulan_list as $bulan) : ?>
-                                                    <th>Jumlah</th>
-                                                    <th>%</th>
-                                                <?php endforeach; ?>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php $no = 1; foreach ($rekapitulasi as $bidang => $data) : ?>
-                                                <tr>
-                                                    <td><?= $no++ ?></td>
-                                                    <td><?= $bidang ?></td>
-                                                    <?php foreach ($bulan_list as $key => $nama_bulan) : ?>
-                                                        <td><?= $data[$key] ?></td>
-                                                        <td><?= ($total_per_bulan[$key] > 0) ? round(($data[$key] / $total_per_bulan[$key]) * 100, 2) . "%" : "0%" ?></td>
-                                                    <?php endforeach; ?>
-                                                </tr>
-                                            <?php endforeach; ?>
-                                        </tbody>
-                                        <tfoot>
-                                            <tr>
-                                                <th colspan="2">Jumlah</th>
-                                                <?php foreach ($bulan_list as $key => $nama_bulan) : ?>
-                                                    <th><?= $total_per_bulan[$key] ?></th>
-                                                    <th><?= ($total_per_bulan[$key] > 0) ? "100%" : "-" ?></th>
-                                                <?php endforeach; ?>
-                                            </tr>
-                                        </tfoot>
-                                    </table>
+                                
+                                    <h2>Grafik Bidang Pekerjaan</h2>
+                                    <canvas id="grafikBidangBulanBerjalan" height="100"></canvas>
+                                    <h2>Grafik Bidang Pekerjaan s/d Bulan Ini</h2>
+                                    <canvas id="grafikBidangKumulatif" height="100"></canvas>
                                 </div>
                             </div>
                     </div>
@@ -503,155 +235,24 @@
                                 <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li><!-- 
                                 <li><a class="close-link"><i class="fa fa-close"></i></a></li>  -->
                             </ul>
-                            <h4>Tabular KK1</h4>
+                            <h4>Tabular KK4</h4>
                             
                             <div class="clearfix">
                             </div>
                             <!-- <hr style="height:2px;border:none;color:lightgrey;background-color:lightgrey;"/> -->
                         </div>
                             <div class="x_content">
-                            <div class="tab-container">
+                            <!-- <div class="tab-container">
                                 <button class="tab-button active" data-tab="kegiatan">Kegiatan DSPI</button>
                                 <button class="tab-button" data-tab="lha">Jumlah LHA</button>
-                            </div>
+                            </div> -->
                                 <button class="btn btn-success btn-lg" id="exportExcel" onclick="exportTableToExcel('auditTable', 'LHA_Audit')">
                                     <span class="fa fa-file-excel-o"></span>
                                 </button>
-                                <div id="kegiatan" class="tab-content" style="display: block;">
-                                    <div class="table-container">
-                                    <h3>Tabel Audit</h3>
-                                    <?php
-                                        $bulan_list = [
-                                            '01' => 'Januari', '02' => 'Februari', '03' => 'Maret', 
-                                            '04' => 'April', '05' => 'Mei', '06' => 'Juni',
-                                            '07' => 'Juli', '08' => 'Agustus', '09' => 'September', 
-                                            '10' => 'Oktober', '11' => 'November', '12' => 'Desember'
-                                        ];
-
-                                        $jenis_audit_list = ['Rutin' => 'Audit Rutin (Operasional)', 
-                                                            'Khusus' => 'Audit Dengan Tujuan Tertentu (Audit Khusus)', 
-                                                            'Tematik' => 'Evaluasi/Audit Tematik'];
-
-                                        // Buat array kosong untuk menampung data yang diformat ulang
-                                        $data_audit = [];
-                                        $total_bulanan = [];
-
-                                        // Format ulang hasil query menjadi array yang lebih mudah diakses di view
-                                        foreach ($record4 as $row) {
-                                            $bulan = substr($row['bulan'], 5, 2); // Ambil MM dari YYYY-MM
-                                            $jenis_audit = $row['jenis_audit'];
-
-                                            // Simpan data berdasarkan bulan dan jenis audit
-                                            $data_audit[$bulan][$jenis_audit] = [
-                                                'jumlah_pemeriksaan' => $row['jumlah_pemeriksaan'],
-                                                'jumlah_pkpt' => $row['jumlah_pkpt']
-                                            ];
-
-                                            // Hitung total per bulan
-                                            if (!isset($total_bulanan[$bulan])) {
-                                                $total_bulanan[$bulan] = ['jumlah_pemeriksaan' => 0, 'jumlah_pkpt' => 0];
-                                            }
-                                            $total_bulanan[$bulan]['jumlah_pemeriksaan'] += $row['jumlah_pemeriksaan'];
-                                            $total_bulanan[$bulan]['jumlah_pkpt'] += $row['jumlah_pkpt'];
-                                        }
-                                        ?>
-
-                                        <table class="table table-striped table-bordered datatable">
-                                            <thead>
-                                                <tr>
-                                                    <th rowspan="2">No</th>
-                                                    <th rowspan="2">Uraian</th>
-                                                    <?php foreach ($bulan_list as $nama_bulan) { ?>
-                                                        <th colspan="3"><?php echo $nama_bulan; ?></th>
-                                                    <?php } ?>
-                                                </tr>
-                                                <tr>
-                                                    <?php foreach ($bulan_list as $nama_bulan) { ?>
-                                                        <th>Real</th>
-                                                        <th>PKPT</th>
-                                                        <th>%</th>
-                                                    <?php } ?>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <?php $nomor = 1;
-                                                foreach ($jenis_audit_list as $jenis_audit => $label) { ?>
-                                                    <tr>
-                                                        <td><?php echo $nomor++; ?>.</td>
-                                                        <td><?php echo $label; ?></td>
-                                                        <?php foreach ($bulan_list as $periode => $nama_bulan) {
-                                                            $real = $data_audit[$periode][$jenis_audit]['jumlah_pemeriksaan'] ?? 0;
-                                                            $pkpt = $data_audit[$periode][$jenis_audit]['jumlah_pkpt'] ?? 0;
-                                                            $persentase = ($pkpt > 0) ? round(($real / $pkpt) * 100, 2) : 0;
-                                                        ?>
-                                                            <td><?php echo $real; ?></td>
-                                                            <td><?php echo $pkpt; ?></td>
-                                                            <td><?php echo $persentase . "%"; ?></td>
-                                                        <?php } ?>
-                                                    </tr>
-                                                <?php } ?>
-
-                                                <!-- Baris Total -->
-                                                <tfoot>
-                                                    <tr>
-                                                        <td colspan="2"><strong>Jumlah</strong></td>
-                                                        <?php foreach ($bulan_list as $periode => $nama_bulan) {
-                                                            $total_real = $total_bulanan[$periode]['jumlah_pemeriksaan'] ?? 0;
-                                                            $total_pkpt = $total_bulanan[$periode]['jumlah_pkpt'] ?? 0;
-                                                            $total_persentase = ($total_pkpt > 0) ? round(($total_real / $total_pkpt) * 100, 2) : 0;
-                                                        ?>
-                                                            <td><strong><?php echo $total_real; ?></strong></td>
-                                                            <td><strong><?php echo $total_pkpt; ?></strong></td>
-                                                            <td><strong><?php echo $total_persentase . "%"; ?></strong></td>
-                                                        <?php } ?>
-                                                    </tr>
-                                                </tfoot>
-                                            </tbody>
-                                        </table>
-
-
-
-                                    </div>
-                                </div>
-                                <div id="lha" class="tab-content" style="display: none;">
-                                <h3>Tabel 2 Laporan Hasil Audit (LHA) yang Terbit</h3>
-                                <table  class="table table-striped table-bordered">
-                                        <thead>
-                                            <tr>
-                                                <th rowspan="2">No</th>
-                                                <th rowspan="2">Uraian</th>
-                                                <th colspan="3">Januari</th>
-                                            </tr>
-                                            <tr>
-                                                <th>LHA</th>
-                                                <th>Temuan</th>
-                                                <th>Rekomendasi</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>1</td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                            </tr>
-                                            <tr>
-                                                <td>2</td>
-                                                <td>LHA Terbit (Audit Tahun 2025)</td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                            </tr>
-                                            <tr>
-                                                <td colspan="2">Jumlah</td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
+                                <h2>Grafik Pelaksanaan Kegiatan Divisi SPI</h2>
+                                <canvas id="grafikPkptBulanIni" height="100"></canvas>
+                                <h2>Grafik Pelaksanaan Kegiatan Divisi SPI s/d Bulan Ini</h2>
+                                <canvas id="grafikPkptKumulatif" height="100"></canvas>
                             </div>
                     </div>
                 </div>
@@ -754,14 +355,377 @@
         
     });
     </script>
-    <script type="text/javascript">
-    $(document).ready(function() {
-            $('.tab-button').click(function() {
-                var tab = $(this).data('tab');
-                $('.tab-button').removeClass('active');
-                $(this).addClass('active');
-                $('.tab-content').hide();
-                $('#' + tab).show();
-            });
+<script>
+    //GRAFIK 2
+    // Ambil data dari PHP
+    const dataBulanBerjalan = <?= json_encode($bulan_berjalan); ?>;
+    const dataKumulatif = <?= json_encode($kumulatif); ?>;
+
+    function getRandomColor() {
+    const r = Math.floor(Math.random() * 200);
+    const g = Math.floor(Math.random() * 200);
+    const b = Math.floor(Math.random() * 200);
+    return `rgba(${r}, ${g}, ${b}, 0.7)`;
+    }
+    
+    
+    function prosesDataTotalSampaiBulanIni(data) {
+        const bulanSekarang = new Date().getMonth(); // 0 = Jan
+        const tahunSekarang = new Date().getFullYear();
+        const labelBulanIni = 'Sampai dengan Bulan ' + new Date(tahunSekarang, bulanSekarang, 1)
+            .toLocaleDateString('id-ID', { month: 'long' });
+
+        const dataKlasifikasi = {};
+
+        data.forEach(item => {
+            const tgl = new Date(item.tanggal);
+            const bulan = tgl.getMonth();
+            const tahun = tgl.getFullYear();
+
+            // ✅ Hitung semua data sampai bulan ini
+            if (tahun === tahunSekarang && bulan <= bulanSekarang) {
+                const klasifikasi = item.klasifikasi_temuan;
+                const jumlah = parseInt(item.jumlah_kemunculan);
+
+                if (!dataKlasifikasi[klasifikasi]) {
+                    dataKlasifikasi[klasifikasi] = 0;
+                }
+
+                dataKlasifikasi[klasifikasi] += jumlah;
+            }
         });
-    </script>
+
+        const datasets = Object.entries(dataKlasifikasi).map(([klasifikasi, jumlah]) => {
+            const warna = getRandomColor();
+            return {
+                label: klasifikasi,
+                data: [jumlah], // semua jumlah dalam satu bar (bulan ini)
+                backgroundColor: warna,
+                borderColor: warna,
+                borderWidth: 1
+            };
+        });
+
+        return {
+            labels: [labelBulanIni],
+            datasets
+        };
+    }
+
+
+    function prosesData(data) {
+    const labelsSet = new Set();
+    const datasetMap = {};
+
+    data.forEach(item => {
+        // Format tanggal konsisten
+        const tanggal = new Date(item.tanggal);
+        const labelRaw = tanggal.getFullYear() + '-' + (tanggal.getMonth() + 1).toString().padStart(2, '0');
+        const labelDisplay = tanggal.toLocaleDateString('id-ID', { day: '2-digit', month: 'long' });
+        
+
+        labelsSet.add(labelRaw);
+
+        const klasifikasi = item.klasifikasi_temuan;
+
+        if (!datasetMap[klasifikasi]) {
+            datasetMap[klasifikasi] = {};
+        }
+
+        if (!datasetMap[klasifikasi][labelRaw]) {
+            datasetMap[klasifikasi][labelRaw] = 0;
+        }
+
+        datasetMap[klasifikasi][labelRaw] += parseInt(item.jumlah_kemunculan);
+    });
+
+    const sortedLabels = Array.from(labelsSet).sort();
+    const labelsDisplay = sortedLabels.map(labelRaw => {
+    const [year, month] = labelRaw.split('-');
+    const tanggal = new Date(`${year}-${month}-01`);
+    return 'Bulan ' + tanggal.toLocaleDateString('id-ID', { month: 'long' });
+    });
+
+    const datasets = Object.keys(datasetMap).map(klasifikasi => {
+        const color = getRandomColor();
+        return {
+            label: klasifikasi,
+            data: sortedLabels.map(lbl => datasetMap[klasifikasi][lbl] || 0),
+            backgroundColor: color,
+            borderColor: color,
+            borderWidth: 1
+        };
+    });
+
+
+    return { labels: labelsDisplay, datasets };
+}
+
+    function buatChart(canvasId, chartData, chartTitle) {
+        const ctx = document.getElementById(canvasId).getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: chartData.labels,
+                datasets: chartData.datasets
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: chartTitle
+                    },
+                    legend: {
+                        position: 'bottom'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    const chartDataBulanBerjalan = prosesData(dataBulanBerjalan);
+    buatChart('grafikBulanBerjalan', chartDataBulanBerjalan, 'Temuan Bulan Berjalan');
+
+    const chartDataKumulatif = prosesDataTotalSampaiBulanIni(dataKumulatif);
+    buatChart('grafikTotalPerKlasifikasi', chartDataKumulatif, 'Temuan Kumulatif (Jan - Sekarang)');
+
+</script>
+
+
+<script>
+    //GRAFIK 3
+    const dataBidangBulan = <?= json_encode($record_bidang_bulan); ?>;
+    const dataBidangKumulatif = <?= json_encode($record_bidang_kumulatif); ?>;
+
+    function getRandomColor() {
+        const r = Math.floor(Math.random() * 156) + 100;
+        const g = Math.floor(Math.random() * 156) + 100;
+        const b = Math.floor(Math.random() * 156) + 100;
+        return `rgba(${r}, ${g}, ${b}, 0.8)`;
+    }
+
+    function prosesDataKumulatif(data) {
+        const bulanSekarang = 'Sampai Dengan Bulan ' + new Date().toLocaleDateString('id-ID', { month: 'long' });
+
+        const datasetMap = {};
+
+        data.forEach(item => {
+            const nama = item.bidangtemuan_nama;
+            const jumlah = parseInt(item.jumlah_kemunculan);
+
+            if (!datasetMap[nama]) {
+                datasetMap[nama] = 0;
+            }
+
+            datasetMap[nama] += jumlah;
+        });
+
+        const datasets = Object.keys(datasetMap).map(nama => {
+            return {
+                label: nama,
+                data: [datasetMap[nama]], // hanya 1 nilai karena hanya 1 bulan di sumbu X
+                backgroundColor: getRandomColor(),
+                borderWidth: 1
+            };
+        });
+
+        return {
+            labels: [bulanSekarang], // hanya bulan berjalan yang ditampilkan
+            datasets
+        };
+    }
+
+    function prosesData(data, gunakanLabelBulan = false) {
+        const labelsSet = new Set();
+        const datasetMap = {};
+
+        data.forEach(item => {
+            const tanggal = new Date(item.tanggal);
+            const label = 'Bulan ' + tanggal.toLocaleDateString('id-ID', { month: 'long' });
+                
+            labelsSet.add(label);
+
+            if (!datasetMap[item.bidangtemuan_nama]) {
+                datasetMap[item.bidangtemuan_nama] = {};
+            }
+
+            if (!datasetMap[item.bidangtemuan_nama][label]) {
+                datasetMap[item.bidangtemuan_nama][label] = 0;
+            }
+
+            datasetMap[item.bidangtemuan_nama][label] += parseInt(item.jumlah_kemunculan);
+        });
+
+        const labels = Array.from(labelsSet);
+        const datasets = Object.keys(datasetMap).map(nama => {
+            return {
+                label: nama,
+                data: labels.map(lbl => datasetMap[nama][lbl] || 0),
+                backgroundColor: getRandomColor(),
+                borderWidth: 1
+            };
+        });
+
+        return { labels, datasets };
+    }
+
+
+    function buatChart(canvasId, chartData, chartTitle) {
+        const ctx = document.getElementById(canvasId).getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: chartData.labels,
+                datasets: chartData.datasets
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: chartTitle
+                    },
+                    legend: {
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: {
+                            maxRotation: 0,
+                            minRotation: 0
+                        }
+                    },
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    const chartDataBidangBulan = prosesData(dataBidangBulan, false);
+    const chartDataBidangKumulatif = prosesDataKumulatif(dataBidangKumulatif);
+
+
+    buatChart('grafikBidangBulanBerjalan', chartDataBidangBulan, 'Grafik Temuan per Bidang - Bulan Berjalan');
+    buatChart('grafikBidangKumulatif', chartDataBidangKumulatif, 'Grafik Temuan per Bidang - Jan s/d Bulan Ini');
+</script>
+
+    <!-- <script type="text/javascript">
+        $(document).ready(function() {
+                $('.tab-button').click(function() {
+                    var tab = $(this).data('tab');
+                    $('.tab-button').removeClass('active');
+                    $(this).addClass('active');
+                    $('.tab-content').hide();
+                    $('#' + tab).show();
+                });
+            });
+    </script> -->
+<script>
+    const dataPkpt = <?= json_encode($record4); ?>;
+
+    function getRandomColor() {
+        const r = Math.floor(Math.random() * 255);
+        const g = Math.floor(Math.random() * 255);
+        const b = Math.floor(Math.random() * 255);
+        return `rgba(${r}, ${g}, ${b}, 0.7)`;
+    }
+
+    function prosesPkptBulanIni(data) {
+    const jenisAudit = ['Rutin', 'Khusus', 'Tematik'];
+    const bulanSekarang = new Date().toLocaleDateString('id-ID', { month: 'long' });
+    const labelTambahan = ` (Bulan ${bulanSekarang})`;
+    const kategori = [`PKPT${labelTambahan}`, `Realisasi${labelTambahan}`];
+    const datasets = [];
+
+    jenisAudit.forEach(jenis => {
+        const warna = getRandomColor();
+        const pkptData = data.find(item => item.jenis_audit === jenis);
+
+        datasets.push({
+            label: jenis,
+            backgroundColor: warna,
+            data: [
+                pkptData ? pkptData.jumlah_pkpt : 0,        // Untuk PKPT
+                pkptData ? pkptData.jumlah_pemeriksaan : 0  // Untuk Realisasi
+            ]
+        });
+    });
+
+    return {
+        labels: kategori, // PKPT dan Realisasi di sumbu X
+        datasets: datasets
+    };
+}
+
+
+function prosesPkptKumulatif(data) {
+    const jenisAudit = ['Rutin', 'Khusus', 'Tematik'];
+    const bulanSekarang = new Date().toLocaleDateString('id-ID', { month: 'long' });
+    const labelTambahan = ` (Sampai dengan Bulan ${bulanSekarang})`;
+    const kategori = [`PKPT${labelTambahan}`, `Realisasi${labelTambahan}`];
+    const datasets = [];
+
+    jenisAudit.forEach(jenis => {
+        const warna = getRandomColor();
+
+        // Filter data untuk jenis audit tersebut dan hitung total kumulatif
+        const dataAudit = data.filter(item => item.jenis_audit === jenis);
+        const totalPkpt = dataAudit.reduce((sum, item) => sum + parseInt(item.jumlah_pkpt), 0);
+        const totalPemeriksaan = dataAudit.reduce((sum, item) => sum + parseInt(item.jumlah_pemeriksaan), 0);
+
+        datasets.push({
+            label: jenis,
+            backgroundColor: warna,
+            data: [totalPkpt, totalPemeriksaan]
+        });
+    });
+
+    return {
+        labels: kategori,
+        datasets: datasets
+    };
+}
+
+
+    function buatChart(canvasId, chartData, chartTitle) {
+        const ctx = document.getElementById(canvasId).getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: chartData,
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: chartTitle
+                    },
+                    legend: {
+                        position: 'bottom'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                barPercentage: 0.5,
+                categoryPercentage: 0.6
+            }
+        });
+    }
+
+    const chartPkptBulanIni = prosesPkptBulanIni(dataPkpt);
+    const chartPkptKumulatif = prosesPkptKumulatif(dataPkpt);
+
+    buatChart('grafikPkptBulanIni', chartPkptBulanIni, 'PKPT & Realisasi Bulan Berjalan');
+    buatChart('grafikPkptKumulatif', chartPkptKumulatif, 'Jumlah PKPT Jan - Sekarang');
+</script>
