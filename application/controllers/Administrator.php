@@ -76,14 +76,14 @@ class Administrator extends CI_Controller {
 
             // Tentukan tabel dan kolom yang sesuai
 			if ($objek === "divisi") {
-				$tableName = "tb_divisi";
-				$columns = ["id" => "master_bagian_id", "name" => "master_bagian_nama"];
+				$tableName = "tb_unit";
+				$columns = ["id" => "unit_id", "name" => "unit_nama"];
 			} elseif ($objek === "regional") {
 				$tableName = "tb_unit";
 				$columns = ["id" => "unit_id", "name" => "unit_nama"];
 			} elseif ($objek === "anper") {
-				$tableName = "tb_anper";
-				$columns = ["id" => "anper_id", "name" => "anper_nama"];
+				$tableName = "tb_unit";
+				$columns = ["id" => "unit_id", "name" => "unit_nama"];
 			}
 
             if ($tableName) {        
