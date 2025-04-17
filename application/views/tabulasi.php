@@ -519,98 +519,112 @@
                                 </button>
                                 <div id="kegiatan" class="tab-content" style="display: block;">
                                     <div class="table-container">
-                                    <h3>Tabel Audit</h3>
-                                    <?php
-                                        $bulan_list = [
-                                            '01' => 'Januari', '02' => 'Februari', '03' => 'Maret', 
-                                            '04' => 'April', '05' => 'Mei', '06' => 'Juni',
-                                            '07' => 'Juli', '08' => 'Agustus', '09' => 'September', 
-                                            '10' => 'Oktober', '11' => 'November', '12' => 'Desember'
-                                        ];
-
-                                        $jenis_audit_list = ['Rutin' => 'Audit Rutin (Operasional)', 
-                                                            'Khusus' => 'Audit Dengan Tujuan Tertentu (Audit Khusus)', 
-                                                            'Tematik' => 'Evaluasi/Audit Tematik'];
-
-                                        // Buat array kosong untuk menampung data yang diformat ulang
-                                        $data_audit = [];
-                                        $total_bulanan = [];
-
-                                        // Format ulang hasil query menjadi array yang lebih mudah diakses di view
-                                        foreach ($record4 as $row) {
-                                            $bulan = substr($row['bulan'], 5, 2); // Ambil MM dari YYYY-MM
-                                            $jenis_audit = $row['jenis_audit'];
-
-                                            // Simpan data berdasarkan bulan dan jenis audit
-                                            $data_audit[$bulan][$jenis_audit] = [
-                                                'jumlah_pemeriksaan' => $row['jumlah_pemeriksaan'],
-                                                'jumlah_pkpt' => $row['jumlah_pkpt']
+                                        <h3>Tabel Audit</h3>
+                                        <?php
+                                            $bulan_list = [
+                                                '01' => 'Januari', '02' => 'Februari', '03' => 'Maret', 
+                                                '04' => 'April', '05' => 'Mei', '06' => 'Juni',
+                                                '07' => 'Juli', '08' => 'Agustus', '09' => 'September', 
+                                                '10' => 'Oktober', '11' => 'November', '12' => 'Desember'
                                             ];
 
-                                            // Hitung total per bulan
-                                            if (!isset($total_bulanan[$bulan])) {
-                                                $total_bulanan[$bulan] = ['jumlah_pemeriksaan' => 0, 'jumlah_pkpt' => 0];
+                                            $jenis_audit_list = ['Rutin' => 'Audit Rutin (Operasional)', 
+                                                                'Khusus' => 'Audit Dengan Tujuan Tertentu (Audit Khusus)', 
+                                                                'Tematik' => 'Evaluasi/Audit Tematik'];
+
+                                            // Buat array kosong untuk menampung data yang diformat ulang
+                                            $data_audit = [];
+                                            $total_bulanan = [];
+
+                                            // Format ulang hasil query menjadi array yang lebih mudah diakses di view
+                                            foreach ($record4 as $row) {
+                                                $bulan = substr($row['bulan'], 5, 2); // Ambil MM dari YYYY-MM
+                                                $jenis_audit = $row['jenis_audit'];
+
+                                                // Simpan data berdasarkan bulan dan jenis audit
+                                                $data_audit[$bulan][$jenis_audit] = [
+                                                    'jumlah_pemeriksaan' => $row['jumlah_pemeriksaan'],
+                                                    'jumlah_pkpt' => $row['jumlah_pkpt']
+                                                ];
+
+                                                // Hitung total per bulan
+                                                if (!isset($total_bulanan[$bulan])) {
+                                                    $total_bulanan[$bulan] = ['jumlah_pemeriksaan' => 0, 'jumlah_pkpt' => 0];
+                                                }
+                                                $total_bulanan[$bulan]['jumlah_pemeriksaan'] += $row['jumlah_pemeriksaan'];
+                                                $total_bulanan[$bulan]['jumlah_pkpt'] += $row['jumlah_pkpt'];
                                             }
-                                            $total_bulanan[$bulan]['jumlah_pemeriksaan'] += $row['jumlah_pemeriksaan'];
-                                            $total_bulanan[$bulan]['jumlah_pkpt'] += $row['jumlah_pkpt'];
-                                        }
+
+                                            // Menampilkan tabel
                                         ?>
-
-                                        <table class="table table-striped table-bordered datatable">
-                                            <thead>
-                                                <tr>
-                                                    <th rowspan="2">No</th>
-                                                    <th rowspan="2">Uraian</th>
-                                                    <?php foreach ($bulan_list as $nama_bulan) { ?>
-                                                        <th colspan="3"><?php echo $nama_bulan; ?></th>
-                                                    <?php } ?>
-                                                </tr>
-                                                <tr>
-                                                    <?php foreach ($bulan_list as $nama_bulan) { ?>
-                                                        <th>Real</th>
-                                                        <th>PKPT</th>
-                                                        <th>%</th>
-                                                    <?php } ?>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <?php $nomor = 1;
-                                                foreach ($jenis_audit_list as $jenis_audit => $label) { ?>
+                                            <table class="table table-striped table-bordered datatable">
+                                                <thead>
                                                     <tr>
-                                                        <td><?php echo $nomor++; ?>.</td>
-                                                        <td><?php echo $label; ?></td>
-                                                        <?php foreach ($bulan_list as $periode => $nama_bulan) {
-                                                            $real = $data_audit[$periode][$jenis_audit]['jumlah_pemeriksaan'] ?? 0;
-                                                            $pkpt = $data_audit[$periode][$jenis_audit]['jumlah_pkpt'] ?? 0;
-                                                            $persentase = ($pkpt > 0) ? round(($real / $pkpt) * 100, 2) : 0;
-                                                        ?>
-                                                            <td><?php echo $real; ?></td>
-                                                            <td><?php echo $pkpt; ?></td>
-                                                            <td><?php echo $persentase . "%"; ?></td>
+                                                        <th rowspan="2">No</th>
+                                                        <th rowspan="2">Uraian</th>
+                                                        <?php foreach ($bulan_list as $nama_bulan) { ?>
+                                                            <th colspan="3"><?php echo $nama_bulan; ?></th>
                                                         <?php } ?>
                                                     </tr>
-                                                <?php } ?>
-
-                                                <!-- Baris Total -->
-                                                <tfoot>
                                                     <tr>
-                                                        <td colspan="2"><strong>Jumlah</strong></td>
-                                                        <?php foreach ($bulan_list as $periode => $nama_bulan) {
-                                                            $total_real = $total_bulanan[$periode]['jumlah_pemeriksaan'] ?? 0;
-                                                            $total_pkpt = $total_bulanan[$periode]['jumlah_pkpt'] ?? 0;
-                                                            $total_persentase = ($total_pkpt > 0) ? round(($total_real / $total_pkpt) * 100, 2) : 0;
-                                                        ?>
-                                                            <td><strong><?php echo $total_real; ?></strong></td>
-                                                            <td><strong><?php echo $total_pkpt; ?></strong></td>
-                                                            <td><strong><?php echo $total_persentase . "%"; ?></strong></td>
+                                                        <?php foreach ($bulan_list as $nama_bulan) { ?>
+                                                            <th>Real</th>
+                                                            <th>PKPT</th>
+                                                            <th>%</th>
                                                         <?php } ?>
                                                     </tr>
-                                                </tfoot>
-                                            </tbody>
-                                        </table>
+                                                </thead>
+                                                <tbody>
+                                                    <?php $nomor = 1; 
+                                                    foreach ($jenis_audit_list as $jenis_audit => $label) { ?>
+                                                        <tr>
+                                                            <td><?php echo $nomor++; ?>.</td>
+                                                            <td><?php echo $label; ?></td>
+                                                            <?php foreach ($bulan_list as $periode => $nama_bulan) {
+                                                                // Cek apakah data ada untuk bulan ini, jika tidak, tampilkan 0
+                                                                $real = $data_audit[$periode][$jenis_audit]['jumlah_pemeriksaan'] ?? 0;
+                                                                $pkpt = $data_audit[$periode][$jenis_audit]['jumlah_pkpt'] ?? 0;
+                                                                $persentase = ($pkpt > 0) ? round(($real / $pkpt) * 100, 2) : 0;
+                                                            ?>
+                                                                <td><?php echo $real; ?></td>
+                                                                <td><?php echo $pkpt; ?></td>
+                                                                <td><?php echo $persentase . "%"; ?></td>
+                                                            <?php } ?>
+                                                        </tr>
+                                                    <?php } ?>
 
+                                                    <!-- Baris Total -->
+                                                    <tfoot>
+                                                        <tr>
+                                                            <td colspan="2"><strong>Jumlah</strong></td>
+                                                            <?php 
+                                                            foreach ($bulan_list as $periode => $nama_bulan) {
+                                                                $total_real = $total_bulanan[$periode]['jumlah_pemeriksaan'] ?? 0;
+                                                                $total_pkpt = $total_bulanan[$periode]['jumlah_pkpt'] ?? 0;
 
+                                                                // Hitung rata-rata persentase dari masing-masing jenis audit
+                                                                $jumlah_persen = 0;
+                                                                $jumlah_dibagi = 0;
 
+                                                                foreach ($jenis_audit_list as $jenis_audit => $label) {
+                                                                    $real = $data_audit[$periode][$jenis_audit]['jumlah_pemeriksaan'] ?? 0;
+                                                                    $pkpt = $data_audit[$periode][$jenis_audit]['jumlah_pkpt'] ?? 0;
+                                                                    if ($pkpt > 0) {
+                                                                        $jumlah_persen += ($real / $pkpt) * 100;
+                                                                        $jumlah_dibagi++;
+                                                                    }
+                                                                }
+
+                                                                $rata_rata_persen = ($jumlah_dibagi > 0) ? round($jumlah_persen / $jumlah_dibagi, 2) : 0;
+                                                            ?>
+                                                                <td><strong><?php echo $total_real; ?></strong></td>
+                                                                <td><strong><?php echo $total_pkpt; ?></strong></td>
+                                                                <td><strong><?php echo $rata_rata_persen; ?>%</strong></td>
+                                                            <?php } ?>
+                                                        </tr>
+                                                    </tfoot>
+                                                </tbody>
+                                            </table>
                                     </div>
                                 </div>
                                 <div id="lha" class="tab-content" style="display: none;">

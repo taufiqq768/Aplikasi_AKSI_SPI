@@ -53,31 +53,70 @@ class Tabulasi extends CI_Controller {
                     AND DATE(t2.temuan_tgl) = t1.temuan_tgl
                 GROUP BY t1.temuan_tgl, bt.bidangtemuan_nama
                 ORDER BY t1.temuan_tgl, bt.bidangtemuan_nama")->result_array();
+            
+            //Record4
             $data['record4'] = $this->db->query("WITH Bulan AS (
-                SELECT DISTINCT DATE_FORMAT(pemeriksaan_tgl_mulai, '%Y-%m') AS periode
-                FROM tb_pemeriksaan
-                WHERE YEAR(pemeriksaan_tgl_mulai) = YEAR(CURDATE()) -- Hanya ambil bulan yang ada di data
+                SELECT 
+                    DATE_FORMAT(DATE_ADD(DATE_FORMAT(CURDATE(), '%Y-01-01'), INTERVAL (n.n) MONTH), '%Y-%m') AS periode
+                FROM 
+                    (SELECT 0 AS n UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL 
+                    SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL 
+                    SELECT 8 UNION ALL SELECT 9 UNION ALL SELECT 10 UNION ALL SELECT 11) AS n
             ),
             JenisAudit AS (
-                SELECT 'Rutin' AS jenis_audit UNION ALL
-                SELECT 'Khusus' UNION ALL
+                SELECT 'Rutin' AS jenis_audit
+                UNION ALL
+                SELECT 'Khusus'
+                UNION ALL
                 SELECT 'Tematik'
+            ),
+            PKPT_PerBulan AS (
+                SELECT 
+                    CONCAT(tahun, '-', 
+                        LPAD(
+                            CASE 
+                                WHEN bulan = 'Januari' THEN 1
+                                WHEN bulan = 'Februari' THEN 2
+                                WHEN bulan = 'Maret' THEN 3
+                                WHEN bulan = 'April' THEN 4
+                                WHEN bulan = 'Mei' THEN 5
+                                WHEN bulan = 'Juni' THEN 6
+                                WHEN bulan = 'Juli' THEN 7
+                                WHEN bulan = 'Agustus' THEN 8
+                                WHEN bulan = 'September' THEN 9
+                                WHEN bulan = 'Oktober' THEN 10
+                                WHEN bulan = 'November' THEN 11
+                                WHEN bulan = 'Desember' THEN 12
+                            END, 
+                        2, '0')
+                    ) AS periode,
+                    jenis_audit,
+                    jumlah
+                FROM tb_pkpt
+                WHERE tahun = YEAR(CURDATE())
+            ),
+            Agg_PKPT AS (
+                SELECT periode, jenis_audit, SUM(jumlah) AS jumlah_pkpt
+                FROM PKPT_PerBulan
+                GROUP BY periode, jenis_audit
+            ),
+            Agg_Pemeriksaan AS (
+                SELECT DATE_FORMAT(pemeriksaan_tgl_mulai, '%Y-%m') AS periode, pemeriksaan_jenis AS jenis_audit, COUNT(DISTINCT pemeriksaan_id) AS jumlah_pemeriksaan
+                FROM tb_pemeriksaan
+                WHERE pemeriksaan_pkpt = 'pkpt' 
+                AND YEAR(pemeriksaan_tgl_mulai) = YEAR(CURDATE())
+                GROUP BY periode, jenis_audit
             )
             SELECT 
                 b.periode AS bulan,
                 j.jenis_audit,
-                COALESCE(SUM(p.jumlah), 0) AS jumlah_pkpt,
-                COALESCE(COUNT(DISTINCT pe.pemeriksaan_id), 0) AS jumlah_pemeriksaan
+                COALESCE(pkpt.jumlah_pkpt, 0) AS jumlah_pkpt,
+                COALESCE(pm.jumlah_pemeriksaan, 0) AS jumlah_pemeriksaan
             FROM Bulan b
             CROSS JOIN JenisAudit j
-            LEFT JOIN tb_pkpt p ON j.jenis_audit = p.jenis_audit
-            LEFT JOIN tb_pemeriksaan pe 
-                ON j.jenis_audit = pe.pemeriksaan_jenis 
-                AND pe.pemeriksaan_pkpt = 'pkpt' 
-                AND DATE_FORMAT(pe.pemeriksaan_tgl_mulai, '%Y-%m') = b.periode
-            GROUP BY b.periode, j.jenis_audit
-            ORDER BY b.periode, FIELD(j.jenis_audit, 'Rutin', 'Khusus', 'Tematik')")->result_array();
-           
+            LEFT JOIN Agg_PKPT pkpt ON pkpt.periode = b.periode AND pkpt.jenis_audit = j.jenis_audit
+            LEFT JOIN Agg_Pemeriksaan pm ON pm.periode = b.periode AND pm.jenis_audit = j.jenis_audit
+            ORDER BY b.periode, FIELD(j.jenis_audit, 'Rutin', 'Khusus', 'Tematik')")->result_array();            
 
             $this->template->load('template','tabulasi',$data);
         }

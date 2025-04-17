@@ -641,30 +641,45 @@
 
     function prosesPkptBulanIni(data) {
     const jenisAudit = ['Rutin', 'Khusus', 'Tematik'];
-    const bulanSekarang = new Date().toLocaleDateString('id-ID', { month: 'long' });
-    const labelTambahan = ` (Bulan ${bulanSekarang})`;
+
+    // Ambil bulan dan tahun saat ini
+    const now = new Date();
+    const bulanSekarang = now.getMonth() + 1; // 0-based, jadi tambah 1
+    const tahunSekarang = now.getFullYear();
+
+    // Format periode: "YYYY-MM"
+    const bulanFormatted = bulanSekarang < 10 ? `0${bulanSekarang}` : bulanSekarang;
+    const periodeSekarang = `${tahunSekarang}-${bulanFormatted}`;
+
+    const labelTambahan = ` (Bulan ${now.toLocaleDateString('id-ID', { month: 'long' })})`;
     const kategori = [`PKPT${labelTambahan}`, `Realisasi${labelTambahan}`];
+
     const datasets = [];
 
     jenisAudit.forEach(jenis => {
         const warna = getRandomColor();
-        const pkptData = data.find(item => item.jenis_audit === jenis);
+
+        // Filter data hanya untuk bulan sekarang dan jenis audit ini
+        const dataBulanIni = data.find(item =>
+            item.bulan === periodeSekarang && item.jenis_audit === jenis
+        );
 
         datasets.push({
             label: jenis,
             backgroundColor: warna,
             data: [
-                pkptData ? pkptData.jumlah_pkpt : 0,        // Untuk PKPT
-                pkptData ? pkptData.jumlah_pemeriksaan : 0  // Untuk Realisasi
+                dataBulanIni ? dataBulanIni.jumlah_pkpt : 0,
+                dataBulanIni ? dataBulanIni.jumlah_pemeriksaan : 0
             ]
         });
     });
 
     return {
-        labels: kategori, // PKPT dan Realisasi di sumbu X
+        labels: kategori,
         datasets: datasets
     };
 }
+
 
 
 function prosesPkptKumulatif(data) {
