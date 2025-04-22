@@ -3,6 +3,11 @@
     .hidden { display: none; }
     .read-more:hover + .hidden { display: inline; }
     .timeline {margin-left:200px; padding-right:320px;}
+    .konten-tinymce img {
+        max-width: 100%;     /* biar responsif */
+        height: auto;        /* proporsi tetap */
+        width: 300px;        /* ukuran kecil */
+      }
     .event{
     white-space: nowrap; /* Cegah teks wrap */
     text-overflow: ellipsis; /* Tambahkan "..." jika teks terlalu panjang */
@@ -127,7 +132,7 @@
                           <td><?php echo $row['pemeriksaan_judul']; ?></td>
                           <td>
                             <p>
-                                <?= $short_kondisi; ?>...<span id="dots">...</span>
+                                <?= $short_kondisi; ?>...<span id="dots" class="konten-tinymce">...</span>
                                 <span id="more" style="display:none;"><?= substr($kondisi, 100); ?></span>
                             </p>
                             <button onclick="toggleReadMore()" id="myBtn">Read More</button>

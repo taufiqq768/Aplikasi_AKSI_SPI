@@ -102,7 +102,7 @@ class Administrator extends CI_Controller {
 			{
 				$config['upload_path'] = 'asset/file_pemeriksaan/';
 	            $config['allowed_types'] = 'jpg|png|JPG|JPEG|pdf|doc|docx|xls|xlsx|odt|';
-	            $config['max_size'] = '50000'; // kb
+	            $config['max_size'] = '25000'; // kb
 	            $this->load->library('upload', $config);
 	            $this->upload->do_upload('file_pmr');
             	$hasil=$this->upload->data();
@@ -332,7 +332,7 @@ class Administrator extends CI_Controller {
 	}
 	public function list_kka(){
 		if ($this->session->level=="admin" OR $this->session->level=="spi" OR $this->session->level=="kabagspi" OR $this->session->level=="viewer" OR $this->session->level=="administrasi") {
-			if ($this->session->level == "kabagspi") {
+			if ($this->session->level == "kabagspi" OR $this->session->level=="admin") {
 				$data['record'] = $this->model_app->view_join('tb_pemeriksaan','tb_unit','unit_id','tb_pemeriksaan.pemeriksaan_id','DESC');
 				$data['unit'] = $this->model_app->view_ordering('tb_unit','unit_id','ASC');
 				$this->template->load('template','kelola-kka/list_kka_kadiv_group',$data);
@@ -342,7 +342,8 @@ class Administrator extends CI_Controller {
                 // $data['record'] = $this->model_app->view_join_two('pemeriksaan_petugas','20634','tb_pemeriksaan','tb_unit','tb_kka','unit_id','pemeriksaan_id','tb_pemeriksaan.pemeriksaan_id','DESC');
                 // }
 				// $this->template->load('template','kelola-kka/list_kka',$data);
-			}else{
+			}
+			else{
 					$nik=$this->session->username;
 					$data= $this->db->query("SELECT * FROM `tb_pemeriksaan` JOIN `tb_unit` ON `tb_pemeriksaan`.`unit_id`=`tb_unit`.`unit_id` ORDER BY `tb_pemeriksaan`.`pemeriksaan_id` DESC")->result_array();
 				if($data[0]['pemeriksaan_ketua'] == $nik ){
@@ -387,7 +388,7 @@ class Administrator extends CI_Controller {
 			$this->template->load('template','kelola-kka/list_kka',$data);
 		}
 		else{
-			//ketua dan pengawas dan kavid
+			//ketua dan pengawas dan kadiv
 			$data['record'] = $this->db->query("SELECT * FROM `tb_pemeriksaan` JOIN `tb_unit` ON `tb_pemeriksaan`.`unit_id`=`tb_unit`.`unit_id` JOIN `tb_kka` ON `tb_pemeriksaan`.`pemeriksaan_id`=`tb_kka`.`pemeriksaan_id` WHERE `tb_pemeriksaan`.`pemeriksaan_id`=$id_pmr AND (`tb_kka`.`kka_kirim_kadiv_dspi` IN (1,2,3,4)) ORDER BY `tb_pemeriksaan`.`pemeriksaan_id` DESC")->result_array();
 			
 			$this->template->load('template','kelola-kka/list_kka',$data);
@@ -535,6 +536,26 @@ class Administrator extends CI_Controller {
 			}
 		}else{
 			redirect('administrator/list_kka_group');
+		}
+	}
+	public function image_tinymce(){
+		$config['upload_path'] = './asset/kka/';
+		$config['allowed_types'] = 'jpg|jpeg|png|gif';
+		$config['max_size'] = '25000'; // kb
+		$config['encrypt_name'] = TRUE;
+
+		$this->load->library('upload', $config);
+
+		if ($this->upload->do_upload('file')) {
+			$data = $this->upload->data();
+			$url = base_url('asset/kka/' . $data['file_name']);
+
+			// Ini HARUS JSON murni
+			header('Content-Type: application/json');
+			echo json_encode(['location' => $url]);
+		} else {
+			header('Content-Type: application/json');
+			echo json_encode(['error' => $this->upload->display_errors()]);
 		}
 	}
 	public function edit_kka(){
@@ -871,7 +892,7 @@ class Administrator extends CI_Controller {
 			$tahun=date('Y');
 			$config['upload_path'] = 'asset/file_lha/';
 			$config['allowed_types'] = 'pdf';
-			$config['max_size'] = '50000'; // kb
+			$config['max_size'] = '25000'; // kb
 			$this->load->library('upload', $config);
 			if($this->upload->do_upload('file_lha')){
 				$file_lha=$this->upload->data();
@@ -926,7 +947,7 @@ class Administrator extends CI_Controller {
 				//simpan sebagai draft
 				$config['upload_path'] = 'asset/file_pendukung/';
 	            $config['allowed_types'] = 'jpg|png|JPG|JPEG|pdf|doc|docx|xls|xlsx|odt|';
-	            $config['max_size'] = '50000'; // kb
+	            $config['max_size'] = '25000'; // kb
 	            $this->load->library('upload', $config);
 	            $this->upload->do_upload('upload');
             	$hasil=$this->upload->data();
@@ -1559,7 +1580,7 @@ class Administrator extends CI_Controller {
 		$id_rekom = $this->uri->segment(5); $id_tanggapan = $this->uri->segment(6);
 		$config['upload_path'] = 'asset/file_tanggapan/';
 		$config['allowed_types'] = 'jpg|png|jpeg|JPG|JPEG|pdf|doc|docx|xls|xlsx|odt|';
-		$config['max_size'] = '50000'; // kb
+		$config['max_size'] = '25000'; // kb
 		$this->load->library('upload', $config);
 		if($this->upload->do_upload('userfile')){
 			$token=$this->input->post('token_foto');
@@ -2221,7 +2242,7 @@ class Administrator extends CI_Controller {
 		$id_rekom = $this->uri->segment(5);
 		$config['upload_path'] = 'asset/file_rekomendasi/';
 		$config['allowed_types'] = 'jpg|png|jpeg|JPG|JPEG|pdf|doc|docx|xls|xlsx|odt|';
-		$config['max_size'] = '50000'; // kb
+		$config['max_size'] = '25000'; // kb
 		$this->load->library('upload', $config);
 		if($this->upload->do_upload('userfile')){
 			$token=$this->input->post('token_foto');
@@ -2260,7 +2281,7 @@ class Administrator extends CI_Controller {
 		$tgl = date('Ymd');
 		$config['upload_path'] = 'asset/file_rekomendasi/';
         $config['allowed_types'] = 'jpg|png|JPG|JPEG|pdf|doc|docx|xls|xlsx|odt|';
-        $config['max_size'] = '50000'; // kb
+        $config['max_size'] = '25000'; // kb
         $this->load->library('upload', $config);
         $filename="";
         if($this->upload->do_upload('userfile')){
@@ -2499,7 +2520,7 @@ class Administrator extends CI_Controller {
 		$id_rekom = $this->uri->segment(5); $id_tl = $this->uri->segment(6);
 		$config['upload_path'] = 'asset/file_tl/';
 		$config['allowed_types'] = 'jpg|png|jpeg|JPG|JPEG|pdf|doc|docx|xls|xlsx|odt|';
-		$config['max_size'] = '50000'; // kb
+		$config['max_size'] = '25000'; // kb
 		$this->load->library('upload', $config);
 		if($this->upload->do_upload('userfile')){
 			$token=$this->input->post('token_foto');
@@ -2538,7 +2559,7 @@ class Administrator extends CI_Controller {
 		$tgl = date('Ymd');
 		$config['upload_path'] = 'asset/file_tl/';
         $config['allowed_types'] = 'jpg|png|JPG|JPEG|pdf|doc|docx|xls|xlsx|odt|';
-        $config['max_size'] = '50000'; // kb
+        $config['max_size'] = '25000'; // kb
         $this->load->library('upload', $config);
         $filename="";
         if($this->upload->do_upload('userfile')){
@@ -3335,7 +3356,7 @@ class Administrator extends CI_Controller {
 		if (isset($_POST['edit'])) {
 			$config['upload_path'] = 'asset/foto_user/';
             $config['allowed_types'] = 'gif|jpg|png|JPG|JPEG';
-            $config['max_size'] = '3000'; // kb
+            $config['max_size'] = '25000'; // kb
             $this->load->library('upload', $config);
             $this->upload->do_upload('file');
             $hasil=$this->upload->data();

@@ -98,7 +98,7 @@
                     </div>
                  </div>
                  <div class="form-group">
-                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">Pengawas <span class="required ">*</span></label>
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">Kepala Audit<span class="required ">*</span></label>
                     <div class="col-md-6 col-sm-6 col-xs-12">
                       <select name="pengawas" class="form-control" id="pengawas" required>
                       <option>Pilih Anggota DSPI</option> 
@@ -111,7 +111,7 @@
                     </div>
                   </div>
                 <div class="form-group">
-                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">Ketua <span class="required ">*</span></label>
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">Ketua Tim<span class="required ">*</span></label>
                     <div class="col-md-6 col-sm-6 col-xs-12">
                       <select name="ketua" class="form-control" id="ketua" required>
                         <option>Pilih Anggota DSPI</option>
@@ -155,7 +155,7 @@
                       <div class="col-md-6 col-sm-6 col-xs-12">
                         <input type="file" name="file_pmr" id="dokumen" accept=".jpg, .pdf, .xls, .xlsx, .doc, .docx, .odt, .png">
                         <p><strong>(Accepted : .jpg, .jpeg, .png, .pdf, .doc, .docx, .xls, .xlsx, .odt)</strong></p>
-                        <p><strong>Max. size 20MB</strong></p>
+                        <p><strong>Max. size 25MB</strong></p>
                       </div>
                     </div>
                 <div class="ln_solid"></div>
