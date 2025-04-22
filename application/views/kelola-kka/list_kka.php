@@ -3,6 +3,11 @@
     .hidden { display: none; }
     .read-more:hover + .hidden { display: inline; }
     .timeline {margin-left:200px; padding-right:320px;}
+    .konten-tinymce img {
+        max-width: 100%;     /* biar responsif */
+        height: auto;        /* proporsi tetap */
+        width: 300px;        /* ukuran kecil */
+      }
     .event{
     white-space: nowrap; /* Cegah teks wrap */
     text-overflow: ellipsis; /* Tambahkan "..." jika teks terlalu panjang */
@@ -127,7 +132,7 @@
                           <td><?php echo $row['pemeriksaan_judul']; ?></td>
                           <td>
                             <p>
-                                <?= $short_kondisi; ?>...<span id="dots">...</span>
+                                <?= $short_kondisi; ?>...<span id="dots" class="konten-tinymce">...</span>
                                 <span id="more" style="display:none;"><?= substr($kondisi, 100); ?></span>
                             </p>
                             <button onclick="toggleReadMore()" id="myBtn">Read More</button>
@@ -157,7 +162,6 @@
                             <?php
                               echo "<a href='".base_url()."administrator/delete_temuan/$row[id_kka]' onclick=\"return confirm('Apa anda yakin untuk hapus Data ini?')\">" 
                             ?>
-                              <button type="button" class="btn btn-danger btn-sm bt-remove"  <?php  echo strpos($role[0]['role_akses'],',5,')!==FALSE?"":"disabled";?> data-toggle="tooltip" data-placement="top" title="Reject"><span class="fa fa-long-arrow-left"></button></a>
                               <button type="button" class="btn btn-warning btn-sm btn-history"  <?php  echo strpos($role[0]['role_akses'],',5,')!==FALSE?"":"disabled";?> data-id="<?= $row['pemeriksaan_id'] ?>" data-toggle="tooltip" data-placement="top" title="History"><span class="fa fa-history"></button></a>
                               <!-- /ANGGOTA AUDIT -->
                             <?php } elseif($row['kka_kirim_kadiv_dspi'] == "1" && $row['pembuat_kka'] == $this->session->username){ ?>

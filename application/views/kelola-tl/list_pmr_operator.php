@@ -20,12 +20,14 @@
                   <div class="x_content">
                   <?php
                   $role = $this->model_app->view_where('tb_role','role_id',$this->session->role);
-                    if (strpos($role[0]['role_akses'],'29')) {
+                  //ROLE TAMU 
+                  if (strpos($role[0]['role_akses'],'29')) {
                       $record = $this->db->query("SELECT * FROM tb_pemeriksaan WHERE pemeriksaan_jenis = 'Rutin' AND pemeriksaan_aktif = 'Y'")->result_array();
                     }
 
                   $no=1;$r=1;$bintang=""; $cc = "";$back =10000; $num = ''; $tback = 30000; $rowbaris = 0;
                   $span = "";
+                  //QUERY $RECORD UNTUK MEMUNCULKAN JUMLAH DATA PEMERIKSAAN PADA ACORDION jika dalam 1 unit ada 2 pemeriksaan akan muncul 2
                    foreach ($record as $row) { 
                   $si = [];
                   $num.= $no." ";
@@ -68,15 +70,17 @@
                           $span = ""; $ti=[];
                           //$rkm = $this->model_app->view_join_where3('tb_rekomendasi','temuan_id',$value['temuan_id'],'rekomendasi_kirim','Y','tb_pemeriksaan','pemeriksaan_id','pemeriksaan_id', 'tb_pemeriksaan.unit_id','tb_rekomendasi.unit_id');
                           $unit=$this->session->unit;
+                          // $rkm ini khusus memunculkan rekomendasi saja
                           $rkm= $this->db->query("SELECT `tb_pemeriksaan`.* , `tb_rekomendasi`.* ,tb_rekomendasi.unit_id AS unit_mention FROM `tb_rekomendasi` LEFT JOIN `tb_pemeriksaan` ON `tb_rekomendasi`.`pemeriksaan_id`=`tb_pemeriksaan`.`pemeriksaan_id` WHERE `temuan_id` = $value[temuan_id] AND `rekomendasi_kirim` = 'Y' AND `tb_rekomendasi`.`unit_id`= $unit")->result_array();
+
                           
-                          // if($q[0]['unit_mention'] == $this->session->unit){
-                          //   $rkm = $this->db->query("SELECT * FROM `tb_rekomendasi` LEFT JOIN `tb_pemeriksaan` ON `tb_rekomendasi`.`pemeriksaan_id`=`tb_pemeriksaan`.`pemeriksaan_id` WHERE `temuan_id` = $value[temuan_id] AND `rekomendasi_kirim` = 'Y' AND `tb_rekomendasi`.`unit_id` = `tb_rekomendasi`.`unit_id`")->result_array();
+                          // if($q[0]['pemeriksaan_id'] > 0){
+                          //   $rkm= $this->db->query("SELECT `tb_pemeriksaan`.* , `tb_rekomendasi`.* ,tb_rekomendasi.unit_id AS unit_mention FROM `tb_rekomendasi` LEFT JOIN `tb_pemeriksaan` ON `tb_rekomendasi`.`pemeriksaan_id`=`tb_pemeriksaan`.`pemeriksaan_id` WHERE `temuan_id` = $value[temuan_id] AND `rekomendasi_kirim` = 'Y' AND `tb_rekomendasi`.`unit_id`= $unit")->result_array();
   
                           // }
-                          //else{
-                            //$rkm= $this->db->query("SELECT * FROM `tb_rekomendasi` LEFT JOIN `tb_pemeriksaan` ON `tb_rekomendasi`.`pemeriksaan_id`=`tb_pemeriksaan`.`pemeriksaan_id` WHERE `temuan_id` = $value[temuan_id] AND `rekomendasi_kirim` = 'Y' AND `tb_rekomendasi`.`unit_id` = `tb_rekomendasi`.`unit_id`")->result_array();
-                          //}
+                          // else{
+                          //   $rkm= $this->db->query("SELECT * FROM `tb_rekomendasi` LEFT JOIN `tb_pemeriksaan` ON `tb_rekomendasi`.`pemeriksaan_id`=`tb_pemeriksaan`.`pemeriksaan_id` WHERE `temuan_id` = $value[temuan_id] AND `rekomendasi_kirim` = 'Y' AND `tb_rekomendasi`.`unit_id` = `tb_rekomendasi`.`unit_id`")->result_array();
+                          // }
                           $bidang = $this->model_app->view_profile('tb_bidangtemuan', array('bidangtemuan_id'=> $value['bidangtemuan_id']))->row_array();
                           $m_temuan = $this->model_app->view_profile('tb_master_temuan', array('temu_id'=> $value['temu_id']))->row_array();
                           $m_ab = $this->model_app->view_profile('tb_master_ab', array('id_ab'=> $value['id_klasifikasi_ab']))->row_array();
@@ -141,7 +145,7 @@
                               </thead>
                               <tbody>
                                 <?php
-                                
+                                $pemeriksaan_terakhir = null; // Untuk melacak pemeriksaan terakhir
                                 foreach ($rkm as $baris) {
                                 $rowbaris++; 
                                     if ($baris['rekomendasi_status']=="Sesuai") {

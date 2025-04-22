@@ -88,7 +88,7 @@
             </div>
             <footer>
               <div class="pull-right">
-               <a href="http://ptpn12.com" target="_BLANK">PT. Perkebunan Nusantara I </a>
+               <a href="http://ptpn1.co.id" target="_BLANK">PT. Perkebunan Nusantara I </a>
               </div>
               <div class="clearfix"></div>
             </footer>

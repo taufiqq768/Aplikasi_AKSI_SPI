@@ -111,8 +111,9 @@
                       </thead>
                       <tbody>
                         <?php
-                        $no = 0; $number=1;
-                        foreach ($record as $value) { 
+                         $no = 1; $number=1;
+                        foreach ($record as $value) 
+                        { 
                           if ($value['pemeriksaan_aktif']=='Y') {
                             $status = "Aktif";
                           }else{
@@ -125,11 +126,6 @@
                                 $placeholder = 'Aktifkan';
                               } 
                         ?>
-                        <?php 
-                        
-                        // }elseif ($value['pemeriksaan_jenis']=="Rutin") { 
-                          $no = 1;
-                          ?>
                         <tr>
                           <td><center><?php echo $no."."; ?></center></td>
                           <td><?php echo $value['pemeriksaan_jenis']; ?></td>
@@ -194,12 +190,7 @@
                           </td>
                         </tr>
                   <?php 
-                        }
-                         ?>
-                        
-
-                        <?php  $no++; ?>
-                        
+                  $no++; } ?>
                       </tbody>
                     </table>
                   </div>

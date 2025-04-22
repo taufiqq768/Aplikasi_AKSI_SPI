@@ -2,34 +2,99 @@
   <head>
 
   </head>
-  <script src="<?php echo base_url(); ?>/asset/tinymce/tinymce.min.js"></script>
+  <script src="<?php echo base_url(); ?>/asset/tinymce_7.8.0/tinymce.min.js"></script>
   <script>
-    tinymce.init({
-      forced_root_block : "",
-      selector : '#mytextarea',
-       // menubar: false,
-       plugins: [
-        "paste",
-        // "advlist autolink autosave link image lists charmap print preview hr anchor pagebreak spellchecker",
-        "searchreplace wordcount visualblocks visualchars fullscreen insertdatetime nonbreaking lists",
-        // "save table contextmenu directionality emoticons template textcolor paste fullpage textcolor colorpicker",
-        // 'advlist autolink image lists charmap print preview'
-        ],
-        paste_as_text: true
+  tinymce.init({
+    selector: '#mytextarea',
+    plugins: 'image table code lists link media',
+    toolbar: 'undo redo | styles | bold italic | alignleft aligncenter alignright alignjustify | ' +
+            'bullist numlist outdent indent | link image media table | code',
+    menubar: 'file edit view insert format tools table help',
+    height: 400,
+    image_title: true,
+    automatic_uploads: true,
+    images_upload_url: '<?= base_url("asset/kka") ?>',
+    images_upload_handler: (blobInfo, progress) => {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.withCredentials = false;
+      xhr.open('POST', '<?= base_url("administrator/image_tinymce") ?>');
+
+      xhr.onload = () => {
+        if (xhr.status !== 200) {
+          reject(`HTTP Error: ${xhr.status}`);
+          return;
+        }
+
+        let json;
+        try {
+          json = JSON.parse(xhr.responseText);
+        } catch (e) {
+          reject(`Invalid JSON: ${xhr.responseText}`);
+          return;
+        }
+
+        if (!json || typeof json.location !== 'string') {
+          reject('Invalid response: no "location" field');
+          return;
+        }
+
+        resolve(json.location);
+      };
+
+      const formData = new FormData();
+      formData.append('file', blobInfo.blob(), blobInfo.filename());
+
+      xhr.send(formData);
     });
-    tinymce.init({
-      forced_root_block : "",
-      selector : '#mytextarea2',
-       // menubar: false,
-       plugins: [
-        "paste",
-        // "advlist autolink autosave link image lists charmap print preview hr anchor pagebreak spellchecker",
-        "searchreplace wordcount visualblocks visualchars fullscreen insertdatetime nonbreaking lists",
-        // "save table contextmenu directionality emoticons template textcolor paste fullpage textcolor colorpicker",
-        // 'advlist autolink image lists charmap print preview'
-        ],
-        paste_as_text: true
+  }
+});
+
+tinymce.init({
+    selector: '#mytextarea2',
+    plugins: 'image table code lists link media',
+    toolbar: 'undo redo | styles | bold italic | alignleft aligncenter alignright alignjustify | ' +
+            'bullist numlist outdent indent | link image media table | code',
+    menubar: 'file edit view insert format tools table help',
+    height: 400,
+    image_title: true,
+    automatic_uploads: true,
+    images_upload_url: '<?= base_url("asset/kka") ?>',
+    images_upload_handler: (blobInfo, progress) => {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.withCredentials = false;
+      xhr.open('POST', '<?= base_url("administrator/image_tinymce") ?>');
+
+      xhr.onload = () => {
+        if (xhr.status !== 200) {
+          reject(`HTTP Error: ${xhr.status}`);
+          return;
+        }
+
+        let json;
+        try {
+          json = JSON.parse(xhr.responseText);
+        } catch (e) {
+          reject(`Invalid JSON: ${xhr.responseText}`);
+          return;
+        }
+
+        if (!json || typeof json.location !== 'string') {
+          reject('Invalid response: no "location" field');
+          return;
+        }
+
+        resolve(json.location);
+      };
+
+      const formData = new FormData();
+      formData.append('file', blobInfo.blob(), blobInfo.filename());
+
+      xhr.send(formData);
     });
+  }
+});
   </script>
       <!-- page content -->
       <div class="right_col" role="main">

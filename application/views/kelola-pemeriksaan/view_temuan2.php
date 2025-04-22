@@ -110,6 +110,7 @@
                     foreach ($record2 as $key => $value) {
                       $num.=$no." "; $ti = []; $hapustemuan++;
                       $tmn = $this->model_app->view_where2('tb_rekomendasi','temuan_id',$value['temuan_id'],'rekomendasi_publish_kabag','Y');
+                      
                       $target = array('Belum di Tindak Lanjut', 'Tidak dapat di Tindak Lanjuti');
                        $cek_t = $this->db->query("SELECT rekomendasi_status FROM tb_rekomendasi WHERE temuan_id = '$value[temuan_id]' AND rekomendasi_kirim='Y'")->result_array();
                           foreach ($cek_t as $to) {
@@ -376,7 +377,7 @@
                                           <td>
                                             <?php 
                                             if ($baris['tl_status_publish_kabag']=='Y' AND $baris['tl_status_kirim']=="N") {
-                                              echo "Terkirim ke Kabag";
+                                              echo "Terkirim ke KADIV SPI";
                                             }elseif ($baris['tl_status_kirim']=="Y") {
                                               echo "Telah disetujui Kabag dan terkirim ke Kebun";
                                             }
