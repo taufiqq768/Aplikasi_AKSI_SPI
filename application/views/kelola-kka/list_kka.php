@@ -139,7 +139,7 @@
                           </td>
                           <td>
                             <p>
-                                <?= $short_penyebab; ?>...<span id="dots1">...</span>
+                                <?= $short_penyebab; ?>...<span id="dots1" class="konten-tinymce">...</span>
                                 <span id="more1" style="display:none;"><?= substr($penyebab, 100); ?></span>
                             </p>
                             <button onclick="toggleReadMore1()" id="myBtn1">Read More</button>

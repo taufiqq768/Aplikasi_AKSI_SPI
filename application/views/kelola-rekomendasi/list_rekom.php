@@ -137,6 +137,7 @@
                           <th>No.</th>
                           <th style="width: 350px"><center>Rekomendasi</center></th>
                           <th style="width: 170px"><center>Klasifikasi Rekomendasi</center></th>
+                          <th style="width: 170px"><center>Tujuan Rekomendasi</center></th>
                           <th style="width: 170px"><center>Dokumen</center></th>
                           <th style="width: 70px"><center>Tanggal Deadline</center></th>
                           <th style="width: 135px"><center>Status</center></th>
@@ -183,6 +184,15 @@
                                   }
                                 ?>
                               </td>
+                              <td>
+                                <?php 
+                               $unit = $this->model_app->view_where('tb_unit','unit_id',$row['unit_id']);
+                               if (!empty($unit)) {
+                                echo $unit[0]['unit_nama'];
+                                } else {
+                                    echo "-";
+                                }
+                              ?></td>
                                 <?php if ($row['rekomendasi_kirim']=='K') {
                                   echo " <i class='fa fa-circle' style='color: red'></i>";
                                 } ?>

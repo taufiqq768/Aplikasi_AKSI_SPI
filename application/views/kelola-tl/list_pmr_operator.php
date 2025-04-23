@@ -32,8 +32,8 @@
                   $si = [];
                   $num.= $no." ";
                    $span1 = "";
-                    // $tmn = $this->model_app->view_where('tb_temuan','pemeriksaan_id',$row['pemeriksaan_id']);
-                    $tmn = $this->db->query("SELECT * FROM tb_temuan WHERE pemeriksaan_id = '$row[pemeriksaan_id]' AND temuan_kirim='Y' AND temuan_pmr_sebelumnya = '0' ORDER BY temuan_id ASC")->result_array(); 
+                    $tmn = $this->model_app->view_where2('tb_temuan','pemeriksaan_id',$row['pemeriksaan_id'],'temuan_kirim','Y');
+                    //$tmn = $this->db->query("SELECT * FROM tb_temuan WHERE pemeriksaan_id = '$row[pemeriksaan_id]' AND temuan_kirim='Y' AND temuan_pmr_sebelumnya = '0' ORDER BY temuan_id ASC")->result_array(); 
                     $cek = $this->db->query("SELECT rekomendasi_status FROM tb_rekomendasi WHERE pemeriksaan_id = '$row[pemeriksaan_id]'")->result_array();
                     foreach ($cek as $so) {
                       $si[] = $so['rekomendasi_status'];
