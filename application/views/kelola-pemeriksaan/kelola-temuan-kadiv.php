@@ -203,7 +203,7 @@
                               <?php echo "<a href='".base_url()."administrator/list_rekomendasi/$id_pmr/$value[temuan_id]'>" ?><button type="button" class="btn btn-default btn-xs">Lihat Rekomendasi</button></a>
                             </div>
                            <?php 
-                              if ($this->session->level=="kabagspi" AND $value['temuan_kirim']=="N") {
+                              if ($this->session->level=="kabagspi" AND $value['temuan_publish_kabag']=="Y" AND  $value['temuan_kirim'] != "Y") {
                               echo "<a href='".base_url()."administrator/kembalikan_temuan/$id_pmr/$value[temuan_id]'>" 
                             ?>
                               <button class="btn btn-sm btn-danger" type="button" title="Kembalikan Temuan ke SPI"><span class="fa fa-mail-reply"></span></button></a>
@@ -212,13 +212,10 @@
                             ?>
                               <!-- <button class="btn btn-xs btn-success" type="button" title="Kirim Temuan ke Regional/Divisi">Kirim Temuan dan rekomendasi all</span></button></a> -->
                             <?php
-                            if(isset($record5[0]['rekomendasi_kirim']) == "N"){
-                              $id_temuan = isset($record5[0]['temuan_id']) ? trim(json_encode($record5[0]['temuan_id']), '"') : '0';
                               //$id_rekomendasi = isset($record5[0]['rekomendasi_id']) ? trim(json_encode($record5[0]['rekomendasi_id']), '"') : '0'; 
-                              echo "<a href='".base_url()."administrator/send_temuan_rekomendasi_unit/$id_temuan/$id_pmr'";
+                              echo "<a href='".base_url()."administrator/send_temuan_rekomendasi_unit/$value[temuan_id]/$id_pmr'";
                             ?>
                               <button class="btn btn-sm btn-success" type="button" title="Kirim Temuan dan Rekomendasi ke Regional/Divisi"><span class="fa fa-send-o"></span></button></a>
-                            <?php } ?>
                             <?php 
                               } 
                             ?>

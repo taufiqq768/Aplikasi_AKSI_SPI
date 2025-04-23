@@ -278,76 +278,71 @@
                       </thead>
                       
                       <?php $nomer = 1; foreach ($record3 as $value) {  ?>
-                      <tbody>
-                      <tr>
-                        <td>
-                            <?php if ($value['temuan_publish_kabag']=='N'): ?>
-                                  <input type="checkbox" class="form-control checkbox ck" name="select[]" value="<?php echo $value['temuan_id']?>">  
-                            <?php endif ?>
-                        </td>
-                        <td><?php echo $nomer."." ?></td>
-                        <td style=width:50px;><?php echo $value['temuan_judul']; ?></td>
-                        <td><?php echo $value['bidangtemuan_nama']; ?></td>
-                        <td><?php echo $value['klasifikasi_temuan']; ?></td>
-                        <td><?php echo $value['judul_ab']; ?></td>
-                        <?php 
-                        $select  = explode("/", $value['sebab_id']);
-                        $sebab = [];
-                          foreach ($select as $penyebab) {
-                            $q = $this->model_app->view_profile('tb_master_penyebab', array('sebab_id'=> $penyebab))->row_array();
-                            $sebab[] = $q['klasifikasi_sebab'];
-                          }
-                          $gab_sebab = implode(", ", $sebab);
-                        ?>
-                        <td><?php echo $value['penyebab']; ?></td>
-                        <td><?php echo $gab_sebab; ?></td>
-                        <td><?php echo $value['klasifikasi_coso']; ?></td>
-                        <?php 
-                          // if ($value['temuan_publish_kabag']=='Y') {
-                          //   echo "<td>Terkirim ke KADIV DSPI</td>";
-                          // }elseif ($value['temuan_publish_kabag']=='N' AND $value['temuan_kirim']=="N") {
-                          //   echo "<td>Belum Terkirim</td>";
-                          // }
-                          // else{ 
-                          //   echo "<td>Dikembalikan oleh KADIV DSPI</td>"; 
-                          // }
-                        ?>
-                          
-                          <td>
-                            <?php   
-                              echo "<a href='".base_url()."administrator/list_rekomendasi/$id_pmr/$value[temuan_id]'>" 
-                            ?>
-                              <button type="button" class="btn btn-default btn-xs">Lihat Rekomendasi</button></a></br></br>
+                        <tbody>
+                          <tr>
+                            <td>
+                                <?php if ($value['temuan_publish_kabag']=='N'): ?>
+                                      <input type="checkbox" class="form-control checkbox ck" name="select[]" value="<?php echo $value['temuan_id']?>">  
+                                <?php endif ?>
+                            </td>
+                            <td><?php echo $nomer."." ?></td>
+                            <td style=width:50px;><?php echo $value['temuan_judul']; ?></td>
+                            <td><?php echo $value['bidangtemuan_nama']; ?></td>
+                            <td><?php echo $value['klasifikasi_temuan']; ?></td>
+                            <td><?php echo $value['judul_ab']; ?></td>
                             <?php 
-                              if ($value['temuan_publish_kabag']=='N') { 
+                            $select  = explode("/", $value['sebab_id']);
+                            $sebab = [];
+                              foreach ($select as $penyebab) {
+                                $q = $this->model_app->view_profile('tb_master_penyebab', array('sebab_id'=> $penyebab))->row_array();
+                                $sebab[] = $q['klasifikasi_sebab'];
+                              }
+                              $gab_sebab = implode(", ", $sebab);
                             ?>
-                            <?php
-                              echo "<a href='".base_url()."administrator/edit_temuan/$id_pmr/$value[temuan_id]'>" 
-                            ?>
-                              <button type="button" class="btn btn-warning btn-sm" data-toggle="tooltip" data-placement="top"  title="Ubah Data Temuan" data-toggle="modal" data-target="#EditTemuan<?php echo $value['temuan_id']?>" <?php  echo strpos($role[0]['role_akses'],',4,')!==FALSE?"":"disabled";?> <?php echo $dis; echo $disable; ?>><span class="fa fa-pencil"></span></button></a>
-                            <?php
-                              //echo "<a href='".base_url()."administrator/kirim_temuan_kadiv_spi/$id_pmr/$value[temuan_id]'>" 
-                            ?>
-                              <!-- <button type="button" class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="top"  title="Kirim ke Kadiv DSPI Temuan" data-toggle="modal" data-target="#EditTemuan<?php echo $value['temuan_id']?>" <?php  echo strpos($role[0]['role_akses'],',4,')!==FALSE?"":"disabled";?> <?php echo $dis; echo $disable; ?>><span class="fa fa-send"></span></button></a> -->
-                            <?php
-                              echo "<a href='".base_url()."administrator/delete_temuan/$id_pmr/$value[temuan_id]' onclick=\"return confirm('Apa anda yakin untuk hapus Data ini?')\">" 
-                            ?>
-                              <button type="button" class="btn btn-danger btn-sm bt-remove"  <?php  echo strpos($role[0]['role_akses'],',5,')!==FALSE?"":"disabled";?> data-toggle="tooltip" data-placement="top" title="Hapus Temuan" <?php echo $dis; echo $disable; ?>><span class="fa fa-trash"></span></button></a>
+                            <td><?php echo $value['penyebab']; ?></td>
+                            <td><?php echo $gab_sebab; ?></td>
+                            <td><?php echo $value['klasifikasi_coso']; ?></td>
                             <?php 
-                            if(isset($record5[0]['rekomendasi_publish_kabag']) == "N"){
-                              $id_temuan = isset($record5[0]['temuan_id']) ? trim(json_encode($record5[0]['temuan_id']), '"') : '0';
-                              //$id_rekomendasi = isset($record5[0]['rekomendasi_id']) ? trim(json_encode($record5[0]['rekomendasi_id']), '"') : '0';
-                              echo "<a href='".base_url()."administrator/send_temuan_rekomendasi/$id_temuan/$id_pmr'" ;
+                              // if ($value['temuan_publish_kabag']=='Y') {
+                              //   echo "<td>Terkirim ke KADIV DSPI</td>";
+                              // }elseif ($value['temuan_publish_kabag']=='N' AND $value['temuan_kirim']=="N") {
+                              //   echo "<td>Belum Terkirim</td>";
+                              // }
+                              // else{ 
+                              //   echo "<td>Dikembalikan oleh KADIV DSPI</td>"; 
+                              // }
+                            ?>
+                            <td>
+                              <?php   
+                                  echo "<a href='".base_url()."administrator/list_rekomendasi/$id_pmr/$value[temuan_id]'>" 
+                                ?>
+                                  <button type="button" class="btn btn-default btn-xs">Lihat Rekomendasi</button></a></br></br>
+                                <?php 
+                                  if ($value['temuan_publish_kabag']=='N') { 
+                                ?>
+                                <?php
+                                  echo "<a href='".base_url()."administrator/edit_temuan/$id_pmr/$value[temuan_id]'>" 
+                                ?>
+                                  <button type="button" class="btn btn-warning btn-sm" data-toggle="tooltip" data-placement="top"  title="Ubah Data Temuan" data-toggle="modal" data-target="#EditTemuan<?php echo $value['temuan_id']?>" <?php  echo strpos($role[0]['role_akses'],',4,')!==FALSE?"":"disabled";?> <?php echo $dis; echo $disable; ?>><span class="fa fa-pencil"></span></button></a>
+                                <?php
+                                  //echo "<a href='".base_url()."administrator/kirim_temuan_kadiv_spi/$id_pmr/$value[temuan_id]'>" 
+                                ?>
+                                  <!-- <button type="button" class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="top"  title="Kirim ke Kadiv DSPI Temuan" data-toggle="modal" data-target="#EditTemuan<?php echo $value['temuan_id']?>" <?php  echo strpos($role[0]['role_akses'],',4,')!==FALSE?"":"disabled";?> <?php echo $dis; echo $disable; ?>><span class="fa fa-send"></span></button></a> -->
+                                <?php
+                                  echo "<a href='".base_url()."administrator/delete_temuan/$id_pmr/$value[temuan_id]' onclick=\"return confirm('Apa anda yakin untuk hapus Data ini?')\">" 
+                                ?>
+                                  <button type="button" class="btn btn-danger btn-sm bt-remove"  <?php  echo strpos($role[0]['role_akses'],',5,')!==FALSE?"":"disabled";?> data-toggle="tooltip" data-placement="top" title="Hapus Temuan" <?php echo $dis; echo $disable; ?>><span class="fa fa-trash"></span></button></a>
+                                <?php 
+                                  echo "<a href='".base_url()."administrator/send_temuan_rekomendasi/$value[temuan_id]/$id_pmr'" ;
+                                ?>
+                                  </br></br></br><button type="button" class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="top"  title="Kirim Temuan Rekomendasi ke KADIV SPI" data-toggle="modal" data-target="#EditTemuan<?php echo $value['temuan_id']?>" <?php  echo strpos($role[0]['role_akses'],',4,')!==FALSE?"":"disabled";?> <?php echo $dis; echo $disable; ?>><span class="fa fa-send"></span></button></a>
+                                <?php  
+                                }
                               ?>
-                              </br></br></br><button type="button" class="btn btn-primary btn-sm" data-toggle="tooltip" data-placement="top"  title="Kirim Temuan Rekomendasi ke KADIV SPI" data-toggle="modal" data-target="#EditTemuan<?php echo $value['temuan_id']?>" <?php  echo strpos($role[0]['role_akses'],',4,')!==FALSE?"":"disabled";?> <?php echo $dis; echo $disable; ?>><span class="fa fa-send"></span></button></a>
-                            <?php } ?>
-                            <?php  
-                            }
-                            ?>
-                          </td>
-                      </tr>
-                      <?php $nomer++;  ?>
-                      </tbody>
+                            </td>
+                          </tr>
+                            <?php $nomer++;  ?>
+                        </tbody>
                       <?php } ?>
                     </table>
             </div>

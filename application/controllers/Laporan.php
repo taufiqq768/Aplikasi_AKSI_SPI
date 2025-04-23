@@ -9,7 +9,7 @@ class Laporan extends CI_Controller {
 		$data['tgl_mulai'] = '';
 		if ($this->session->level=="operator" OR $this->session->level=="verifikator") {
             $unit = $this->session->unit;
-            $data['record'] = $this->db->query("SELECT * FROM tb_rekomendasi JOIN tb_pemeriksaan ON tb_rekomendasi.pemeriksaan_id = tb_pemeriksaan.pemeriksaan_id JOIN tb_temuan ON tb_rekomendasi.temuan_id = tb_temuan.temuan_id WHERE pemeriksaan_jenis = 'Rutin' AND pemeriksaan_aktif = 'Y' AND kebun_id = '$unit' ORDER BY pemeriksaan_tgl ASC")->result_array(); 
+            $data['record'] = $this->db->query("SELECT * FROM tb_rekomendasi JOIN tb_pemeriksaan ON tb_rekomendasi.pemeriksaan_id = tb_pemeriksaan.pemeriksaan_id JOIN tb_temuan ON tb_rekomendasi.temuan_id = tb_temuan.temuan_id WHERE pemeriksaan_jenis = 'Rutin' AND pemeriksaan_aktif = 'Y' AND kebun_id = '$unit' AND `rekomendasi_kirim` = 'Y' ORDER BY pemeriksaan_tgl ASC")->result_array(); 
         }else{
 			$data['record'] = $this->db->query("SELECT * FROM tb_rekomendasi JOIN tb_pemeriksaan ON tb_rekomendasi.pemeriksaan_id = tb_pemeriksaan.pemeriksaan_id JOIN tb_temuan ON tb_rekomendasi.temuan_id = tb_temuan.temuan_id ORDER BY tb_rekomendasi.temuan_id ASC")->result_array();
         }

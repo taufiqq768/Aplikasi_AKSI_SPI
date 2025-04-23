@@ -861,7 +861,7 @@ class Administrator extends CI_Controller {
 			$data['record2'] = $this->model_app->view_where_ordering('pemeriksaan_id','tb_temuan',$id_pmr,'bidangtemuan_id','ASC');
 			$data['record3'] = $this->model_app->view_join_five_table('tb_temuan','tb_bidangtemuan','tb_master_temuan','tb_master_coso','tb_master_ab','pemeriksaan_id','DESC','pemeriksaan_id',$id_pmr,'bidangtemuan_id','bidangtemuan_id','temu_id','coso_id','temu_id','coso_id','id_klasifikasi_ab','id_ab');
 			$data['record4'] = $this->model_app->view_where('tb_lha','id_pemeriksaan',$id_pmr);
-			$data['record5'] = $this->model_app->view_where('tb_rekomendasi','pemeriksaan_id',$id_pmr);
+			//$data['record5'] = $this->model_app->view_where('tb_temuan','pemeriksaan_id',$id_pmr);
 				//if ($jenis!="Rutin") {
 					//$this->template->load('template','kelola-pemeriksaan/kelola-temuanspi',$data);
 				//}else{
@@ -873,7 +873,7 @@ class Administrator extends CI_Controller {
 				$dataa['record2'] = $this->model_app->view_where2_ordering('tb_temuan','pemeriksaan_id',$id_pmr,'temuan_publish_kabag','Y','bidangtemuan_id','ASC');
 				$dataa['record3'] = $this->model_app->view_join_five_table('tb_temuan','tb_bidangtemuan','tb_master_temuan','tb_master_coso','tb_master_ab','pemeriksaan_id','DESC','pemeriksaan_id',$id_pmr,'bidangtemuan_id','bidangtemuan_id','temu_id','coso_id','temu_id','coso_id','id_klasifikasi_ab','id_ab');
 				$dataa['record4'] = $this->model_app->view_where('tb_lha','id_pemeriksaan',$id_pmr);
-				$dataa['record5'] = $this->model_app->view_where('tb_rekomendasi','pemeriksaan_id',$id_pmr);
+				//$dataa['record5'] = $this->model_app->view_where('tb_rekomendasi','pemeriksaan_id',$id_pmr);
 				//if ($jenis!="Rutin") {
 					//$this->template->load('template','kelola-pemeriksaan/kelola-kabagspi',$dataa);
 				//}else{
@@ -1336,6 +1336,13 @@ class Administrator extends CI_Controller {
 			echo json_encode(['status' => 'error', 'message' => 'ID Temuan tidak ditemukan']);
 			return;
 		}
+
+		$cek_temuand_id = $this->model_app->view_where('tb_rekomendasi', 'temuan_id', $id_temuan);
+		if (empty($cek_temuand_id)) {
+			//echo json_encode(['status' => 'error', 'message' => 'ID Temuan tidak ditemukan']);
+			echo "<script>alert('Belum Mengisi Rekomendasi'); window.history.back();</script>";
+			return;
+		}
 	
 		try {
 			// Update tabel tb_temuan
@@ -1619,10 +1626,17 @@ class Administrator extends CI_Controller {
 			$unit=$this->session->unit;
 			//$query = $this->model_app->view_where2_ordering('tb_pemeriksaan','pemeriksaan_aktif','Y','unit_mention',$this->session->unit,'pemeriksaan_id','ASC');
 			$q = $this->db->query("SELECT * FROM `tb_pemeriksaan` WHERE `pemeriksaan_aktif` = 'Y' ORDER BY `tb_pemeriksaan`.`pemeriksaan_id` ASC")->result_array();
-			
-			
-			if($q[0]['mention_unit'] == $unit){
-				$data['record'] = $this->db->query("SELECT * FROM `tb_pemeriksaan` WHERE `pemeriksaan_aktif` = 'Y' AND mention_unit = $unit ORDER BY `tb_pemeriksaan`.`pemeriksaan_id` ASC")->result_array();
+			$found = false;
+			foreach ($q as $row) {
+				$units = explode('/', $row['mention_unit']); // ubah string jadi array
+				if (in_array($unit, $units)) { // cek apakah $unit ada di dalam array
+					$found = true;
+					break;
+				}
+			}
+
+			if($found){
+				$data['record'] = $this->db->query("SELECT * FROM `tb_pemeriksaan` WHERE `pemeriksaan_aktif` = 'Y' AND mention_unit REGEXP '(^|/)$unit(/|$)' ORDER BY `tb_pemeriksaan`.`pemeriksaan_id` ASC")->result_array();
 				$this->template->load('template','kelola-tl/list_pmr_operator', $data);
 			}
 			else{
@@ -1723,8 +1737,22 @@ class Administrator extends CI_Controller {
 					// Jika insert berhasil, ambil ID yang baru dimasukkan
 					$id_rekom = $this->db->insert_id();
 				
-					// Update mention_unit di tb_pemeriksaan
-					$this->db->set('mention_unit', $divisi);
+					// Ambil mention_unit lama
+					$old = $this->db->select('mention_unit')
+					->where('pemeriksaan_id', $id_pmr)
+					->get('tb_pemeriksaan')
+					->row();
+					
+					$mention_unit_lama = $old ? $old->mention_unit : '';
+
+					$arr_unit = array_filter(explode('/', $mention_unit_lama)); // ubah ke array dan hapus kosong
+					if (!in_array($divisi, $arr_unit)) {
+					$arr_unit[] = $divisi; // tambahkan divisi baru jika belum ada
+					}
+					$mention_baru = implode('/', $arr_unit);
+
+					// Simpan kembali ke DB
+					$this->db->set('mention_unit', $mention_baru);
 					$this->db->where('pemeriksaan_id', $id_pmr);
 					$update = $this->db->update('tb_pemeriksaan');
 				
