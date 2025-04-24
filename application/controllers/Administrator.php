@@ -1664,9 +1664,16 @@ class Administrator extends CI_Controller {
 		$unit=$this->session->unit;
 		//$data['record'] = $this->db->query("SELECT * FROM `tb_pemeriksaan`  WHERE `pemeriksaan_aktif` = 'Y' AND unit_id = $unit ORDER BY `tb_pemeriksaan`.`pemeriksaan_id` ASC")->result_array();
 		$q = $this->db->query("SELECT * FROM `tb_pemeriksaan` WHERE `pemeriksaan_aktif` = 'Y' ORDER BY `tb_pemeriksaan`.`pemeriksaan_id` ASC")->result_array();	
-			
-			if($q[0]['mention_unit'] == $unit){
-				$data['record'] = $this->db->query("SELECT * FROM `tb_pemeriksaan` WHERE `pemeriksaan_aktif` = 'Y' AND mention_unit = $unit ORDER BY `tb_pemeriksaan`.`pemeriksaan_id` ASC")->result_array();
+		$found = false;
+		foreach ($q as $row) {
+			$units = explode('/', $row['mention_unit']); // ubah string jadi array
+			if (in_array($unit, $units)) { // cek apakah $unit ada di dalam array
+				$found = true;
+				break;
+			}
+		}
+			if($found){
+				$data['record'] = $this->db->query("SELECT * FROM `tb_pemeriksaan` WHERE `pemeriksaan_aktif` = 'Y' AND mention_unit REGEXP '(^|/)$unit(/|$)' ORDER BY `tb_pemeriksaan`.`pemeriksaan_id` ASC")->result_array();
 				$this->template->load('template','kelola-tl/list_pmr_verifikator', $data);
 			}
 			else{
@@ -2947,7 +2954,7 @@ class Administrator extends CI_Controller {
 					'notifikasi_link' => 'administrator/view_temuan/'.$id_pmr
 				);
 			$this->model_app->insert('tb_notifikasi',$data3);
-			$this->session->set_flashdata('kirim_tnggp','Tanggapan Anda berhasil dikirim ke Kabag');
+			$this->session->set_flashdata('kirim_tnggp','Tanggapan Anda berhasil dikirim ke Kadiv');
 		}
 		redirect('administrator/view_temuan/'.$id_pmr);
 	}
@@ -3062,7 +3069,7 @@ class Administrator extends CI_Controller {
 				'notifikasi_unit' => $unit
 			);
 			$this->model_app->insert('tb_notifikasi',$data4);
-		$this->session->set_flashdata('kirimtanggapan','Tanggapan SPI berhasil dikirim ke Kebun');
+		$this->session->set_flashdata('kirimtanggapan','Tanggapan SPI berhasil dikirim ke Regional/Divisi');
 		redirect('administrator/view_temuan/'.$id_pmr);
 	}
 	public function kembalikan_tanggapan(){
