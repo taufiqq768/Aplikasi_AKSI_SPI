@@ -379,7 +379,7 @@
                                             if ($baris['tl_status_publish_kabag']=='Y' AND $baris['tl_status_kirim']=="N") {
                                               echo "Terkirim ke KADIV SPI";
                                             }elseif ($baris['tl_status_kirim']=="Y") {
-                                              echo "Telah disetujui Kabag dan terkirim ke Kebun";
+                                              echo "Telah disetujui Kadiv dan terkirim ke Regional";
                                             }
                                             ?>
                                           </td>
