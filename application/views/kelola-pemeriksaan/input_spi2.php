@@ -197,13 +197,15 @@
                           <?php endif ?>
                           </div>
                       </div>
-                      <div class="form-group">
-                          <label class="control-label col-md-3">Dokumen LHA</label>
-                              <?php 
-                                $filelha = isset($record4[0]['file_lha']) ? trim(json_encode($record4[0]['file_lha']), '"') : '0';
-                                if ($filelha === '0' || empty($filelha)) 
-                                { 
-                              ?>
+                    </form>
+                 <?php } ?>
+                  <!-- <div class="form-group"> -->
+                        <div class="form-group">
+                          <label class="control-label col-md-3" style="padding-left: 150px">Dokumen LHA</label>
+                          <?php 
+                            $filelha = isset($record4[0]['file_lha']) ? trim(json_encode($record4[0]['file_lha']), '"') : '0';
+                            if ($filelha === '0' || empty($filelha)) { 
+                          ?>
                           <div class="col-md-6 col-sm-6 col-xs-12">
                             <button type="button" id="lha" class="btn btn-success btn-xs" data-toggle="tooltip" data-placement="top" title="Upload Dokumen LHA">Upload Dokumen LHA</button>
                           </div>
@@ -234,46 +236,13 @@
                               <?php 
                                   $checked = (!empty($record4) && isset($record4[0]['status']) && $record4[0]['status'] == 1) ? "checked" : "";
                               ?>
+                              <label class="switch">
+                                  <input type="checkbox" class="send-lha" id="statusCheckbox" data-id="<?= $id_pmr ?>" <?= $checked ?>>
+                                  <span class="slider round"></span>
+                              </label>
+                          </div>
                       </div>
 
-                    </form>
-                 <?php } ?>
-                  <div class="form-group">
-                    <?php $id_pmr = $this->uri->segment(3); ?>
-                    <form action="<?= site_url('administrator/upload_lha/'.$id_pmr) ?>" method="post" enctype="multipart/form-data">
-
-                        <br></br>
-                        <div class="form-group">
-                          <label class="control-label col-md-3">Dokumen LHA Kirim ke Regional/Divisi </label>
-                                <?php 
-
-                                if(isset($record4[0]['status'])){
-                                  $checked = $record4[0]['status'] == 1 ? "checked" : "";
-                                }
-                                else{
-                                  $checked = "";
-                                }
-                                ?>
-                                <?php 
-                                    echo "<br><label class='switch'>
-                                            <input type='checkbox' class='send-lha' data-id='$id_pmr' $checked>
-                                            <span class='slider round'></span>
-                                          </label>";
-                                ?>
-                        </div>
-
-                        <div class="form-groupm lha" style="display:none;">
-                          <label class="control-label col-md-3" style="padding-left: 196px">Nomor LHA</label>
-                          <div class="col-md-6 col-sm-6 col-xs-12">
-                          <input type="text" id="no_lha" required="required" name="no_lha" class="form-control col-md-7 col-xs-12" value="<?php echo set_value('Nomor LHA'); ?>"></br></br></br>
-                          <input type="file" name="file_lha" accept=".pdf" required="required">
-                              <p><strong>(Accepted : .pdf)</strong></p>
-                              <p><strong>Max. size 20MB</strong></p></br>
-                          <button type="submit" name="upload" class="btn btn-primary">simpan</button>
-                        </div>
-                    </form>
-                  </div>
-              <?php //print_r($select); ?>
                     <div class="col-xs-12 col-md-12 col-sm-12 col-lg-12">
                      <?php 
                      $role = $this->model_app->view_where('tb_role','role_id',$this->session->role);

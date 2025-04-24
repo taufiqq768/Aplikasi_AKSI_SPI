@@ -132,15 +132,15 @@
                           <td><?php echo $row['pemeriksaan_judul']; ?></td>
                           <td>
                             <p>
-                                <?= $short_kondisi; ?> ...<span id="dots" class="konten-tinymce">...</span>
-                                <span id="more" style="display:none;"><?= substr($kondisi, 100); ?></span>
+                                <?= $kondisi; ?>" ...<span id="dots" class="konten-tinymce">...</span>
+                                <span id="more" style="display:none;"><?= substr($kondisi, 120); ?></span>
                             </p>
                             <button onclick="toggleReadMore()" id="myBtn">Read More</button>
                           </td>
                           <td>
                             <p>
-                                <?= $short_penyebab; ?> ...<span id="dots1">...</span>
-                                <span id="more1" style="display:none;"><?= substr($penyebab, 100); ?></span>
+                                <?= $penyebab; ?>" ...<span id="dots1">...</span>
+                                <span id="more1" style="display:none;"><?= substr($penyebab, 120); ?></span>
                             </p>
                             <button onclick="toggleReadMore1()" id="myBtn1">Read More</button>
                           </td>
