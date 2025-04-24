@@ -61,7 +61,44 @@
       .slider.round:before {
         border-radius: 50%;
       }
+      .popup-error {
+        display: none;
+        position: absolute;
+        background-color: #ffdddd;
+        color: #a94442;
+        border: 1px solid #a94442;
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-size: 0.9em;
+        z-index: 10;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        animation: fadeIn 0.3s ease-in-out;
+        margin-top: 5px;
+      }
 
+      .popup-error::after {
+        content: "";
+        position: absolute;
+        top: -10px;
+        left: 15px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: transparent transparent #ffdddd transparent;
+      }
+
+      .file-upload-wrapper {
+        position: relative;
+        display: inline-block;
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-5px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      .show-popup {
+        display: block !important;
+      }
       </style>
       <div class="right_col" role="main">
         <div class="">
@@ -170,10 +207,32 @@
                           <div class="col-md-6 col-sm-6 col-xs-12">
                             <button type="button" id="lha" class="btn btn-success btn-xs" data-toggle="tooltip" data-placement="top" title="Upload Dokumen LHA">Upload Dokumen LHA</button>
                           </div>
-                              <?php }
-                              else { 
-                                  echo "<a href='".base_url("asset/file_lha/").$filelha."' target='_blank'><button type=button class='btn btn-warning btn-sm' data-toggle=tooltip data-placement=top title=Download Dokumen LHA style='margin-left: 10px'>Download Dokumen LHA</button></a>";
-                                }
+                          <?php }else{ 
+                              echo "<a href='".base_url("asset/file_lha/").$filelha."' target='_blank'><button type=button class='btn btn-warning btn-sm' data-toggle=tooltip data-placement=top title=Download Dokumen LHA style='margin-left: 10px'>Download Dokumen LHA</button></a>";
+                            }
+                          ?>
+                        </div></br>
+                        <div class="form-group lha" style="display:none;">
+                          <div class="form-groupm">
+                            <?php $id_pmr = $this->uri->segment(3); ?>
+                            <form action="<?= site_url('administrator/upload_lha/'.$id_pmr) ?>" method="post" enctype="multipart/form-data">
+                                  <label class="control-label col-md-3" style="padding-left: 196px">Nomor LHA</label>
+                                  <div class="col-md-6 col-sm-6 col-xs-12">
+                                  <input type="text" id="no_lha" required="required" name="no_lha" class="form-control col-md-7 col-xs-12" value="<?php echo set_value('Nomor LHA'); ?>"></br></br></br>
+                                  <input type="file" name="file_lha" accept=".pdf" required="required" onchange="validateFileSize(this)">
+                                  <div id="popupSizeError" class="popup-error">Ukuran file terlalu besar! Maksimal 25MB.</div>
+                                      <p><strong>(Accepted : .pdf)</strong></p>
+                                      <p><strong>Max. size 25MB</strong></p></br>
+                                  <button type="submit" name="upload" class="btn btn-primary">simpan</button>
+                                </div>
+                            </form>
+                          </div>
+                        </div></br>
+                        <div class="form-group row">
+                          <label class="control-label col-md-3 col-form-label">Dokumen LHA Kirim ke Regional/Divisi</label>
+                          <div class="col-md-9">
+                              <?php 
+                                  $checked = (!empty($record4) && isset($record4[0]['status']) && $record4[0]['status'] == 1) ? "checked" : "";
                               ?>
                       </div>
 
@@ -474,7 +533,20 @@
       $('#bt-remove').on('click', function(){
         $('#forpesan').remove();
       });
-      
+      function validateFileSize(input) {
+        const popup = document.getElementById('popupSizeError');
+        popup.classList.remove('show-popup');
+
+        if (input.files.length > 0 && input.files[0].size > 25000000) {
+          input.value = ""; // reset file input
+          popup.classList.add('show-popup');
+
+          // auto-close after 6 seconds
+          setTimeout(() => {
+            popup.classList.remove('show-popup');
+          }, 6000);
+        }
+      }
     </script>
     <script type="text/javascript">
       $(document).ready(function(){

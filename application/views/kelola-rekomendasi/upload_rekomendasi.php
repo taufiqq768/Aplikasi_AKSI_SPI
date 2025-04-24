@@ -1,11 +1,50 @@
-<title>PTPN XII | Upload File Rekomendasi </title>
+<title>PTPN I | Upload File Rekomendasi </title>
+<style>
+  .popup-error {
+    display: none;
+    position: absolute;
+    background-color: #ffdddd;
+    color: #a94442;
+    border: 1px solid #a94442;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.9em;
+    z-index: 10;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    animation: fadeIn 0.3s ease-in-out;
+    margin-top: 5px;
+  }
 
+  .popup-error::after {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 15px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent #ffdddd transparent;
+  }
+
+  .file-upload-wrapper {
+    position: relative;
+    display: inline-block;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .show-popup {
+    display: block !important;
+  }
+</style>
       <!-- page content -->
       <div class="right_col" role="main">
         <div class="">
           <div class="page-title">
             <div class="title_left">
-              <h3>Form Pemeriksaan Kebun</h3>
+              <h3>Form upload rekomendasi</h3>
             </div>
           </div>
           <div class="clearfix"></div>
@@ -84,7 +123,7 @@
                   </div>
                   <br />
                   <div class="form-group">
-                    <strong>Upload Dokumen (max. size 2MB)</strong><br><span>(Accepted : .jpg, .jpeg, .png, .pdf, .doc, .docx, .xls, .xlsx, .odt)</span>
+                    <strong>Upload Dokumen (max. size 25MB)</strong><br><span>(Accepted : .jpg, .jpeg, .png, .pdf, .doc, .docx, .xls, .xlsx, .odt)</span>
                     <br>
                     <div class="dropzone col-lg-12 col-md-12 col-sm-12 col-xs-12">
                     <div class="dz-message">
@@ -192,7 +231,7 @@
     var redirect = "<?php echo base_url('administrator/list_rekomendasi/');?>";
     var foto_upload= new Dropzone(".dropzone",{
     url: BASE_URL+id_pmr+'/'+id_temuan+'/'+id_rekom,
-    maxFilesize: 50,
+    maxFilesize: 25,
     method:"post",
     maxFiles: 10,
     acceptedFiles:"image/*, .pdf, .doc, .docx, .xls, .xlsx, .odt",
@@ -246,7 +285,7 @@
     var jumlah_form = 1;
     $(".add-more").on('click' , function () {
         // body...
-        $(".tambah-form").append('<div class="txt-form'+jumlah_form+'"><label class="control-label col-md-3 col-sm-3 col-xs-12"></label><div class="input-group col-md-12 col-sm-12 col-xs-12"> <input type="text" class="form-control col-md-7 col-xs-12" name="rekom[]" ><span class="input-group-btn"><button type="button" class="btn btn-danger bt-remove" id="'+jumlah_form+'">Remove</button></span></div><b>Upload Dokumen</b> <span class="file-info">(ekstensi .jpg/ .pdf)</span><div class="col-md-9 col-sm-9 col-xs-12"><input type="file" name="upload[]" id="upload" multiple accept=".jpg, .pdf"><br></div>');
+        $(".tambah-form").append('<div class="txt-form'+jumlah_form+'"><label class="control-label col-md-3 col-sm-3 col-xs-12"></label><div class="input-group col-md-12 col-sm-12 col-xs-12"> <input type="text" class="form-control col-md-7 col-xs-12" name="rekom[]" ><span class="input-group-btn"><button type="button" class="btn btn-danger bt-remove" id="'+jumlah_form+'">Remove</button></span></div><b>Upload Dokumen</b> <span class="file-info">(ekstensi .jpg/ .pdf)</span><div class="col-md-9 col-sm-9 col-xs-12"><input type="file" name="upload[]"  id="upload" multiple accept=".jpg, .pdf"><br></div>');
         jumlah_form++;
         $(".bt-remove").on('click',function(){
           confirm("Apakah Anda yakin ingin Menghapus Tindak Lanjut ?");
