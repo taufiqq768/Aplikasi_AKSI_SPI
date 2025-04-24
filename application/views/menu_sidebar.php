@@ -18,7 +18,7 @@
       <div class="menu_section">
         <h3>Menu <?php print_r($this->session->level); ?></h3>
         <ul class="nav side-menu">
-        <?php if($this->session->level == "operator" OR $this->session->level=="verifikator"){ ?>
+        <?php if($this->session->level=="admin" OR $this->session->level=="spi" OR $this->session->level=="kabagspi" OR $this->session->level=="administrasi") {?>
           <li>
             <a href="<?php echo base_url(); ?>dashboard/status_rekomendasi"><i class="fa fa-home"></i> Dashboard</a>
           </li>
