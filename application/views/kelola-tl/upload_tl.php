@@ -5,7 +5,7 @@
         <div class="">
           <div class="page-title">
             <div class="title_left">
-              <h3>Form Pemeriksaan Kebun</h3>
+              <h3>Form Upload Tindak Lanjut</h3>
             </div>
           </div>
           <div class="clearfix"></div>
@@ -95,7 +95,7 @@
                   </div>
                   <br />
                   <div class="form-group">
-                    <strong>Upload Dokumen (max. size 20MB)</strong><br>(Accepted : .jpg, .jpeg, .png, .pdf, .doc, .docx, .xls, .xlsx, .odt)
+                    <strong>Upload Dokumen (max. size 25MB)</strong><br>(Accepted : .jpg, .jpeg, .png, .pdf, .doc, .docx, .xls, .xlsx, .odt)
                     <br>
                     <div class="dropzone col-lg-12 col-md-12 col-xs-12">
                     <div class="dz-message">
@@ -185,7 +185,7 @@
     var redirect = "<?php echo base_url('administrator/list_tl/');?>";
     var foto_upload= new Dropzone(".dropzone",{
     url: BASE_URL+id_pmr+'/'+id_temuan+'/'+id_rekom+'/'+id_tl,
-    maxFilesize: 50,
+    maxFilesize: 25,
     method:"post",
     maxFiles: 10,
     acceptedFiles:"image/*, .pdf, .doc, .docx, .xls, .xlsx, .odt",

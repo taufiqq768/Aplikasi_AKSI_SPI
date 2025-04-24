@@ -135,8 +135,8 @@
                         <tr>
                           <th><input type="checkbox" id="select_all" /></th>
                           <th>No.</th>
-                          <th style="width: 350px"><center>Rekomendasi</center></th>
-                          <th style="width: 170px"><center>Klasifikasi Rekomendasi</center></th>
+                          <th style="width: 250px"><center>Rekomendasi</center></th>
+                          <th style="width: 150px"><center>Klasifikasi Rekomendasi</center></th>
                           <th style="width: 170px"><center>Tujuan Rekomendasi</center></th>
                           <th style="width: 170px"><center>Dokumen</center></th>
                           <th style="width: 70px"><center>Tanggal Deadline</center></th>

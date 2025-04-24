@@ -1,5 +1,44 @@
   <title>AKSI | Tambah Pemeriksaan </title>
+  <style>
+  .popup-error {
+    display: none;
+    position: absolute;
+    background-color: #ffdddd;
+    color: #a94442;
+    border: 1px solid #a94442;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.9em;
+    z-index: 10;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    animation: fadeIn 0.3s ease-in-out;
+    margin-top: 5px;
+  }
 
+  .popup-error::after {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 15px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent #ffdddd transparent;
+  }
+
+  .file-upload-wrapper {
+    position: relative;
+    display: inline-block;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .show-popup {
+    display: block !important;
+  }
+</style>
       <!-- page content -->
       <div class="right_col" role="main">
         <div class="">
@@ -153,7 +192,8 @@
                     <div class="form-group">
                       <label class="control-label col-md-3 col-sm-3 col-xs-12" enctype="multipart/form-data">Upload Dokumen Surat Tugas</label>
                       <div class="col-md-6 col-sm-6 col-xs-12">
-                        <input type="file" name="file_pmr" id="dokumen" accept=".jpg, .pdf, .xls, .xlsx, .doc, .docx, .odt, .png">
+                        <input type="file" name="file_pmr" id="dokumen" required="required" accept=".jpg, .pdf, .xls, .xlsx, .doc, .docx, .odt, .png" onchange="validateFileSize(this)">
+                        <div id="popupSizeError" class="popup-error">Ukuran file terlalu besar! Maksimal 25MB.</div>
                         <p><strong>(Accepted : .jpg, .jpeg, .png, .pdf, .doc, .docx, .xls, .xlsx, .odt)</strong></p>
                         <p><strong>Max. size 25MB</strong></p>
                       </div>
@@ -249,6 +289,20 @@
           placeholder: "Pilih Petugas DSPI"
         });
       });
+      function validateFileSize(input) {
+        const popup = document.getElementById('popupSizeError');
+        popup.classList.remove('show-popup');
+
+        if (input.files.length > 0 && input.files[0].size > 25000000) {
+          input.value = ""; // reset file input
+          popup.classList.add('show-popup');
+
+          // auto-close after 6 seconds
+          setTimeout(() => {
+            popup.classList.remove('show-popup');
+          }, 6000);
+        }
+      }
     </script>
     <script type="text/javascript">
       $('#tgl_st').datetimepicker({

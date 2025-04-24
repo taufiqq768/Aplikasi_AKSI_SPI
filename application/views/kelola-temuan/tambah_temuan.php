@@ -1,7 +1,45 @@
   <title>AKSI | Tambah Temuan</title>
-  <head>
+  <head>tambah temuan</head>
+  <style>
+  .popup-error {
+    display: none;
+    position: absolute;
+    background-color: #ffdddd;
+    color: #a94442;
+    border: 1px solid #a94442;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.9em;
+    z-index: 10;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    animation: fadeIn 0.3s ease-in-out;
+    margin-top: 5px;
+  }
 
-  </head>
+  .popup-error::after {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 15px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent #ffdddd transparent;
+  }
+
+  .file-upload-wrapper {
+    position: relative;
+    display: inline-block;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .show-popup {
+    display: block !important;
+  }
+  </style>
   <script src="<?php echo base_url(); ?>/asset/tinymce/tinymce.min.js"></script>
   <script>
     tinymce.init({
@@ -184,9 +222,10 @@
                       <label class="control-label col-md-2 col-sm-2 col-xs-12" for="first-name">Upload Dokumen Pendukung
                       </label>
                       <div class="col-md-10 col-sm-9 col-xs-12">
-                      <input type="file" name="upload" accept=".pdf">
+                      <input type="file" name="upload" accept=".pdf" onchange="validateFileSize(this)">
+                      <div id="popupSizeError" class="popup-error">Ukuran file terlalu besar! Maksimal 25MB.</div>
                               <p><strong>(Accepted : .pdf)</strong></p>
-                              <p><strong>Max. size 20MB</strong></p></br>
+                              <p><strong>Max. size 25MB</strong></p></br>
                       </div>
                     </div>
                 <div class="ln_solid"></div>
@@ -284,4 +323,18 @@
     <script type="text/javascript">
       $('#myDatepicker').datetimepicker({
         format: 'YYYY-MM-DD' });
+      function validateFileSize(input) {
+        const popup = document.getElementById('popupSizeError');
+        popup.classList.remove('show-popup');
+
+        if (input.files.length > 0 && input.files[0].size > 25000000) {
+          input.value = ""; // reset file input
+          popup.classList.add('show-popup');
+
+          // auto-close after 6 seconds
+          setTimeout(() => {
+            popup.classList.remove('show-popup');
+          }, 6000);
+        }
+      }
     </script>
