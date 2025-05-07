@@ -7,6 +7,7 @@ class Tabulasi extends CI_Controller {
     {
         if ($this->session->level=="admin" OR $this->session->level=="spi" OR $this->session->level=="verifikator" OR $this->session->level=="operator" OR $this->session->level=="kabagspi" OR $this->session->level=="viewer"  OR $this->session->level=="administrasi")  
         {
+                //Record
                 $data['record'] = $this->db->query("SELECT 
                     COALESCE(t.jumlah_temuan, 0) AS jumlah_temuan,
                     l.tahun,
@@ -16,16 +17,16 @@ class Tabulasi extends CI_Controller {
                     COALESCE(r.jumlah_bd, 0) AS jumlah_bd,
                     COALESCE(r.jumlah_bs, 0) AS jumlah_bs,
                     COALESCE(r.jumlah_tdd, 0) AS jumlah_tdd,
-                    COALESCE(r.rekomendasi_status_tanggal, '-') AS rekomendasi_status_tanggal
+                    COALESCE(r.rekomendasi_status_tanggal, '-') AS rekomendasi_status_tanggal,
+                    p.pemeriksaan_judul
                 FROM tb_lha l
                 LEFT JOIN (
                     SELECT 
                         pemeriksaan_id, 
-                        COUNT(DISTINCT temuan_id) AS jumlah_temuan
-                    FROM tb_temuan
+                        COUNT(DISTINCT temuan_id) AS jumlah_temuan 
+                    FROM tb_temuan 
                     GROUP BY pemeriksaan_id
                 ) t ON t.pemeriksaan_id = l.id_pemeriksaan
-
                 LEFT JOIN (
                     SELECT 
                         pemeriksaan_id, 
@@ -34,14 +35,27 @@ class Tabulasi extends CI_Controller {
                         SUM(CASE WHEN rekomendasi_status = 'Belum di Tindak Lanjut' THEN 1 ELSE 0 END) AS jumlah_bd,
                         SUM(CASE WHEN rekomendasi_status = 'Belum Sesuai' THEN 1 ELSE 0 END) AS jumlah_bs,
                         SUM(CASE WHEN rekomendasi_status = 'Tidak dapat di Tindak Lanjuti' THEN 1 ELSE 0 END) AS jumlah_tdd,
-                        MAX(rekomendasi_status_tanggal) AS rekomendasi_status_tanggal -- Menampilkan tanggal terbaru
-                    FROM tb_rekomendasi
+                        MAX(rekomendasi_status_tanggal) AS rekomendasi_status_tanggal
+                    FROM tb_rekomendasi 
                     GROUP BY pemeriksaan_id
                 ) r ON r.pemeriksaan_id = l.id_pemeriksaan
-
-                GROUP BY l.tahun, l.no_lha, t.jumlah_temuan, r.jumlah_rekomendasi, r.jumlah_s, r.jumlah_bd, r.jumlah_bs, r.jumlah_tdd, r.rekomendasi_status_tanggal")->result_array();
-            
+                LEFT JOIN tb_pemeriksaan p ON p.pemeriksaan_id = l.id_pemeriksaan
+                GROUP BY 
+                    l.tahun, 
+                    l.no_lha, 
+                    t.jumlah_temuan, 
+                    r.jumlah_rekomendasi, 
+                    r.jumlah_s, 
+                    r.jumlah_bd, 
+                    r.jumlah_bs, 
+                    r.jumlah_tdd, 
+                    r.rekomendasi_status_tanggal,
+                    p.pemeriksaan_judul")->result_array();
+              
+            //Record2
             $data['record2'] = $this->db->query("SELECT t.tanggal, mt.kode_temuan, mt.klasifikasi_temuan, COALESCE(COUNT(tt.temu_id), 0) AS jumlah_kemunculan FROM (SELECT DISTINCT temuan_tgl AS tanggal FROM tb_temuan) t CROSS JOIN tb_master_temuan mt LEFT JOIN tb_temuan tt ON mt.temu_id = tt.temu_id AND t.tanggal = tt.temuan_tgl GROUP BY t.tanggal, mt.klasifikasi_temuan, mt.kode_temuan ORDER BY t.tanggal, mt.kode_temuan")->result_array();
+            
+            //Record3
             $data['record3'] = $this->db->query("SELECT 
                     t1.temuan_tgl AS tanggal,
                     bt.bidangtemuan_nama,
