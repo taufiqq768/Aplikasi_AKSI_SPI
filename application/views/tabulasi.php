@@ -99,7 +99,7 @@
                                         <?php $nomer = 1; foreach ($record as $kk4) {  ?>
                                         <tr>
                                             <td><?php echo $nomer."." ?></td>
-                                            <td>LHA Audit Tahun <?php echo $kk4['tahun']; ?></td>
+                                            <td><?php echo $kk4['pemeriksaan_judul']; ?></td>
                                             <td><?php echo $kk4['jumlah_temuan']; ?></td>
                                             <td><?php echo $kk4['jumlah_rekomendasi']; ?></td>
 
