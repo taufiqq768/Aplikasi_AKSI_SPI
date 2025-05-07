@@ -321,9 +321,13 @@ class Administrator extends CI_Controller {
                 }
 				$this->template->load('template','kelola-pemeriksaan/list_pemeriksaan',$data);
 			}else{
-				$data['unit'] = $this->model_app->view_ordering('tb_unit','unit_id','ASC');
-				$data['record'] = $this->model_app->view_join('tb_pemeriksaan','tb_unit','unit_id','pemeriksaan_id','DESC');
-				$this->template->load('template','kelola-pemeriksaan/list_pemeriksaan',$data);
+				$nik=$this->session->nik;
+				$niks = explode('/', $nik);
+				foreach ($niks as $n) {
+					$data['unit'] = $this->model_app->view_ordering('tb_unit','unit_id','ASC');
+					$data['record'] = $this->db->query("SELECT * FROM `tb_pemeriksaan` JOIN `tb_unit` ON `tb_pemeriksaan`.`unit_id`=`tb_unit`.`unit_id` WHERE `pemeriksaan_petugas` LIKE '%$n%' ORDER BY `pemeriksaan_id` DESC")->result_array();
+					$this->template->load('template','kelola-pemeriksaan/list_pemeriksaan',$data);
+				}
 			}
 		}else{
 			redirect('administrator');
