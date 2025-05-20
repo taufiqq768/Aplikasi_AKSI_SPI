@@ -136,7 +136,7 @@ class Tabulasi extends CI_Controller {
         }
         else
         {
-            redirect('administrator');
+            redirect('tabulasi');
         }
     }
 
