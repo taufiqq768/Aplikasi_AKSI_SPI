@@ -25,6 +25,9 @@
           <li>
             <a href="<?php echo base_url(); ?>tabulasi/status_rekomendasi"><i class="fa fa-home"></i> Dashboard Tabulasi</a>
           </li>
+          <li>
+            <a href="<?php echo base_url(); ?>monitoring/tindak_lanjut"><i class="fa fa-desktop"></i> Monitoring Tindak Lanjut</a>
+          </li>
           <?php } ?>
           <?php if($this->session->level=="admin" OR $this->session->level=="spi" OR $this->session->level=="kabagspi" OR $this->session->level=="administrasi") {?>
           <li><a><i class="fa fa-edit"></i>Pemeriksaan <span class="fa fa-chevron-down"></span></a>
