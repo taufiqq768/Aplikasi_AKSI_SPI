@@ -12,41 +12,38 @@ class Dashboard extends CI_Controller {
     {
         if ($this->session->level=="admin" OR $this->session->level=="spi" OR $this->session->level=="verifikator" OR $this->session->level=="operator" OR $this->session->level=="kabagspi" OR $this->session->level=="viewer"  OR $this->session->level=="administrasi")  
         {
+                //Record
                 $data['record'] = $this->db->query("SELECT 
-                    COALESCE(t.jumlah_temuan, 0) AS jumlah_temuan,
-                    l.tahun,
-                    l.no_lha,
-                    COALESCE(r.jumlah_rekomendasi, 0) AS jumlah_rekomendasi,
-                    COALESCE(r.jumlah_s, 0) AS jumlah_s,
-                    COALESCE(r.jumlah_bd, 0) AS jumlah_bd,
-                    COALESCE(r.jumlah_bs, 0) AS jumlah_bs,
-                    COALESCE(r.jumlah_tdd, 0) AS jumlah_tdd,
-                    COALESCE(r.rekomendasi_status_tanggal, '-') AS rekomendasi_status_tanggal
-                FROM tb_lha l
+                    CONCAT('LHA Terbit ', DATE_FORMAT(MAX(r.rekomendasi_status_tanggal), '%Y')) AS uraian,
+                    DATE_FORMAT(r.rekomendasi_status_tanggal, '%Y-%m') AS bulan,
+                    COUNT(DISTINCT l.no_lha) AS jumlah_lha,
+                    SUM(COALESCE(t.jumlah_temuan, 0)) AS jumlah_temuan,
+                    SUM(COALESCE(r.jumlah_rekomendasi, 0)) AS jumlah_rekomendasi
+                FROM 
+                    tb_lha l
                 LEFT JOIN (
                     SELECT 
                         pemeriksaan_id, 
-                        COUNT(DISTINCT temuan_id) AS jumlah_temuan
-                    FROM tb_temuan
+                        COUNT(DISTINCT temuan_id) AS jumlah_temuan 
+                    FROM tb_temuan 
                     GROUP BY pemeriksaan_id
                 ) t ON t.pemeriksaan_id = l.id_pemeriksaan
-
                 LEFT JOIN (
                     SELECT 
                         pemeriksaan_id, 
                         COUNT(DISTINCT rekomendasi_id) AS jumlah_rekomendasi,
-                        SUM(CASE WHEN rekomendasi_status = 'Sesuai' THEN 1 ELSE 0 END) AS jumlah_s,
-                        SUM(CASE WHEN rekomendasi_status = 'Belum di Tindak Lanjut' THEN 1 ELSE 0 END) AS jumlah_bd,
-                        SUM(CASE WHEN rekomendasi_status = 'Belum Sesuai' THEN 1 ELSE 0 END) AS jumlah_bs,
-                        SUM(CASE WHEN rekomendasi_status = 'Tidak dapat di Tindak Lanjuti' THEN 1 ELSE 0 END) AS jumlah_tdd,
-                        MAX(rekomendasi_status_tanggal) AS rekomendasi_status_tanggal -- Menampilkan tanggal terbaru
-                    FROM tb_rekomendasi
+                        MAX(rekomendasi_status_tanggal) AS rekomendasi_status_tanggal
+                    FROM tb_rekomendasi 
                     GROUP BY pemeriksaan_id
                 ) r ON r.pemeriksaan_id = l.id_pemeriksaan
-
-                GROUP BY l.tahun, l.no_lha, t.jumlah_temuan, r.jumlah_rekomendasi, r.jumlah_s, r.jumlah_bd, r.jumlah_bs, r.jumlah_tdd, r.rekomendasi_status_tanggal")->result_array();
+                WHERE 
+                    r.rekomendasi_status_tanggal IS NOT NULL
+                GROUP BY 
+                    DATE_FORMAT(r.rekomendasi_status_tanggal, '%Y-%m')
+                ORDER BY 
+                    bulan ASC")->result_array();
             
-             // DATA BULAN BERJALAN SAJA
+             // DATA BULAN BERJALAN SAJA RECORD 2
             $data['bulan_berjalan'] = $this->db->query("
             SELECT 
                 t.tanggal, 
@@ -64,11 +61,10 @@ class Dashboard extends CI_Controller {
                 ON mt.temu_id = tt.temu_id 
             AND t.tanggal = tt.temuan_tgl
             GROUP BY t.tanggal, mt.klasifikasi_temuan, mt.kode_temuan
-            ORDER BY t.tanggal, mt.kode_temuan
-        ")->result_array();
+            ORDER BY t.tanggal, mt.kode_temuan")->result_array();
 
         // -------------------------------
-        // DATA DARI JANUARI S/D BULAN SEKARANG
+        // DATA DARI JANUARI S/D BULAN SEKARANG RECORD 2
         $data['kumulatif'] = $this->db->query("
             SELECT 
                 t.tanggal, 
@@ -86,10 +82,9 @@ class Dashboard extends CI_Controller {
                 ON mt.temu_id = tt.temu_id 
             AND t.tanggal = tt.temuan_tgl
             GROUP BY t.tanggal, mt.klasifikasi_temuan, mt.kode_temuan
-            ORDER BY t.tanggal, mt.kode_temuan
-        ")->result_array();
+            ORDER BY t.tanggal, mt.kode_temuan")->result_array();
             
-            
+            //Record3
             $data['record3'] = $this->db->query("SELECT 
                     t1.temuan_tgl AS tanggal,
                     bt.bidangtemuan_nama,
@@ -129,33 +124,48 @@ class Dashboard extends CI_Controller {
                 $data['record_bidang_bulan'] = $bulan_berjalan;
                 $data['record_bidang_kumulatif'] = $kumulatif;
 
-                
+            //Record4    
             $data['record4'] = $this->db->query("WITH Bulan AS (
-                SELECT DISTINCT DATE_FORMAT(pemeriksaan_tgl_mulai, '%Y-%m') AS periode
-                FROM tb_pemeriksaan
-                WHERE YEAR(pemeriksaan_tgl_mulai) = YEAR(CURDATE()) 
-            ),
-            JenisAudit AS (
-                SELECT 'Rutin' AS jenis_audit UNION ALL
-                SELECT 'Khusus' UNION ALL
-                SELECT 'Tematik'
-            )
+            SELECT DISTINCT DATE_FORMAT(pemeriksaan_tgl_mulai, '%Y-%m') AS periode
+            FROM tb_pemeriksaan
+            WHERE YEAR(pemeriksaan_tgl_mulai) = YEAR(CURDATE())
+        ),
+        JenisAudit AS (
+            SELECT 'Rutin' AS jenis_audit
+            UNION ALL SELECT 'Khusus'
+            UNION ALL SELECT 'Tematik'
+        ),
+        PemeriksaanFix AS (
             SELECT 
-                b.periode AS bulan,
-                j.jenis_audit,
-                COALESCE(SUM(p.jumlah), 0) AS jumlah_pkpt,
-                COALESCE(COUNT(DISTINCT pe.pemeriksaan_id), 0) AS jumlah_pemeriksaan
-            FROM Bulan b
-            CROSS JOIN JenisAudit j
-            LEFT JOIN tb_pkpt p ON j.jenis_audit = p.jenis_audit
-            LEFT JOIN tb_pemeriksaan pe 
-                ON j.jenis_audit = pe.pemeriksaan_jenis 
-                AND pe.pemeriksaan_pkpt = 'pkpt' 
-                AND DATE_FORMAT(pe.pemeriksaan_tgl_mulai, '%Y-%m') = b.periode
-            GROUP BY b.periode, j.jenis_audit
-            ORDER BY b.periode, FIELD(j.jenis_audit, 'Rutin', 'Khusus', 'Tematik')")->result_array();
+                pemeriksaan_id,
+                pemeriksaan_jenis,
+                DATE_FORMAT(pemeriksaan_tgl_mulai, '%Y-%m') AS periode
+            FROM tb_pemeriksaan
+            WHERE YEAR(pemeriksaan_tgl_mulai) = YEAR(CURDATE())
+        ),
+        PKPT_Sum AS (
+            SELECT 
+                jenis_audit,
+                SUM(jumlah) AS jumlah_pkpt
+            FROM tb_pkpt
+            GROUP BY jenis_audit
+        )
+        SELECT 
+            b.periode AS bulan,
+            j.jenis_audit,
+            COALESCE(pks.jumlah_pkpt, 0) AS jumlah_pkpt,
+            COALESCE(COUNT(DISTINCT pf.pemeriksaan_id), 0) AS jumlah_pemeriksaan
+        FROM Bulan b
+        CROSS JOIN JenisAudit j
+        LEFT JOIN PKPT_Sum pks 
+            ON j.jenis_audit = pks.jenis_audit
+        LEFT JOIN PemeriksaanFix pf 
+            ON j.jenis_audit = pf.pemeriksaan_jenis
+            AND pf.periode = b.periode
+        GROUP BY b.periode, j.jenis_audit, pks.jumlah_pkpt
+        ORDER BY b.periode, FIELD(j.jenis_audit, 'Rutin', 'Khusus', 'Tematik');
+        ")->result_array();
            
-
             $this->template->load('template','dashboard',$data);
         }
         else

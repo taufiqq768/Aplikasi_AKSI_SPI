@@ -70,39 +70,36 @@ class Tabulasi extends CI_Controller {
             
             //Record4
             $data['record4'] = $this->db->query("WITH Bulan AS (
-                SELECT 
-                    DATE_FORMAT(DATE_ADD(DATE_FORMAT(CURDATE(), '%Y-01-01'), INTERVAL (n.n) MONTH), '%Y-%m') AS periode
-                FROM 
-                    (SELECT 0 AS n UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL 
-                    SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL 
-                    SELECT 8 UNION ALL SELECT 9 UNION ALL SELECT 10 UNION ALL SELECT 11) AS n
+                SELECT DATE_FORMAT(DATE_ADD(DATE_FORMAT(CURDATE(), '%Y-01-01'), INTERVAL (n.n) MONTH), '%Y-%m') AS periode
+                FROM (
+                    SELECT 0 AS n UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL 
+                    SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL 
+                    SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL 
+                    SELECT 9 UNION ALL SELECT 10 UNION ALL SELECT 11
+                ) AS n
             ),
             JenisAudit AS (
                 SELECT 'Rutin' AS jenis_audit
-                UNION ALL
-                SELECT 'Khusus'
-                UNION ALL
-                SELECT 'Tematik'
+                UNION ALL SELECT 'Khusus'
+                UNION ALL SELECT 'Tematik'
             ),
             PKPT_PerBulan AS (
                 SELECT 
-                    CONCAT(tahun, '-', 
-                        LPAD(
-                            CASE 
-                                WHEN bulan = 'Januari' THEN 1
-                                WHEN bulan = 'Februari' THEN 2
-                                WHEN bulan = 'Maret' THEN 3
-                                WHEN bulan = 'April' THEN 4
-                                WHEN bulan = 'Mei' THEN 5
-                                WHEN bulan = 'Juni' THEN 6
-                                WHEN bulan = 'Juli' THEN 7
-                                WHEN bulan = 'Agustus' THEN 8
-                                WHEN bulan = 'September' THEN 9
-                                WHEN bulan = 'Oktober' THEN 10
-                                WHEN bulan = 'November' THEN 11
-                                WHEN bulan = 'Desember' THEN 12
-                            END, 
-                        2, '0')
+                    CONCAT(tahun, '-', LPAD(
+                        CASE 
+                            WHEN bulan = 'Januari' THEN 1
+                            WHEN bulan = 'Februari' THEN 2
+                            WHEN bulan = 'Maret' THEN 3
+                            WHEN bulan = 'April' THEN 4
+                            WHEN bulan = 'Mei' THEN 5
+                            WHEN bulan = 'Juni' THEN 6
+                            WHEN bulan = 'Juli' THEN 7
+                            WHEN bulan = 'Agustus' THEN 8
+                            WHEN bulan = 'September' THEN 9
+                            WHEN bulan = 'Oktober' THEN 10
+                            WHEN bulan = 'November' THEN 11
+                            WHEN bulan = 'Desember' THEN 12
+                        END, 2, '0')
                     ) AS periode,
                     jenis_audit,
                     jumlah
@@ -115,10 +112,12 @@ class Tabulasi extends CI_Controller {
                 GROUP BY periode, jenis_audit
             ),
             Agg_Pemeriksaan AS (
-                SELECT DATE_FORMAT(pemeriksaan_tgl_mulai, '%Y-%m') AS periode, pemeriksaan_jenis AS jenis_audit, COUNT(DISTINCT pemeriksaan_id) AS jumlah_pemeriksaan
+                SELECT 
+                    DATE_FORMAT(pemeriksaan_tgl_mulai, '%Y-%m') AS periode,
+                    pemeriksaan_jenis AS jenis_audit,
+                    COUNT(DISTINCT pemeriksaan_id) AS jumlah_pemeriksaan
                 FROM tb_pemeriksaan
-                WHERE pemeriksaan_pkpt = 'pkpt' 
-                AND YEAR(pemeriksaan_tgl_mulai) = YEAR(CURDATE())
+                WHERE YEAR(pemeriksaan_tgl_mulai) = YEAR(CURDATE()) -- 🟢 tanpa filter pemeriksaan_pkpt
                 GROUP BY periode, jenis_audit
             )
             SELECT 
@@ -128,8 +127,10 @@ class Tabulasi extends CI_Controller {
                 COALESCE(pm.jumlah_pemeriksaan, 0) AS jumlah_pemeriksaan
             FROM Bulan b
             CROSS JOIN JenisAudit j
-            LEFT JOIN Agg_PKPT pkpt ON pkpt.periode = b.periode AND pkpt.jenis_audit = j.jenis_audit
-            LEFT JOIN Agg_Pemeriksaan pm ON pm.periode = b.periode AND pm.jenis_audit = j.jenis_audit
+            LEFT JOIN Agg_PKPT pkpt 
+                ON pkpt.periode = b.periode AND pkpt.jenis_audit = j.jenis_audit
+            LEFT JOIN Agg_Pemeriksaan pm 
+                ON pm.periode = b.periode AND pm.jenis_audit = j.jenis_audit
             ORDER BY b.periode, FIELD(j.jenis_audit, 'Rutin', 'Khusus', 'Tematik')")->result_array();            
 
             $this->template->load('template','tabulasi',$data);
