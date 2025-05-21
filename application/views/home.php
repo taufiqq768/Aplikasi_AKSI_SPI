@@ -1,6 +1,5 @@
-<title>AKSI | Dashboard</title>
 <script src="<?php echo base_url(); ?>/asset/chartjs/Chart.js"></script>
-        <div class="right_col" role="main">
+      
           <?php $unit = $this->session->unit;
           $namaunit = $this->db->query("SELECT * FROM tb_unit WHERE unit_id='$unit'")->row_array();
           ?>
@@ -273,7 +272,7 @@
 
           </div>
           
-        </div>
+      
         <!-- /page content -->
 
     <script>

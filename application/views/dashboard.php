@@ -10,6 +10,7 @@
 	<div class="row">
 		<div>
 			<div class="x_panel tile fixed_height_420 overflow_hidden">
+				<?php $this->load->view('home'); ?>
 				<div class="x_title">
 					<ul class="nav navbar-right panel_toolbox">
 						<li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li><!-- 

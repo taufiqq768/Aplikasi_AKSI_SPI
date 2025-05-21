@@ -26,7 +26,7 @@ class Administrator extends CI_Controller {
             	}
 				else
 				{
-                	redirect('administrator/home');
+                	redirect('dashboard/status_rekomendasi');
             	}
             }else{
                 $data['pesan'] = 'Username atau Password salah!';
