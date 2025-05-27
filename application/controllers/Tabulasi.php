@@ -117,7 +117,7 @@ class Tabulasi extends CI_Controller {
                     pemeriksaan_jenis AS jenis_audit,
                     COUNT(DISTINCT pemeriksaan_id) AS jumlah_pemeriksaan
                 FROM tb_pemeriksaan
-                WHERE YEAR(pemeriksaan_tgl_mulai) = YEAR(CURDATE()) -- 🟢 tanpa filter pemeriksaan_pkpt
+                WHERE YEAR(pemeriksaan_tgl_mulai) = YEAR(CURDATE()) 
                 GROUP BY periode, jenis_audit
             )
             SELECT 
