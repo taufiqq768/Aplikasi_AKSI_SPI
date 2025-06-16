@@ -133,6 +133,60 @@ class Tabulasi extends CI_Controller {
                 ON pm.periode = b.periode AND pm.jenis_audit = j.jenis_audit
             ORDER BY b.periode, FIELD(j.jenis_audit, 'Rutin', 'Khusus', 'Tematik')")->result_array();            
 
+            //RECORD 5
+            $data['record5'] = $this->db->query("
+                SELECT 
+                    t.temuan_tgl, 
+                    mp.sebab_kode, 
+                    mp.klasifikasi_sebab, 
+                    COALESCE(COUNT(tt.sebab_id), 0) AS jumlah_kemunculan
+                FROM 
+                    (SELECT DISTINCT temuan_tgl FROM tb_temuan) t
+                CROSS JOIN 
+                    tb_master_penyebab mp
+                LEFT JOIN 
+                    tb_temuan tt ON mp.sebab_id = tt.sebab_id AND t.temuan_tgl = tt.temuan_tgl
+                GROUP BY 
+                    t.temuan_tgl, mp.klasifikasi_sebab, mp.sebab_kode
+                ORDER BY 
+                    t.temuan_tgl, mp.sebab_kode")->result_array();
+            //record6
+            $data['record6'] = $this->db->query("
+                SELECT 
+                    t.temuan_tgl, 
+                    mc.kode_coso, 
+                    mc.klasifikasi_coso, 
+                    COALESCE(COUNT(tt.coso_id), 0) AS jumlah_kemunculan
+                FROM 
+                    (SELECT DISTINCT temuan_tgl FROM tb_temuan) t
+                CROSS JOIN 
+                    tb_master_coso mc
+                LEFT JOIN 
+                    tb_temuan tt ON mc.coso_id = tt.coso_id AND t.temuan_tgl = tt.temuan_tgl
+                GROUP BY 
+                    t.temuan_tgl, mc.klasifikasi_coso, mc.kode_coso
+                ORDER BY 
+                    t.temuan_tgl, mc.kode_coso")->result_array();
+                
+            $data['record7'] = $this->db->query("
+                SELECT 
+                    t.temuan_tgl, 
+                    mab.kode_ab, 
+                    mab.judul_ab, 
+                    COALESCE(COUNT(tt.id_klasifikasi_ab), 0) AS jumlah_kemunculan
+                FROM 
+                    (SELECT DISTINCT temuan_tgl FROM tb_temuan) t
+                CROSS JOIN 
+                    tb_master_ab mab
+                LEFT JOIN 
+                    tb_temuan tt ON mab.id_ab = tt.id_klasifikasi_ab AND t.temuan_tgl = tt.temuan_tgl
+                GROUP BY 
+                    t.temuan_tgl, mab.judul_ab, mab.kode_ab
+                ORDER BY 
+                    t.temuan_tgl, mab.kode_ab")->result_array();
+
+
+
             $this->template->load('template','tabulasi',$data);
         }
         else

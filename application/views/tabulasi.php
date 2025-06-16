@@ -181,7 +181,7 @@
                             <button class="tab-button active" data-tab="temuan">Klasifikasi Temuan</button>
                             <button class="tab-button" data-tab="penyebab">Klasifikasi Penyebab</button>
                             <button class="tab-button" data-tab="coso">Klasifikasi COSO</button>
-                            <button class="tab-button" data-tab="audit">Klasifikasi Kode A dan B</button>
+                            <button class="tab-button" data-tab="ab">Klasifikasi Kode A dan B</button>
                         </div>
                             <div id="temuan" class="tab-content" style="display: block;">
                                 <div class="x_content">
@@ -189,187 +189,331 @@
                                         <span class="fa fa-file-excel-o"></span>
                                     </button>
                                     <div class="table-responsive">
-                                    <?php
-                                        // Array bulan dalam Bahasa Indonesia (Januari - Desember)
-                                        $bulan_indonesia = [
-                                            '01' => 'Januari', '02' => 'Februari', '03' => 'Maret',
-                                            '04' => 'April', '05' => 'Mei', '06' => 'Juni',
-                                            '07' => 'Juli', '08' => 'Agustus', '09' => 'September',
-                                            '10' => 'Oktober', '11' => 'November', '12' => 'Desember'
-                                        ];
-                                        // Inisialisasi data
-                                        $data_temuan = [];
-                                        $total_per_bulan = array_fill_keys(array_keys($bulan_indonesia), 0); // Setiap bulan default 0
-                                        $total_semua = 0;
+                                        <?php
+                                            // Array bulan dalam Bahasa Indonesia (Januari - Desember)
+                                            $bulan_indonesia = [
+                                                '01' => 'Januari', '02' => 'Februari', '03' => 'Maret',
+                                                '04' => 'April', '05' => 'Mei', '06' => 'Juni',
+                                                '07' => 'Juli', '08' => 'Agustus', '09' => 'September',
+                                                '10' => 'Oktober', '11' => 'November', '12' => 'Desember'
+                                            ];
+                                            // Inisialisasi data
+                                            $data_temuan = [];
+                                            $total_per_bulan = array_fill_keys(array_keys($bulan_indonesia), 0); // Setiap bulan default 0
+                                            $total_semua = 0;
 
-                                        // Proses data dari database
-                                        foreach ($record2 as $row) {
-                                            $bulan = date('m', strtotime($row['tanggal'] . '-01')); // Ambil bulan dalam format MM
-                                            $kode_temuan = $row['kode_temuan'];
+                                            // Proses data dari database
+                                            foreach ($record2 as $row) {
+                                                $bulan = date('m', strtotime($row['tanggal'] . '-01')); // Ambil bulan dalam format MM
+                                                $kode_temuan = $row['kode_temuan'];
 
-                                            // Jika bulan tidak valid, lewati iterasi ini
-                                            if (!isset($bulan_indonesia[$bulan])) {
-                                                continue;
+                                                // Jika bulan tidak valid, lewati iterasi ini
+                                                if (!isset($bulan_indonesia[$bulan])) {
+                                                    continue;
+                                                }
+
+                                                // Simpan data temuan
+                                                $data_temuan[$kode_temuan]['kode'] = $row['kode_temuan'];
+                                                $data_temuan[$kode_temuan]['uraian'] = $row['klasifikasi_temuan'];
+                                                $data_temuan[$kode_temuan]['data'][$bulan] = $row['jumlah_kemunculan'];
+
+                                                // Hitung total per bulan
+                                                $total_per_bulan[$bulan] += $row['jumlah_kemunculan'];
                                             }
 
-                                            // Simpan data temuan
-                                            $data_temuan[$kode_temuan]['kode'] = $row['kode_temuan'];
-                                            $data_temuan[$kode_temuan]['uraian'] = $row['klasifikasi_temuan'];
-                                            $data_temuan[$kode_temuan]['data'][$bulan] = $row['jumlah_kemunculan'];
-
-                                            // Hitung total per bulan
-                                            $total_per_bulan[$bulan] += $row['jumlah_kemunculan'];
-                                        }
-
-                                        // Total semua temuan
-                                        $total_semua = array_sum($total_per_bulan);
-                                    ?>
-                                    <h4>Tabel Klasifikasi Bidang</h4>
-                                    <table class="table table-striped table-bordered datatable">
-                                        <thead>
-                                            <tr>
-                                                <th rowspan="2">No</th>
-                                                <th colspan="2">Klasifikasi Temuan</th>
-                                                <?php foreach ($bulan_indonesia as $key => $bulan): ?>
-                                                    <th colspan="2"><?php echo $bulan; ?></th>
-                                                <?php endforeach; ?>
-                                            </tr>
-                                            <tr>
-                                                <th>Kode</th>
-                                                <th>Uraian</th>
-                                                <?php foreach ($bulan_indonesia as $key => $bulan): ?>
-                                                    <th>Jumlah</th>
-                                                    <th>%</th>
-                                                <?php endforeach; ?>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php $nomer = 1; foreach ($data_temuan as $temuan): ?>
+                                            // Total semua temuan
+                                            $total_semua = array_sum($total_per_bulan);
+                                        ?>
+                                        <h4>Tabel Klasifikasi Temuan</h4>
+                                        <table class="table table-striped table-bordered datatable">
+                                            <thead>
                                                 <tr>
-                                                    <td><?php echo $nomer++; ?></td>
-                                                    <td><?php echo $temuan['kode']; ?></td>
-                                                    <td><?php echo $temuan['uraian']; ?></td>
+                                                    <th rowspan="2">No</th>
+                                                    <th colspan="2">Klasifikasi Temuan</th>
                                                     <?php foreach ($bulan_indonesia as $key => $bulan): ?>
-                                                        <?php $jumlah = $temuan['data'][$key] ?? 0; ?>
-                                                        <td><?php echo $jumlah; ?></td>
-                                                        <td><?php echo ($total_per_bulan[$key] > 0) ? number_format(($jumlah / $total_per_bulan[$key]) * 100) . '%' : '0%'; ?></td>
+                                                        <th colspan="2"><?php echo $bulan; ?></th>
                                                     <?php endforeach; ?>
                                                 </tr>
-                                            <?php endforeach; ?>
-                                        </tbody>
-                                        <tfoot>
-                                            <tr class="footer">
-                                                <td colspan="3">Jumlah</td>
-                                                <?php foreach ($bulan_indonesia as $key => $bulan): ?>
-                                                    <td><?php echo $total_per_bulan[$key]; ?></td>
-                                                    <td><?php echo ($total_semua > 0) ? number_format(($total_per_bulan[$key] / $total_semua) * 100) . '%' : '0%'; ?></td>
+                                                <tr>
+                                                    <th>Kode</th>
+                                                    <th>Uraian</th>
+                                                    <?php foreach ($bulan_indonesia as $key => $bulan): ?>
+                                                        <th>Jumlah</th>
+                                                        <th>%</th>
+                                                    <?php endforeach; ?>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php $nomer = 1; foreach ($data_temuan as $temuan): ?>
+                                                    <tr>
+                                                        <td><?php echo $nomer++; ?></td>
+                                                        <td><?php echo $temuan['kode']; ?></td>
+                                                        <td><?php echo $temuan['uraian']; ?></td>
+                                                        <?php foreach ($bulan_indonesia as $key => $bulan): ?>
+                                                            <?php $jumlah = $temuan['data'][$key] ?? 0; ?>
+                                                            <td><?php echo $jumlah; ?></td>
+                                                            <td><?php echo ($total_per_bulan[$key] > 0) ? number_format(($jumlah / $total_per_bulan[$key]) * 100) . '%' : '0%'; ?></td>
+                                                        <?php endforeach; ?>
+                                                    </tr>
                                                 <?php endforeach; ?>
-                                            </tr>
-                                        </tfoot>
-                                    </table>
+                                            </tbody>
+                                            <tfoot>
+                                                <tr class="footer">
+                                                    <td colspan="3">Jumlah</td>
+                                                    <?php foreach ($bulan_indonesia as $key => $bulan): ?>
+                                                        <td><?php echo $total_per_bulan[$key]; ?></td>
+                                                        <td><?php echo ($total_semua > 0) ? number_format(($total_per_bulan[$key] / $total_semua) * 100) . '%' : '0%'; ?></td>
+                                                    <?php endforeach; ?>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
                                     </div>
                                 </div>
                             </div>
                             <div id="penyebab" class="tab-content" style="display: none;">
-                                <div class="table-container">
-                                    <h4>Tabel Klasifikasi Penyebab</h4>
-                                    <table  class="table table-striped table-bordered">
-                                        <thead>
-                                            <tr>
-                                                <th rowspan="2">No</th>
-                                                <th colspan="2">Klasifikasi Penyebab</th>
-                                                <th colspan="2">Januari</th>
-                                            </tr>
-                                            <tr>
-                                                <th>Kode</th>
-                                                <th>Uraian</th>
-                                                <th>Jumlah</th>
-                                                <th>%</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr><td>1</td><td>01.01</td><td>Organisasi</td><td></td><td></td></tr>
-                                            <tr><td>2</td><td>01.02</td><td>Kebijakan</td><td></td><td></td></tr>
-                                            <tr><td>3</td><td>01.03</td><td>Perencanaan</td><td></td><td></td></tr>
-                                            <tr><td>4</td><td>01.04</td><td>Personil</td><td></td><td></td></tr>
-                                            <tr><td>5</td><td>01.05</td><td>Prosedur</td><td></td><td></td></tr>
-                                            <tr><td>6</td><td>01.06</td><td>Pencatatan dan Pelaporan</td><td></td><td></td></tr>
-                                            <tr><td>7</td><td>01.07</td><td>Reviu/Pengawasan Internal</td><td></td><td></td></tr>
-                                            <tr><td>8</td><td>02.01</td><td>Hambatan Kelancaran Kegiatan</td><td></td><td></td></tr>
-                                        </tbody>
-                                        <tfoot>
-                                            <tr class="footer">
-                                                <td colspan="3">Jumlah</td>
-                                                <td></td>
-                                                <td></td>
-                                            </tr>
-                                        </tfoot>
-                                    </table>
+                                <div class="x_content">
+                                    <button class="btn btn-success btn-lg" id="exportExcel" onclick="exportTableToExcel('auditTable', 'LHA_Audit')">
+                                        <span class="fa fa-file-excel-o"></span>
+                                    </button>
+                                    <div class="table-responsive">
+                                        <?php
+                                            // Array bulan dalam Bahasa Indonesia (Januari - Desember)
+                                            $bulan_indonesia = [
+                                                '01' => 'Januari', '02' => 'Februari', '03' => 'Maret',
+                                                '04' => 'April', '05' => 'Mei', '06' => 'Juni',
+                                                '07' => 'Juli', '08' => 'Agustus', '09' => 'September',
+                                                '10' => 'Oktober', '11' => 'November', '12' => 'Desember'
+                                            ];
+                                            // Inisialisasi data
+                                            $data_penyebab = [];
+                                            $total_per_bulan = array_fill_keys(array_keys($bulan_indonesia), 0); // Setiap bulan default 0
+                                            $total_semua = 0;
+
+                                            // Proses data dari database
+                                            foreach ($record5 as $row) {
+                                                $bulan = date('m', strtotime($row['temuan_tgl'] . '-01')); // Ambil bulan dalam format MM
+                                                $kode_sebab = $row['sebab_kode'];
+
+                                                // Jika bulan tidak valid, lewati iterasi ini
+                                                if (!isset($bulan_indonesia[$bulan])) {
+                                                    continue;
+                                                }
+
+                                                // Simpan data temuan
+                                                $data_penyebab[$kode_sebab]['kode'] = $row['sebab_kode'];
+                                                $data_penyebab[$kode_sebab]['uraian'] = $row['klasifikasi_sebab'];
+                                                $data_penyebab[$kode_sebab]['data'][$bulan] = $row['jumlah_kemunculan'];
+
+                                                // Hitung total per bulan
+                                                $total_per_bulan[$bulan] += $row['jumlah_kemunculan'];
+                                            }
+
+                                            // Total semua temuan
+                                            $total_semua = array_sum($total_per_bulan);
+                                        ?>
+                                        <h4>Tabel Klasifikasi Penyebab</h4>
+                                        <table class="table table-striped table-bordered datatable">
+                                            <thead>
+                                                <tr>
+                                                    <th rowspan="2">No</th>
+                                                    <th colspan="2">Klasifikasi Penyebab</th>
+                                                    <?php foreach ($bulan_indonesia as $key => $bulan): ?>
+                                                        <th colspan="2"><?php echo $bulan; ?></th>
+                                                    <?php endforeach; ?>
+                                                </tr>
+                                                <tr>
+                                                    <th>Kode</th>
+                                                    <th>Uraian</th>
+                                                    <?php foreach ($bulan_indonesia as $key => $bulan): ?>
+                                                        <th>Jumlah</th>
+                                                        <th>%</th>
+                                                    <?php endforeach; ?>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php $nomer = 1; foreach ($data_penyebab as $sebab): ?>
+                                                    <tr>
+                                                        <td><?php echo $nomer++; ?></td>
+                                                        <td><?php echo $sebab['kode']; ?></td>
+                                                        <td><?php echo $sebab['uraian']; ?></td>
+                                                        <?php foreach ($bulan_indonesia as $key => $bulan): ?>
+                                                            <?php $jumlah = $sebab['data'][$key] ?? 0; ?>
+                                                            <td><?php echo $jumlah; ?></td>
+                                                            <td><?php echo ($total_per_bulan[$key] > 0) ? number_format(($jumlah / $total_per_bulan[$key]) * 100) . '%' : '0%'; ?></td>
+                                                        <?php endforeach; ?>
+                                                    </tr>
+                                                <?php endforeach; ?>
+                                            </tbody>
+                                            <tfoot>
+                                                <tr class="footer">
+                                                    <td colspan="3">Jumlah</td>
+                                                    <?php foreach ($bulan_indonesia as $key => $bulan): ?>
+                                                        <td><?php echo $total_per_bulan[$key]; ?></td>
+                                                        <td><?php echo ($total_semua > 0) ? number_format(($total_per_bulan[$key] / $total_semua) * 100) . '%' : '0%'; ?></td>
+                                                    <?php endforeach; ?>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
-                            <div id="coso" class="tab-content" style="display: none;">
-                                <div class="table-container">
-                                <h4>Tabel Klasifikasi COSO</h4>
-                                <table  class="table table-striped table-bordered">
-                                <thead>
-                                        <tr>
-                                            <th>No</th>
-                                            <th>Kode</th>
-                                            <th>Uraian</th>
-                                            <th>Jumlah</th>
-                                            <th>%</th>
-                                        </tr>
-                                </thead>
-                                <tbody>
-                                        <tr>
-                                            <td>1</td>
-                                            <td>LP.01</td>
-                                            <td>Komitmen Terhadap Integritas dan Nilai Etika</td>
-                                            <td>-</td>
-                                            <td>-</td>
-                                        </tr>
-                                </tbody>
-                                    </table>
+                            <div id="coso" class="tab-content" style="display: none;"> 
+                                <div class="x_content">
+                                    <button class="btn btn-success btn-lg" onclick="exportTableToExcel('cosoTable', 'LHA_Coso')">
+                                        <span class="fa fa-file-excel-o"></span>
+                                    </button>
+                                    <div class="table-responsive">
+                                        <?php
+                                            $bulan_indonesia = [
+                                                '01' => 'Januari', '02' => 'Februari', '03' => 'Maret',
+                                                '04' => 'April', '05' => 'Mei', '06' => 'Juni',
+                                                '07' => 'Juli', '08' => 'Agustus', '09' => 'September',
+                                                '10' => 'Oktober', '11' => 'November', '12' => 'Desember'
+                                            ];
+                                            $data_coso = [];
+                                            $total_per_bulan_coso = array_fill_keys(array_keys($bulan_indonesia), 0);
+                                            $total_coso = 0;
+
+                                            foreach ($record6 as $row) {
+                                                $bulan = date('m', strtotime($row['temuan_tgl'] . '-01'));
+                                                $kode_coso = $row['kode_coso'];
+
+                                                if (!isset($bulan_indonesia[$bulan])) continue;
+
+                                                $data_coso[$kode_coso]['kode'] = $row['kode_coso'];
+                                                $data_coso[$kode_coso]['uraian'] = $row['klasifikasi_coso'];
+                                                $data_coso[$kode_coso]['data'][$bulan] = $row['jumlah_kemunculan'];
+
+                                                $total_per_bulan_coso[$bulan] += $row['jumlah_kemunculan'];
+                                            }
+
+                                            $total_coso = array_sum($total_per_bulan_coso);
+                                        ?>
+                                        <h4>Tabel Klasifikasi COSO</h4>
+                                        <table class="table table-striped table-bordered datatable" id="cosoTable">
+                                            <thead>
+                                                <tr>
+                                                    <th rowspan="2">No</th>
+                                                    <th colspan="2">Klasifikasi COSO</th>
+                                                    <?php foreach ($bulan_indonesia as $key => $bulan): ?>
+                                                        <th colspan="2"><?php echo $bulan; ?></th>
+                                                    <?php endforeach; ?>
+                                                </tr>
+                                                <tr>
+                                                    <th>Kode</th>
+                                                    <th>Uraian</th>
+                                                    <?php foreach ($bulan_indonesia as $key => $bulan): ?>
+                                                        <th>Jumlah</th>
+                                                        <th>%</th>
+                                                    <?php endforeach; ?>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php $no = 1; foreach ($data_coso as $coso): ?>
+                                                    <tr>
+                                                        <td><?php echo $no++; ?></td>
+                                                        <td><?php echo $coso['kode']; ?></td>
+                                                        <td><?php echo $coso['uraian']; ?></td>
+                                                        <?php foreach ($bulan_indonesia as $key => $bulan): ?>
+                                                            <?php $jumlah = $coso['data'][$key] ?? 0; ?>
+                                                            <td><?php echo $jumlah; ?></td>
+                                                            <td><?php echo ($total_per_bulan_coso[$key] > 0) ? number_format(($jumlah / $total_per_bulan_coso[$key]) * 100) . '%' : '0%'; ?></td>
+                                                        <?php endforeach; ?>
+                                                    </tr>
+                                                <?php endforeach; ?>
+                                            </tbody>
+                                            <tfoot>
+                                                <tr class="footer">
+                                                    <td colspan="3">Jumlah</td>
+                                                    <?php foreach ($bulan_indonesia as $key => $bulan): ?>
+                                                        <td><?php echo $total_per_bulan_coso[$key]; ?></td>
+                                                        <td><?php echo ($total_coso > 0) ? number_format(($total_per_bulan_coso[$key] / $total_coso) * 100) . '%' : '0%'; ?></td>
+                                                    <?php endforeach; ?>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
-                            <div id="audit" class="tab-content" style="display: none;">
-                                <div class="table-container">
-                                <h4>Tabel Klasifikasi Kode A dan B</h4>
-                                <table  class="table table-striped table-bordered">
-                                <thead>
-                                        <tr>
-                                            <th>No</th>
-                                            <th>Kode</th>
-                                            <th>Uraian</th>
-                                            <th>Jumlah</th>
-                                            <th>%</th>
-                                        </tr>
-                                </thead>
-                                <tbody>
-                                        <tr>
-                                            <td colspan="5"><strong>1. Kriteria Audit Keuangan dengan Kode A meliputi:</strong></td>
-                                        </tr>
-                                        <tr>
-                                            <td>1</td>
-                                            <td>A1</td>
-                                            <td>Finansial atau dapat dinilai dengan uang</td>
-                                            <td>-</td>
-                                            <td>-</td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="5"><strong>2. Kriteria Audit Operasional dengan Kode B meliputi:</strong></td>
-                                        </tr>
-                                        <tr>
-                                            <td>1</td>
-                                            <td>B1</td>
-                                            <td>Kelancaran Pelayanan</td>
-                                            <td>-</td>
-                                            <td>-</td>
-                                        </tr>
-                                </tbody>
-                                    </table>
+                            <div id="ab" class="tab-content" style="display: none;"> 
+                                <div class="x_content">
+                                    <button class="btn btn-success btn-lg" onclick="exportTableToExcel('abTable', 'LHA_AB')">
+                                        <span class="fa fa-file-excel-o"></span>
+                                    </button>
+                                    <div class="table-responsive">
+                                        <?php
+                                            $bulan_indonesia = [
+                                                '01' => 'Januari', '02' => 'Februari', '03' => 'Maret',
+                                                '04' => 'April', '05' => 'Mei', '06' => 'Juni',
+                                                '07' => 'Juli', '08' => 'Agustus', '09' => 'September',
+                                                '10' => 'Oktober', '11' => 'November', '12' => 'Desember'
+                                            ];
+                                            $data_ab = [];
+                                            $total_per_bulan_ab = array_fill_keys(array_keys($bulan_indonesia), 0);
+                                            $total_ab = 0;
+
+                                            foreach ($record7 as $row) {
+                                                $bulan = date('m', strtotime($row['temuan_tgl'] . '-01'));
+                                                $kode_ab = $row['kode_ab'];
+
+                                                if (!isset($bulan_indonesia[$bulan])) continue;
+
+                                                $data_ab[$kode_ab]['kode'] = $row['kode_ab'];
+                                                $data_ab[$kode_ab]['uraian'] = $row['judul_ab'];
+                                                $data_ab[$kode_ab]['data'][$bulan] = $row['jumlah_kemunculan'];
+
+                                                $total_per_bulan_ab[$bulan] += $row['jumlah_kemunculan'];
+                                            }
+
+                                            $total_ab = array_sum($total_per_bulan_ab);
+                                        ?>
+                                        <h4>Tabel Klasifikasi AB</h4>
+                                        <table class="table table-striped table-bordered datatable" id="abTable">
+                                            <thead>
+                                                <tr>
+                                                    <th rowspan="2">No</th>
+                                                    <th colspan="2">Klasifikasi AB</th>
+                                                    <?php foreach ($bulan_indonesia as $key => $bulan): ?>
+                                                        <th colspan="2"><?php echo $bulan; ?></th>
+                                                    <?php endforeach; ?>
+                                                </tr>
+                                                <tr>
+                                                    <th>Kode</th>
+                                                    <th>Judul</th>
+                                                    <?php foreach ($bulan_indonesia as $key => $bulan): ?>
+                                                        <th>Jumlah</th>
+                                                        <th>%</th>
+                                                    <?php endforeach; ?>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php $no = 1; foreach ($data_ab as $ab): ?>
+                                                    <tr>
+                                                        <td><?php echo $no++; ?></td>
+                                                        <td><?php echo $ab['kode']; ?></td>
+                                                        <td><?php echo $ab['uraian']; ?></td>
+                                                        <?php foreach ($bulan_indonesia as $key => $bulan): ?>
+                                                            <?php $jumlah = $ab['data'][$key] ?? 0; ?>
+                                                            <td><?php echo $jumlah; ?></td>
+                                                            <td><?php echo ($total_per_bulan_ab[$key] > 0) ? number_format(($jumlah / $total_per_bulan_ab[$key]) * 100) . '%' : '0%'; ?></td>
+                                                        <?php endforeach; ?>
+                                                    </tr>
+                                                <?php endforeach; ?>
+                                            </tbody>
+                                            <tfoot>
+                                                <tr class="footer">
+                                                    <td colspan="3">Jumlah</td>
+                                                    <?php foreach ($bulan_indonesia as $key => $bulan): ?>
+                                                        <td><?php echo $total_per_bulan_ab[$key]; ?></td>
+                                                        <td><?php echo ($total_ab > 0) ? number_format(($total_per_bulan_ab[$key] / $total_ab) * 100) . '%' : '0%'; ?></td>
+                                                    <?php endforeach; ?>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
+
                         </div>
                     </div>
 
