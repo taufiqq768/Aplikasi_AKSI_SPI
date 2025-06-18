@@ -167,7 +167,7 @@ class Tabulasi extends CI_Controller {
                     t.temuan_tgl, mc.klasifikasi_coso, mc.kode_coso
                 ORDER BY 
                     t.temuan_tgl, mc.kode_coso")->result_array();
-                
+             //Record7   
             $data['record7'] = $this->db->query("
                 SELECT 
                     t.temuan_tgl, 
@@ -184,8 +184,54 @@ class Tabulasi extends CI_Controller {
                     t.temuan_tgl, mab.judul_ab, mab.kode_ab
                 ORDER BY 
                     t.temuan_tgl, mab.kode_ab")->result_array();
-
-
+            //Record8
+            $data['record8'] = $this->db->query("
+            SELECT 
+                p.pemeriksaan_judul,
+                COALESCE(t.jumlah_temuan, 0) AS jumlah_temuan,
+                COALESCE(r.jumlah_rekomendasi, 0) AS jumlah_rekomendasi,
+                l.no_lha,
+                l.tahun,
+                COALESCE(r.rekomendasi_status_tanggal, '-') AS rekomendasi_status_tanggal
+            FROM tb_lha l
+            LEFT JOIN (
+                SELECT 
+                    pemeriksaan_id, 
+                    COUNT(DISTINCT temuan_id) AS jumlah_temuan 
+                FROM tb_temuan 
+                GROUP BY pemeriksaan_id
+            ) t ON t.pemeriksaan_id = l.id_pemeriksaan
+            LEFT JOIN (
+                SELECT 
+                    pemeriksaan_id, 
+                    COUNT(DISTINCT rekomendasi_id) AS jumlah_rekomendasi,
+                    MAX(rekomendasi_status_tanggal) AS rekomendasi_status_tanggal
+                FROM tb_rekomendasi 
+                GROUP BY pemeriksaan_id
+            ) r ON r.pemeriksaan_id = l.id_pemeriksaan
+            LEFT JOIN tb_pemeriksaan p ON p.pemeriksaan_id = l.id_pemeriksaan
+            GROUP BY 
+                p.pemeriksaan_judul,
+                t.jumlah_temuan,
+                r.jumlah_rekomendasi,
+                l.no_lha,
+                l.tahun,
+                r.rekomendasi_status_tanggal")->result_array();
+            //Record9
+                $data['record9'] = $this->db->query("
+                SELECT 
+                    t1.rekomendasi_tgl AS tanggal,
+                    mr.judul,
+                    COALESCE(COUNT(r2.rekomen_id), 0) AS jumlah_kemunculan
+                FROM (
+                    SELECT DISTINCT DATE(rekomendasi_tgl) AS rekomendasi_tgl FROM tb_rekomendasi
+                ) t1
+                CROSS JOIN tb_master_rekomendasi mr
+                LEFT JOIN tb_rekomendasi r2 
+                    ON mr.rekomen_id = r2.rekomen_id 
+                    AND DATE(r2.rekomendasi_tgl) = t1.rekomendasi_tgl
+                GROUP BY t1.rekomendasi_tgl, mr.judul
+                ORDER BY t1.rekomendasi_tgl, mr.judul")->result_array();
 
             $this->template->load('template','tabulasi',$data);
         }
