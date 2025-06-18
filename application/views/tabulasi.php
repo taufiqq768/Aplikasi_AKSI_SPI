@@ -539,25 +539,77 @@
                                 </button>
                                 <div id="rekomendasi" class="tab-content" style="display: none;">
                                     <div class="table-container">
-                                        <h3>Tabel 7 Klasifikasi Rekomendasi</h3>
-                                        <table  class="table table-striped table-bordered">
+                                        <h3>Klasifikasi Rekomendasi</h3>
+                                        <?php
+                                        // Daftar nama bulan
+                                        $bulan_list = [
+                                            '01' => 'Januari', '02' => 'Februari', '03' => 'Maret', '04' => 'April',
+                                            '05' => 'Mei', '06' => 'Juni', '07' => 'Juli', '08' => 'Agustus',
+                                            '09' => 'September', '10' => 'Oktober', '11' => 'November', '12' => 'Desember'
+                                        ];
+
+                                        // Inisialisasi array rekap data
+                                        $rekap = [];
+                                        $total_per_bulan = array_fill_keys(array_keys($bulan_list), 0);
+
+                                        // Proses data hasil query
+                                        foreach ($record9 as $row) {
+                                            $judul = $row['judul']; // Klasifikasi
+                                            $bulan = date('m', strtotime($row['tanggal']));
+                                            $jumlah = $row['jumlah_kemunculan'];
+
+                                            // Inisialisasi jika belum ada
+                                            if (!isset($rekap[$judul])) {
+                                                $rekap[$judul] = array_fill_keys(array_keys($bulan_list), 0);
+                                                $rekap[$judul]['total'] = 0;
+                                            }
+
+                                            // Tambahkan jumlah
+                                            $rekap[$judul][$bulan] += $jumlah;
+                                            $rekap[$judul]['total'] += $jumlah;
+
+                                            $total_per_bulan[$bulan] += $jumlah;
+                                        }
+                                        ?>
+
+                                        <h3>Rekap Klasifikasi Rekomendasi</h3>
+                                        <table class="table table-striped table-bordered datatable">
                                             <thead>
                                                 <tr>
-                                                    <th>No</th>
-                                                    <th>Klasifikasi Rekomendasi</th>
-                                                    <th>Januari</th>
-                                                    <th>%</th>
+                                                    <th rowspan="2">No</th>
+                                                    <th rowspan="2">Klasifikasi Rekomendasi</th>
+                                                    <?php foreach ($bulan_list as $bulan): ?>
+                                                        <th colspan="2"><?= $bulan ?></th>
+                                                    <?php endforeach; ?>
+                                                </tr>
+                                                <tr>
+                                                    <?php foreach ($bulan_list as $bulan): ?>
+                                                        <th>Jumlah</th>
+                                                        <th>%</th>
+                                                    <?php endforeach; ?>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr><td>1</td><td>Finansial atau dapat dinilai dengan uang</td><td></td><td></td></tr>
-                                                <tr><td>2</td><td>Kepegawaian</td><td></td><td></td></tr>
-                                                <tr><td>3</td><td>Keputusan pengadilan</td><td></td><td></td></tr>
-                                                <tr><td>4</td><td>Administrasi dan Penegakan Prosedur</td><td></td><td></td></tr>
-                                                <tr><td>5</td><td>Peningkatan Efisiensi dan Efektivitas</td><td></td><td></td></tr>
-                                                <tr><td>6</td><td>Peningkatan Sistem Pengendalian Internal</td><td></td><td></td></tr>
-                                                <tr><td colspan="2"><strong>Jumlah</strong></td><td></td><td></td></tr>
+                                                <?php $no = 1; foreach ($rekap as $judul => $data): ?>
+                                                    <tr>
+                                                        <td><?= $no++ ?></td>
+                                                        <td><?= $judul ?></td>
+                                                        <?php foreach ($bulan_list as $key => $nama_bulan): ?>
+                                                            <td><?= $data[$key] ?></td>
+                                                            <td><?= ($total_per_bulan[$key] > 0) ? round(($data[$key] / $total_per_bulan[$key]) * 100, 2) . "%" : "0%" ?></td>
+                                                        <?php endforeach; ?>
+                                                    </tr>
+                                                <?php endforeach; ?>
                                             </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <th colspan="2">Jumlah</th>
+                                                    <?php foreach ($bulan_list as $key => $nama_bulan): ?>
+                                                        <th><?= $total_per_bulan[$key] ?></th>
+                                                        <th><?= ($total_per_bulan[$key] > 0) ? "100%" : "-" ?></th>
+                                                    <?php endforeach; ?>
+                                                </tr>
+                                            </tfoot>
                                         </table>
                                     </div>
                                 </div>
@@ -772,43 +824,86 @@
                                     </div>
                                 </div>
                                 <div id="lha" class="tab-content" style="display: none;">
-                                <h3>Tabel 2 Laporan Hasil Audit (LHA) yang Terbit</h3>
-                                <table  class="table table-striped table-bordered">
-                                        <thead>
-                                            <tr>
-                                                <th rowspan="2">No</th>
-                                                <th rowspan="2">Uraian</th>
-                                                <th colspan="3">Januari</th>
-                                            </tr>
-                                            <tr>
-                                                <th>LHA</th>
-                                                <th>Temuan</th>
-                                                <th>Rekomendasi</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>1</td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                            </tr>
-                                            <tr>
-                                                <td>2</td>
-                                                <td>LHA Terbit (Audit Tahun 2025)</td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                            </tr>
-                                            <tr>
-                                                <td colspan="2">Jumlah</td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                                <h3>Tabel Laporan Hasil Audit (LHA) yang Terbit</h3>
+                                <?php
+// Inisialisasi array bulan
+$bulan = [
+    '01' => 'Januari', '02' => 'Februari', '03' => 'Maret',
+    '04' => 'April', '05' => 'Mei', '06' => 'Juni',
+    '07' => 'Juli', '08' => 'Agustus', '09' => 'September',
+    '10' => 'Oktober', '11' => 'November', '12' => 'Desember'
+];
+
+// Siapkan data per pemeriksaan_judul dan per bulan
+$data_grouped = [];
+foreach ($record8 as $row) {
+    $judul = $row['pemeriksaan_judul'];
+    $bulan_str = date('m', strtotime($row['rekomendasi_status_tanggal']));
+
+    if (!isset($data_grouped[$judul][$bulan_str])) {
+        $data_grouped[$judul][$bulan_str] = ['lha' => 0, 'temuan' => 0, 'rekomendasi' => 0];
+    }
+
+    $data_grouped[$judul][$bulan_str]['lha'] += 1;
+    $data_grouped[$judul][$bulan_str]['temuan'] += $row['jumlah_temuan'];
+    $data_grouped[$judul][$bulan_str]['rekomendasi'] += $row['jumlah_rekomendasi'];
+}
+?>
+
+<table class="table table-striped table-bordered datatable">
+    <thead>
+        <tr>
+            <th rowspan="2">No</th>
+            <th rowspan="2">Uraian</th>
+            <?php foreach ($bulan as $b => $nama): ?>
+                <th colspan="3"><?= $nama ?></th>
+                <?php if (in_array($b, ['03', '06', '09', '12'])): ?>
+                    <th colspan="3">Triwulan <?= ceil($b / 3) ?></th>
+                <?php endif; ?>
+            <?php endforeach; ?>
+        </tr>
+        <tr>
+            <?php foreach ($bulan as $b => $nama): ?>
+                <th>LHA</th><th>Temuan</th><th>Rekomendasi</th>
+                <?php if (in_array($b, ['03', '06', '09', '12'])): ?>
+                    <th>LHA</th><th>Temuan</th><th>Rekomendasi</th>
+                <?php endif; ?>
+            <?php endforeach; ?>
+        </tr>
+    </thead>
+    <tbody>
+        <?php
+        $no = 1;
+        foreach ($data_grouped as $judul => $bulanan) {
+            echo "<tr><td>{$no}</td><td>{$judul}</td>";
+
+            $triwulan = ['lha' => 0, 'temuan' => 0, 'rekomendasi' => 0];
+            foreach ($bulan as $b => $nama) {
+                $lha = $bulanan[$b]['lha'] ?? 0;
+                $temuan = $bulanan[$b]['temuan'] ?? 0;
+                $rekomendasi = $bulanan[$b]['rekomendasi'] ?? 0;
+
+                echo "<td>{$lha}</td><td>{$temuan}</td><td>{$rekomendasi}</td>";
+
+                $triwulan['lha'] += $lha;
+                $triwulan['temuan'] += $temuan;
+                $triwulan['rekomendasi'] += $rekomendasi;
+
+                if (in_array($b, ['03', '06', '09', '12'])) {
+                    echo "<td><strong>{$triwulan['lha']}</strong></td>
+                          <td><strong>{$triwulan['temuan']}</strong></td>
+                          <td><strong>{$triwulan['rekomendasi']}</strong></td>";
+                    $triwulan = ['lha' => 0, 'temuan' => 0, 'rekomendasi' => 0];
+                }
+            }
+
+            echo "</tr>";
+            $no++;
+        }
+        ?>
+    </tbody>
+</table>
+
                                 </div>
                             </div>
                     </div>
