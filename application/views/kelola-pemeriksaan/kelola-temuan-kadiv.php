@@ -19,7 +19,7 @@
             <div class="col-md-12 col-sm-12 col-xs-12">
               <div class="x_panel">
                 <div class="x_title">
-                  <h2>Form Pemeriksaan Regional <small></small></h2>
+                  <h2>Form Pemeriksaan Regional dan Divisi <small></small></h2>
                   <ul class="nav navbar-right panel_toolbox">&nbsp;                       
                     <li><a class="close-link"><i class=""></i></a>
                     </li>
@@ -29,7 +29,8 @@
                   <div class="clearfix"></div>
                 </div>
                 <div class="x_content">
-                  <?php if ($this->session->flashdata('gagal')!=null) { 
+                  <?php 
+                        if ($this->session->flashdata('gagal')!=null) { 
                           echo "<div class='alert alert-danger' role='alert' id='forpesan'><em class='fa fa-lg fa-warning'>&nbsp;</em>".$this->session->flashdata('gagal')."<a href='#'' style='color: #fcfcfc' class='pull-right'><em class='fa fa-lg fa-close' id='bt-remove'></em></a></div>";
                         }
                         if ($this->session->flashdata('kirimtemuan')!=null) { 
@@ -37,6 +38,9 @@
                         }
                         if ($this->session->flashdata('kembalikan')!=null) { 
                           echo "<div class='alert alert-success' role='alert' id='forpesan'><em class='fa fa-lg fa-check-circle-o'>&nbsp;</em>".$this->session->flashdata('kembalikan')."<a href='#'' style='color: #fcfcfc' class='pull-right'><em class='fa fa-lg fa-close' id='bt-remove'></em></a></div>";
+                        }
+                        if ($this->session->flashdata('error')) { 
+                          echo "<div class='alert alert-danger' role='alert' id='forpesan'><em class='fa fa-lg fa-check-circle-o'>&nbsp;</em>".$this->session->flashdata('error')."<a href='#'' style='color: #fcfcfc' class='pull-right'><em class='fa fa-lg fa-close' id='bt-remove'></em></a></div>";
                         }
                   ?>
                   <br />
@@ -156,7 +160,7 @@
                     $bdgtemuan = $this->db->query("SELECT * FROM tb_bidangtemuan ORDER BY bidangtemuan_id ASC")->result_array(); 
                     $atribut = array('class'=>'form-horizontal','role'=>'form');
                     echo form_open('administrator/multikirimtemuan_tokebun/'.$id_pmr,$atribut); ?>
-                    <button type="submit" name="kirim" class="btn btn-xs btn-success" <?php echo $disable; ?>><span class="fa fa-send"></span> Kirim Semua Temuan ke Regional</button> 
+                    <button type="submit" name="kirim" class="btn btn-xs btn-success" <?php echo $disable; ?>><span class="fa fa-send"></span> Kirim Semua Temuan dan Rekomendasi ke Regional atau Divisi</button> 
                     <table class="table table-bordered table-striped datatable">
                       <thead>
                         <tr>
