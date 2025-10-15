@@ -39,21 +39,22 @@ class Administrator extends CI_Controller {
 		}
 	}
 	public function login_satu(){
-		$nik = $this->uri->segment(3);
+		$username = $this->uri->segment(3);
 		if (isset($_POST['simpan'])) {
 			$this->form_validation->set_rules('password', 'Password', 'required');
 			$this->form_validation->set_rules('confirm_password', 'Confirm Password', 'required|matches[password]');
 			if ($this->form_validation->run()==FALSE) {
 				$data['main_content'] = 'administrator/login_satu';
 	         	$this->session->set_flashdata('gagal', 'Password tidak cocok!');
-	         	redirect('administrator/login_satu/'.$nik, $data);				
+	         	redirect('administrator/login_satu/'.$username, $data);				
 			}else{
 				$data = array('user_password' => md5($this->input->post('password')),
 							'user_count'  => '1'
 						);
 				$where = array('user_nik' => $this->input->post('id'));
 				$this->model_app->update('tb_users', $data, $where);
-				redirect('administrator/home');	
+				$this->session->sess_destroy();
+				redirect('administrator');	
 			}	
 		}
 		$this->load->view('login1');
