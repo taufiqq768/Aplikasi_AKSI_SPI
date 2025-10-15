@@ -1,5 +1,5 @@
 <title>AKSI | Kelola Pemeriksaan </title>
-      <!-- page content ---------------------------->
+      <!-- page content -->
        <style>
         /* The switch - the box around the slider */
         .switch {

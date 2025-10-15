@@ -1239,34 +1239,50 @@ class Administrator extends CI_Controller {
 		if (isset($_POST['kirim'])) {
 			$pilih = $this->input->post('select');
 			$jumlah = count($pilih);
-			if ($pilih == null) {
-				redirect('administrator/input_spi/'.$id_pmr);
+			// if ($pilih == null) {
+			// 	redirect('administrator/input_spi/'.$id_pmr);
+			// }
+			if (!empty($pilih)) {
+				// Update semua tb_temuan
+				$this->db->where_in('temuan_id', $pilih);
+				$this->db->update('tb_temuan', ['temuan_kirim' => 'Y']);
+
+				// Update semua tb_rekomendasi
+				$this->db->where_in('temuan_id', $pilih);
+				$this->db->update('tb_rekomendasi', ['rekomendasi_kirim' => 'Y']);
+				
+				$this->session->set_flashdata('kirimtemuan', 'Temuan berhasil disetujui dan dikirim ke Divisi/Regional/Anak Perusahaan');
+				//redirect('administrator/input_spi/'.$id_pmr);
+			}else{
+				
+				$this->session->set_flashdata('error', 'Tidak ada data yang dipilih!');
+				
 			}
-			for($x=0;$x<$jumlah;$x++){
-				$this->db->query("UPDATE tb_temuan SET temuan_kirim = 'Y' WHERE temuan_id ='$pilih[$x]'");
-			}
-				//insert notifikasi
-				$pmr = $this->model_app->view_where('tb_pemeriksaan','pemeriksaan_id',$id_pmr);
-				$jdl_pmr = $pmr[0]['pemeriksaan_judul'];
-				$unit = $pmr[0]['unit_id'];
-				$data2 = array(
-					'notifikasi_judul' => 'Temuan baru',
-					'notifikasi_pesan' => '<b>Pada Pemeriksaan : </b><br>'.$jdl_pmr,
-					'notifikasi_link' => 'administrator/list_pmr_operator',
-					'notifikasi_level' => 'operator',
-					'notifikasi_unit' => $unit
-				);
-				$this->model_app->insert('tb_notifikasi',$data2);
-				$data3 = array(
-					'notifikasi_judul' => 'Temuan baru',
-					'notifikasi_pesan' => '<b>Pada Pemeriksaan : </b><br>'.$jdl_pmr,
-					'notifikasi_link' => 'administrator/list_pmr_verifikator',
-					'notifikasi_level' => 'verifikator',
-					'notifikasi_unit' => $unit
-				);
-				$this->model_app->insert('tb_notifikasi',$data3);
-			$this->session->set_flashdata('kirimtemuan', 'Temuan berhasil disetujui dan dikirim ke Divisi/Regional/Anak Perusahaan');
 			redirect('administrator/input_spi/'.$id_pmr);
+			// for($x=0;$x<$jumlah;$x++){
+			// 	$this->db->query("UPDATE tb_temuan SET temuan_kirim = 'Y' WHERE temuan_id ='$pilih[$x]'");
+			// }
+			// 	//insert notifikasi
+			// 	$pmr = $this->model_app->view_where('tb_pemeriksaan','pemeriksaan_id',$id_pmr);
+			// 	$jdl_pmr = $pmr[0]['pemeriksaan_judul'];
+			// 	$unit = $pmr[0]['unit_id'];
+			// 	$data2 = array(
+			// 		'notifikasi_judul' => 'Temuan baru',
+			// 		'notifikasi_pesan' => '<b>Pada Pemeriksaan : </b><br>'.$jdl_pmr,
+			// 		'notifikasi_link' => 'administrator/list_pmr_operator',
+			// 		'notifikasi_level' => 'operator',
+			// 		'notifikasi_unit' => $unit
+			// 	);
+			// 	$this->model_app->insert('tb_notifikasi',$data2);
+			// 	$data3 = array(
+			// 		'notifikasi_judul' => 'Temuan baru',
+			// 		'notifikasi_pesan' => '<b>Pada Pemeriksaan : </b><br>'.$jdl_pmr,
+			// 		'notifikasi_link' => 'administrator/list_pmr_verifikator',
+			// 		'notifikasi_level' => 'verifikator',
+			// 		'notifikasi_unit' => $unit
+			// 	);
+			// 	$this->model_app->insert('tb_notifikasi',$data3);
+			
 		}
 	}
 	public function kembalikan_temuan(){
@@ -1319,24 +1335,43 @@ class Administrator extends CI_Controller {
 		if (isset($_POST['kirim'])) {
 			$pilih = $this->input->post('select');
 			$jumlah = count($pilih);
-			if ($pilih == null) {
-				redirect('administrator/input_spi/'.$id_pmr);
-			}
-			for($x=0;$x<$jumlah;$x++){
-				$this->db->query("UPDATE tb_rekomendasi SET rekomendasi_publish_kabag = 'Y' WHERE temuan_id ='$pilih[$x]'");
-			}
-			//insert notifikasi
-			$pmr = $this->model_app->view_where('tb_pemeriksaan','pemeriksaan_id',$id_pmr);
-			$pmr = $pmr[0]['pemeriksaan_judul'];
-			$data2 = array(
-				'notifikasi_judul' => 'Temuan baru Perlu di Approve',
-				'notifikasi_pesan' => '<b>Pada Pemeriksaan : </b><br>'.$pmr,
-				'notifikasi_link' => 'administrator/input_spi/'.$id_pmr,
-				'notifikasi_level' => 'kabagspi'
-			);
-			$this->model_app->insert('tb_notifikasi',$data2);
+			
+			// if ($pilih == null) {
+			// 	redirect('administrator/input_spi/'.$id_pmr);
+			// }
+
+			// Update semua tb_temuan
+			if (!empty($pilih)) {
+			$this->db->where_in('temuan_id', $pilih);
+			$this->db->update('tb_temuan', ['temuan_publish_kabag' => 'Y']);
+
+			// Update semua tb_rekomendasi
+			$this->db->where_in('temuan_id', $pilih);
+			$this->db->update('tb_rekomendasi', ['rekomendasi_publish_kabag' => 'Y']);
 			$this->session->set_flashdata('kirimtemuan_tokabag', 'Temuan berhasil dikirim ke Kadiv DSPI');
+			
+			}
+			else{
+			$this->session->set_flashdata('error', 'tidak ada data yang dipilih');
+			
+			}
 			redirect('administrator/input_spi/'.$id_pmr);
+			//for($x=0;$x<$jumlah;$x++){
+			//	$this->db->query("UPDATE tb_temuan SET temuan_publish_kabag = 'Y' WHERE temuan_id ='$pilih[$x]'");
+			//	$this->db->query("UPDATE tb_rekomendasi SET rekomendasi_publish_kabag = 'Y' WHERE temuan_id ='$pilih[$x]'");
+				//echo "UPDATE tb_rekomendasi SET rekomendasi_publish_kabag = 'Y' WHERE temuan_id ='$pilih[$x]'";
+				//die();
+			//}
+			// //insert notifikasi
+			// $pmr = $this->model_app->view_where('tb_pemeriksaan','pemeriksaan_id',$id_pmr);
+			// $pmr = $pmr[0]['pemeriksaan_judul'];
+			// $data2 = array(
+			// 	'notifikasi_judul' => 'Temuan baru Perlu di Approve',
+			// 	'notifikasi_pesan' => '<b>Pada Pemeriksaan : </b><br>'.$pmr,
+			// 	'notifikasi_link' => 'administrator/input_spi/'.$id_pmr,
+			// 	'notifikasi_level' => 'kabagspi'
+			// );
+			// $this->model_app->insert('tb_notifikasi',$data2);
 		}
 	}
 
