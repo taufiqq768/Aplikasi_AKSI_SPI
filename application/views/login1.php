@@ -27,7 +27,7 @@
         <div class="col-md-12">
           <div class="col-middle">
             <div class="text-center text-center">
-              <h1 style="color: white">SIMON Tindak Lanjut</h1>
+              <h1 style="color: white">AKSI</h1>
               <?php $usr = $this->model_app->view_profile('tb_users', array('user_nik'=> $this->session->username))->row_array(); ?>
               <h2><?php echo $usr['user_nama']; ?></h2>
               <h4><?php echo $usr['user_nik']; ?></h4>
