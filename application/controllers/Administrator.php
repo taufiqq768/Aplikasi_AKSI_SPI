@@ -1636,24 +1636,30 @@ class Administrator extends CI_Controller {
 		if ($this->session->level=="admin" OR $this->session->level=="operator") {
 			$unit=$this->session->unit;
 			//$query = $this->model_app->view_where2_ordering('tb_pemeriksaan','pemeriksaan_aktif','Y','unit_mention',$this->session->unit,'pemeriksaan_id','ASC');
-			$q = $this->db->query("SELECT * FROM `tb_pemeriksaan` WHERE `pemeriksaan_aktif` = 'Y' ORDER BY `tb_pemeriksaan`.`pemeriksaan_id` ASC")->result_array();
-			$found = false;
-			foreach ($q as $row) {
-				$units = explode('/', $row['mention_unit']); // ubah string jadi array
-				if (in_array($unit, $units)) { // cek apakah $unit ada di dalam array
-					$found = true;
-					break;
-				}
-			}
+			$data['record'] = $this->db->query("SELECT * FROM tb_pemeriksaan WHERE pemeriksaan_aktif = 'Y' AND (mention_unit REGEXP '(^|/)$unit(/|$)'
+				OR (mention_unit IS NULL AND unit_id = $unit)) ORDER BY pemeriksaan_id ASC")->result_array();
 
-			if($found){
-				$data['record'] = $this->db->query("SELECT * FROM `tb_pemeriksaan` WHERE `pemeriksaan_aktif` = 'Y' AND mention_unit REGEXP '(^|/)$unit(/|$)' ORDER BY `tb_pemeriksaan`.`pemeriksaan_id` ASC")->result_array();
-				$this->template->load('template','kelola-tl/list_pmr_operator', $data);
-			}
-			else{
-				$data['record'] = $this->db->query("SELECT * FROM `tb_pemeriksaan` WHERE `pemeriksaan_aktif` = 'Y' AND unit_id = $unit ORDER BY `tb_pemeriksaan`.`pemeriksaan_id` ASC")->result_array();
-				$this->template->load('template','kelola-tl/list_pmr_operator', $data);
-			}
+			$this->template->load('template', 'kelola-tl/list_pmr_operator', $data);
+					//cek semua pemeriksaan yang aktif
+			// $q = $this->db->query("SELECT * FROM `tb_pemeriksaan` WHERE `pemeriksaan_aktif` = 'Y' ORDER BY `tb_pemeriksaan`.`pemeriksaan_id` ASC")->result_array();
+			
+			// $found = false;
+			// foreach ($q as $row) {
+			// 	$mention_unit = explode('/', $row['mention_unit']); // jika mention unit lebih dari satu dalam pemeriksaan maka lakukan explode atau dipecah by garis miring
+			// 	if (in_array($unit, $mention_unit)) { // cek apakah $unit dan $mention datanya identik sama
+			// 		$found = true;
+			// 		break;
+			// 	}
+			// }
+
+			// if($found){
+			// 	$data['record'] = $this->db->query("SELECT * FROM `tb_pemeriksaan` WHERE `pemeriksaan_aktif` = 'Y' AND mention_unit REGEXP '(^|/)$unit(/|$)' ORDER BY `tb_pemeriksaan`.`pemeriksaan_id` ASC")->result_array();
+			// 	$this->template->load('template','kelola-tl/list_pmr_operator', $data);
+			// }
+			// else{
+			// 	$data['record'] = $this->db->query("SELECT * FROM `tb_pemeriksaan` WHERE `pemeriksaan_aktif` = 'Y' AND unit_id = $unit ORDER BY `tb_pemeriksaan`.`pemeriksaan_id` ASC")->result_array();
+			// 	$this->template->load('template','kelola-tl/list_pmr_operator', $data);
+			// }
 			//CEK NOTIFIKASI
 			// if ($this->uri->segment(3)!=null) {
 			// 	$id_notif = $this->uri->segment(3);
