@@ -64,7 +64,7 @@
               <span class="count_top"><i class="fa fa-pencil"></i> Pemeriksaan Tematik</span>
               <div class="count"><center><a <?php if ($this->session->level=="spi" OR $this->session->level=="admin" OR $this->session->level=="kabagspi") { ?> href="<?php echo base_url(); ?>administrator/list_pemeriksaan/Penting" <?php }else{ ?> href="#" <?php } ?>>
                 <?php
-                  echo $this->db->where('pemeriksaan_jenis','Penting')->from("tb_pemeriksaan")->count_all_results(); 
+                  echo $this->db->where('pemeriksaan_jenis','Tematik')->from("tb_pemeriksaan")->count_all_results(); 
                 ?>
                 </a></center></div>
             </div>
