@@ -69,9 +69,9 @@ class Administrator extends CI_Controller {
 	}
 	public function get_data()
     {
-		$objek = $this->input->post('objek');
         // Pastikan ini adalah permintaan AJAX
-        if ($objek != null) {
+        if ($this->input->is_ajax_request()) {
+            $objek = $this->input->post('objek');
 			$tableName = "";
 			$columns = [];
 
