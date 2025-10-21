@@ -1716,23 +1716,27 @@ class Administrator extends CI_Controller {
 		}
 		$unit=$this->session->unit;
 		//$data['record'] = $this->db->query("SELECT * FROM `tb_pemeriksaan`  WHERE `pemeriksaan_aktif` = 'Y' AND unit_id = $unit ORDER BY `tb_pemeriksaan`.`pemeriksaan_id` ASC")->result_array();
-		$q = $this->db->query("SELECT * FROM `tb_pemeriksaan` WHERE `pemeriksaan_aktif` = 'Y' ORDER BY `tb_pemeriksaan`.`pemeriksaan_id` ASC")->result_array();	
-		$found = false;
-		foreach ($q as $row) {
-			$units = explode('/', $row['mention_unit']); // ubah string jadi array
-			if (in_array($unit, $units)) { // cek apakah $unit ada di dalam array
-				$found = true;
-				break;
-			}
-		}
-			if($found){
-				$data['record'] = $this->db->query("SELECT * FROM `tb_pemeriksaan` WHERE `pemeriksaan_aktif` = 'Y' AND mention_unit REGEXP '(^|/)$unit(/|$)' ORDER BY `tb_pemeriksaan`.`pemeriksaan_id` ASC")->result_array();
-				$this->template->load('template','kelola-tl/list_pmr_verifikator', $data);
-			}
-			else{
-				$data['record'] = $this->db->query("SELECT * FROM `tb_pemeriksaan` WHERE `pemeriksaan_aktif` = 'Y' AND unit_id = $unit ORDER BY `tb_pemeriksaan`.`pemeriksaan_id` ASC")->result_array();
-				$this->template->load('template','kelola-tl/list_pmr_verifikator', $data);
-			}
+		//$q = $this->db->query("SELECT * FROM `tb_pemeriksaan` WHERE `pemeriksaan_aktif` = 'Y' ORDER BY `tb_pemeriksaan`.`pemeriksaan_id` ASC")->result_array();	
+		$data['record'] = $this->db->query("SELECT * FROM tb_pemeriksaan WHERE pemeriksaan_aktif = 'Y' AND (mention_unit REGEXP '(^|/)$unit(/|$)'
+				OR (mention_unit IS NULL AND unit_id = $unit)) ORDER BY pemeriksaan_id ASC")->result_array();
+
+			$this->template->load('template','kelola-tl/list_pmr_verifikator', $data);
+		// $found = false;
+		// foreach ($q as $row) {
+		// 	$units = explode('/', $row['mention_unit']); // ubah string jadi array
+		// 	if (in_array($unit, $units)) { // cek apakah $unit ada di dalam array
+		// 		$found = true;
+		// 		break;
+		// 	}
+		// }
+		// 	if($found){
+		// 		$data['record'] = $this->db->query("SELECT * FROM `tb_pemeriksaan` WHERE `pemeriksaan_aktif` = 'Y' AND mention_unit REGEXP '(^|/)$unit(/|$)' ORDER BY `tb_pemeriksaan`.`pemeriksaan_id` ASC")->result_array();
+		// 		$this->template->load('template','kelola-tl/list_pmr_verifikator', $data);
+		// 	}
+		// 	else{
+		// 		$data['record'] = $this->db->query("SELECT * FROM `tb_pemeriksaan` WHERE `pemeriksaan_aktif` = 'Y' AND unit_id = $unit ORDER BY `tb_pemeriksaan`.`pemeriksaan_id` ASC")->result_array();
+		// 		$this->template->load('template','kelola-tl/list_pmr_verifikator', $data);
+		// 	}
 		
 	}
 	public function list_tanggapantl(){
@@ -2485,14 +2489,14 @@ class Administrator extends CI_Controller {
 			$id_tl = $this->db->insert_id();
 			$rekom = $this->model_app->view_where('tb_rekomendasi','rekomendasi_id', $id_rekom);
 			$rekom = $rekom[0]['rekomendasi_judul'];
-			$data2 = array(
-				'notifikasi_judul' => 'Tindak Lanjut',
-				'notifikasi_pesan' => $rekom,
-				'notifikasi_link' => 'administrator/list_tl_verifikator/'.$id_pmr.'/'.$id_temuan.'/'.$id_rekom,
-				'notifikasi_unit' => $this->session->unit,
-				'notifikasi_level' => "verifikator"
-			);
-			$this->model_app->insert('tb_notifikasi',$data2);
+			// $data2 = array(
+			// 	'notifikasi_judul' => 'Tindak Lanjut',
+			// 	'notifikasi_pesan' => $rekom,
+			// 	'notifikasi_link' => 'administrator/list_tl_verifikator/'.$id_pmr.'/'.$id_temuan.'/'.$id_rekom,
+			// 	'notifikasi_unit' => $this->session->unit,
+			// 	'notifikasi_level' => "verifikator"
+			// );
+			// $this->model_app->insert('tb_notifikasi',$data2);
 			redirect('administrator/upload_tl/'.$id_pmr.'/'.$id_temuan.'/'.$id_rekom.'/'.$id_tl);
 		}
 		$data['record'] = $this->model_app->view_join_two_limit('rekomendasi_id',$id_rekom,'tb_rekomendasi','tb_pemeriksaan','tb_temuan','pemeriksaan_id','temuan_id','rekomendasi_id','ASC','1');
@@ -2561,14 +2565,14 @@ class Administrator extends CI_Controller {
 		$this->model_app->update('tb_tl', $data, $where);
 			$rekom = $this->model_app->view_where('tb_rekomendasi','rekomendasi_id', $id_rekom);
 			$rekom = $rekom[0]['rekomendasi_judul'];
-			$data2 = array(
-				'notifikasi_judul' => 'Tindak Lanjut',
-				'notifikasi_pesan' => $rekom,
-				'notifikasi_link' => 'administrator/list_tl_verifikator/'.$id_pmr.'/'.$id_temuan.'/'.$id_rekom,
-				'notifikasi_unit' => $this->session->unit,
-				'notifikasi_level' => "verifikator"
-			);
-			$this->model_app->insert('tb_notifikasi',$data2);
+			// $data2 = array(
+			// 	'notifikasi_judul' => 'Tindak Lanjut',
+			// 	'notifikasi_pesan' => $rekom,
+			// 	'notifikasi_link' => 'administrator/list_tl_verifikator/'.$id_pmr.'/'.$id_temuan.'/'.$id_rekom,
+			// 	'notifikasi_unit' => $this->session->unit,
+			// 	'notifikasi_level' => "verifikator"
+			// );
+			//$this->model_app->insert('tb_notifikasi',$data2);
 		$this->session->set_flashdata('berhasil','Tindak Lanjut telah dikirim ke Verifikator');
 		redirect('administrator/list_tl/'.$id_pmr.'/'.$id_temuan.'/'.$id_rekom);
 	}
@@ -2582,16 +2586,16 @@ class Administrator extends CI_Controller {
 			$rekom = $rekom[0]['rekomendasi_judul'];
 			$user_spi = $this->model_app->view_where('tb_pemeriksaan','pemeriksaan_id',$id_pmr);
 			$user_spi = explode("/", $user_spi[0]['pemeriksaan_petugas']);
-			foreach ($user_spi as $key => $value) {
-				$data2 = array(
-				'notifikasi_judul' => 'Laporan Tindak Lanjut',
-				'notifikasi_pesan' => $rekom,
-				'notifikasi_link' => 'administrator/detail_tl/'.$id_pmr.'/'.$id_temuan.'/'.$id_rekom.'/'.$id_tl,
-				'notifikasi_level' => "spi",
-				'notifikasi_user' => $value
-				);
-				$this->model_app->insert('tb_notifikasi',$data2);
-			}
+			// foreach ($user_spi as $key => $value) {
+			// 	$data2 = array(
+			// 	'notifikasi_judul' => 'Laporan Tindak Lanjut',
+			// 	'notifikasi_pesan' => $rekom,
+			// 	'notifikasi_link' => 'administrator/detail_tl/'.$id_pmr.'/'.$id_temuan.'/'.$id_rekom.'/'.$id_tl,
+			// 	'notifikasi_level' => "spi",
+			// 	'notifikasi_user' => $value
+			// 	);
+			// 	$this->model_app->insert('tb_notifikasi',$data2);
+			// }
 		$this->session->set_flashdata('berhasil','Tindak Lanjut telah dikirim ke Petugas SPI');
 		redirect('administrator/list_tl_verifikator/'.$id_pmr.'/'.$id_temuan.'/'.$id_rekom);
 
