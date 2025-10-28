@@ -2981,10 +2981,13 @@ class Administrator extends CI_Controller {
 						);
 			$where = array('tl_id' => $this->input->post('id'));
 			$this->model_app->update('tb_tl', $data, $where);
+
 			$data2 = array( 'rekomendasi_status_cache' => $this->input->post('status'), 
-							'rekomendasi_status_publish_kabag' => 'N');
+							'rekomendasi_status_publish_kabag' => 'N',
+							'status_tanggapan' => 1);
 			$where2 = array('rekomendasi_id' => $this->input->post('id_rekom'));
 			$this->model_app->update('tb_rekomendasi', $data2, $where2);
+
 			$this->session->set_flashdata('simpan_tnggp','Status dan Tanggapan Anda berhasil disimpan');
 
 		}elseif (isset($_POST['kirim'])) {
@@ -2997,20 +3000,22 @@ class Administrator extends CI_Controller {
 						);
 			$where = array('tl_id' => $this->input->post('id'));
 			$this->model_app->update('tb_tl', $data, $where);
+
 			$data2 = array( 'rekomendasi_status_cache' => $this->input->post('status'), 
-							'rekomendasi_status_publish_kabag' => 'Y');
+							'rekomendasi_status_publish_kabag' => 'Y',
+							'status_tanggapan' => 1);
 			$where2 = array('rekomendasi_id' => $this->input->post('id_rekom'));
 			$this->model_app->update('tb_rekomendasi', $data2, $where2);
 
 			$tl = $this->model_app->view_where('tb_tl','tl_id',$this->input->post('id'));
 			$tl = $tl[0]['tl_deskripsi'];
-			$data3 = array(
-					'notifikasi_judul' => 'Persetujuan Status dan Tanggapan TL',
-					'notifikasi_pesan' => '<b>Status : '.$this->input->post('status').'</b><br>'.$tl,
-					'notifikasi_level' => 'kabagspi',
-					'notifikasi_link' => 'administrator/view_temuan/'.$id_pmr
-				);
-			$this->model_app->insert('tb_notifikasi',$data3);
+			// $data3 = array(
+			// 		'notifikasi_judul' => 'Persetujuan Status dan Tanggapan TL',
+			// 		'notifikasi_pesan' => '<b>Status : '.$this->input->post('status').'</b><br>'.$tl,
+			// 		'notifikasi_level' => 'kabagspi',
+			// 		'notifikasi_link' => 'administrator/view_temuan/'.$id_pmr
+			// 	);
+			// $this->model_app->insert('tb_notifikasi',$data3);
 			$this->session->set_flashdata('kirim_tnggp','Tanggapan Anda berhasil dikirim ke Kadiv');
 		}
 		redirect('administrator/view_temuan/'.$id_pmr);

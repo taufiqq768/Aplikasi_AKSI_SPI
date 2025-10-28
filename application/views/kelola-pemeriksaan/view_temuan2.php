@@ -5,7 +5,7 @@
           <div class="">
             <div class="page-title">
               <div class="title_left">
-                <h3>Kelola Temuan <small>Regional</small></h3>
+                <h3>Kelola Temuan <small>Regional/Kebun</small></h3>
               </div>
 
             </div>
@@ -423,7 +423,7 @@
                                       </tr>
                                       <?php echo form_close(); ?>
                                       <div class="modal fade" id="editTL<?php echo $baris['tl_id']?>" tabindex="-1" role="dialog" aria-hidden="true">
-                                      <div class="modal-dialog" role="document">
+                                      <div class="modal-dialog modal-lg" role="document"> 
                                         <div class="modal-content">
                                          <div class="modal-header">
                                           <div class="row">
@@ -453,8 +453,8 @@
                                               </div>
                                                <div class="form-group" id="tanggap">
                                                 <label class="control-label col-md-3 col-sm-3 col-xs-12">Tanggapan</label>
-                                                  <div class="input-group col-md-8 col-sm-8 col-xs-12">
-                                                  <textarea class="form-control" rows="5" placeholder="Masukkan Deskripsi Tanggapan" name="tanggapan"><?php echo $baris['tl_tanggapan']; ?></textarea>
+                                                  <div class="input-group col-md-8 col-md-8 col-md-12">
+                                                  <textarea class="form-control" rows="15" placeholder="Masukkan Deskripsi Tanggapan" name="tanggapan"><?php echo $baris['tl_tanggapan']; ?></textarea>
                                                   </div>
                                                </div>
                                           </div><div class="modal-footer">

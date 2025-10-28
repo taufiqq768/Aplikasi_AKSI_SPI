@@ -189,6 +189,11 @@
                                     <?php   echo "<a href='".base_url()."administrator/edit_tl_verifikator/$id_pmr/$id_temuan/$id_rekom/$row[tl_id]'>" ?><button type="button" class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="top" title="Lihat Data Tindak Lanjut" <?php  echo strpos($role[0]['role_akses'],'13')!==FALSE?"":"disabled"; echo $disable; ?>><span class="fa fa-edit"></span> Lihat TL</button></a>
                                     <?php   echo "<a href='".base_url()."administrator/delete_tl/$id_pmr/$id_temuan/$id_rekom/$row[tl_id]'"?><button type="button" class="btn btn-danger btn-xs" onclick="return confirm('Apa anda yakin untuk hapus Tindak Lanjut ini?')" data-toggle="tooltip" data-placement="top" title="Hapus Tindak Lanjut" <?php  echo strpos($role[0]['role_akses'],'14')!==FALSE?"":"disabled"; echo $disable; ?>><span class="fa fa-trash"></span> Hapus</button></a>
                                   </div>
+                                  <?php }elseif ($row['status_tanggapan']=='1') { ?>
+                                  <div class="form-group">
+                                    <?php   echo "<a href='".base_url()."administrator/edit_tl_verifikator/$id_pmr/$id_temuan/$id_rekom/$row[tl_id]'>" ?><button type="button" class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="top" title="Lihat Data Tindak Lanjut" <?php  echo strpos($role[0]['role_akses'],'13')!==FALSE?"":"disabled"; echo $disable; ?>><span class="fa fa-edit"></span> Lihat TL</button></a>
+                                    <?php   echo "<a href='".base_url()."administrator/delete_tl/$id_pmr/$id_temuan/$id_rekom/$row[tl_id]'"?><button type="button" class="btn btn-danger btn-xs" onclick="return confirm('Apa anda yakin untuk hapus Tindak Lanjut ini?')" data-toggle="tooltip" data-placement="top" title="Hapus Tindak Lanjut" <?php  echo strpos($role[0]['role_akses'],'14')!==FALSE?"":"disabled"; echo $disable; ?>><span class="fa fa-trash"></span> Hapus</button></a>
+                                  </div>
                                  <?php }else{ echo "<center>-</center>";} ?>
                               </td>
                             </tr>

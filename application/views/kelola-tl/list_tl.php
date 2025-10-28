@@ -203,11 +203,15 @@
                                 <td>
                                   <?php if ($row['tl_publish_verif']=='N' OR $row['tl_status_from_vrf']=='Y') { ?>
                                   <div class="form-group">
-                                  <?php   echo "<a href='".base_url()."administrator/tl_sendto_vrf/$id_pmr/$id_temuan/$id_rekom/$row[tl_id]'>" ?><button type="button" class="btn btn-primary btn-xs" data-toggle="tooltip" data-placement="top" title="Kirim ke Verifikator" <?php  echo strpos($role[0]['role_akses'],'13')!==FALSE?"":"disabled"; echo $disable;?>><span class="fa fa-send"></span></button></a>
-                                  <?php   echo "<a href='".base_url()."administrator/edit_tl/$id_pmr/$id_temuan/$id_rekom/$row[tl_id]'>" ?><button type="button" class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="top" title="Edit Tindak Lanjut" <?php  echo strpos($role[0]['role_akses'],'13')!==FALSE?"":"disabled"; echo $disable;?>><span class="fa fa-edit"></span> Edit</button></a>
-
-                                  <?php   echo "<a href='".base_url()."administrator/delete_tl/$id_pmr/$id_temuan/$id_rekom/$row[tl_id]'"?><button type="button" class="btn btn-danger btn-xs" onclick="return confirm('Apa anda yakin untuk hapus Tindak Lanjut ini?')" data-toggle="tooltip" data-placement="top" title="Hapus Tindak Lanjut" <?php  echo strpos($role[0]['role_akses'],'14')!==FALSE?"":"disabled"; echo $disable; ?>><span class="fa fa-trash"></span> Hapus</button></a>
-                                </div>
+                                    <?php   echo "<a href='".base_url()."administrator/tl_sendto_vrf/$id_pmr/$id_temuan/$id_rekom/$row[tl_id]'>" ?><button type="button" class="btn btn-primary btn-xs" data-toggle="tooltip" data-placement="top" title="Kirim ke Verifikator" <?php  echo strpos($role[0]['role_akses'],'13')!==FALSE?"":"disabled"; echo $disable;?>><span class="fa fa-send"></span></button></a>
+                                    <?php   echo "<a href='".base_url()."administrator/edit_tl/$id_pmr/$id_temuan/$id_rekom/$row[tl_id]'>" ?><button type="button" class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="top" title="Edit Tindak Lanjut" <?php  echo strpos($role[0]['role_akses'],'13')!==FALSE?"":"disabled"; echo $disable;?>><span class="fa fa-edit"></span> Edit</button></a>
+                                    <?php   echo "<a href='".base_url()."administrator/delete_tl/$id_pmr/$id_temuan/$id_rekom/$row[tl_id]'"?><button type="button" class="btn btn-danger btn-xs" onclick="return confirm('Apa anda yakin untuk hapus Tindak Lanjut ini?')" data-toggle="tooltip" data-placement="top" title="Hapus Tindak Lanjut" <?php  echo strpos($role[0]['role_akses'],'14')!==FALSE?"":"disabled"; echo $disable; ?>><span class="fa fa-trash"></span> Hapus</button></a>
+                                  </div>
+                                <?php }elseif ($row['status_tanggapan']=='1') { ?>
+                                <div class="form-group">
+                                    <?php   echo "<a href='".base_url()."administrator/edit_tl/$id_pmr/$id_temuan/$id_rekom/$row[tl_id]'>" ?><button type="button" class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="top" title="Edit Tindak Lanjut" <?php  echo strpos($role[0]['role_akses'],'13')!==FALSE?"":"disabled"; echo $disable;?>><span class="fa fa-edit"></span> Edit</button></a>
+                                    <?php   echo "<a href='".base_url()."administrator/delete_tl/$id_pmr/$id_temuan/$id_rekom/$row[tl_id]'"?><button type="button" class="btn btn-danger btn-xs" onclick="return confirm('Apa anda yakin untuk hapus Tindak Lanjut ini?')" data-toggle="tooltip" data-placement="top" title="Hapus Tindak Lanjut" <?php  echo strpos($role[0]['role_akses'],'14')!==FALSE?"":"disabled"; echo $disable; ?>><span class="fa fa-trash"></span> Hapus</button></a>
+                                  </div>
                                 <?php }else{ echo "<center>-</center>";} ?>
                               </td>
                             </tr>
