@@ -2483,7 +2483,8 @@ class Administrator extends CI_Controller {
 							'tl_status' => 'Belum di Tindak Lanjut',
 							'tl_publish_verif' => 'Y',
 							'user_opr' => $opr,
-                            'user_vrf' => $vrf 
+                            'user_vrf' => $vrf,
+							'tl_link' =>$this->input->post('link')							
 			);
 			$this->model_app->insert('tb_tl', $data);
 			$id_tl = $this->db->insert_id();
